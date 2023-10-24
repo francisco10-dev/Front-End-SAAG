@@ -1,10 +1,10 @@
-import BasicTabs from "../tools/tabs";
+import TabsSolicitudAdmin from "../tools/tabs";
 
 const Solicitud = () => {
  
     return (
         <div>
-            <BasicTabs/>
+            <TabsSolicitudAdmin/>
         </div>
     );
 }

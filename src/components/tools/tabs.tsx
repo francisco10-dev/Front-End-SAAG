@@ -37,7 +37,6 @@ const applyFilters = (rows: Solicitud[], filterText: string) => {
 };
 
 
-
 function CustomTabPanel(props: TabPanelProps) {
   const { children, value, index, ...other } = props;
 
@@ -65,7 +64,7 @@ function a11yProps(index: number) {
   };
 }
 
-export default function BasicTabs() {
+export default function TabsSolicitudAdmin() {
   const Service = new SolicitudService();
   const [value, setValue] = React.useState(0);
   const [solicitudes, setSolicitudes] = React.useState<Solicitud[]>([]);
