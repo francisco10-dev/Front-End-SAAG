@@ -1,0 +1,6 @@
+.custom-cell {
+    max-height: 100px; /* Altura máxima */
+    min-height: 50px;  /* Altura mínima */
+    overflow: auto;    /* Hacer scroll si el contenido es más grande que la celda */
+}
+  

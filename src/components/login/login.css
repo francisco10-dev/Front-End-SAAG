@@ -1,0 +1,138 @@
+.login-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px #ccc;
+    border-radius: 14px 0px 0px 14px;
+    color: rgb(14, 15, 15);
+    border-right: none;
+    animation: fadeIn 2s ease-in-out forwards;
+    margin-top: 6%;
+    margin-left: 28%;
+}
+  
+.form-group {
+    margin-bottom: 10px;
+}
+  
+.btnLogin {
+    padding: 10px 15px;
+    background-color: rgb(20, 64, 145);
+    color: #e4d6d6;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 3%;
+}
+  
+.btnLogin:hover{
+    background-color: rgb(51, 11, 88)
+}
+
+.eyeBtn{
+    background-color: transparent;
+    border: none;
+    color: white;
+}
+
+.eyeBtn:hover{
+    transform: scale(1.1);
+}
+
+#check{
+    width: 300px;
+    margin-left: 2%;
+}
+
+#see{
+    margin-right: 115px;
+    color: white;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+
+.logos{
+    display: flex;
+    align-items: center;
+    opacity: 0;
+    animation: fadeIn 1.8s ease-in-out forwards;
+}
+
+.msj{
+    color: white;
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    margin-top: 3%;
+    border-radius: 10px;
+}
+
+.error {
+    animation: shake 0.5s ease-in-out;
+    border-color: red;
+}
+
+  
+@keyframes shake {
+    0%, 100% {
+      transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+      transform: translateX(-10px);
+    }
+    20%, 40%, 60%, 80% {
+      transform: translateX(10px);
+    }
+}
+
+.contenedor-imagenes {
+    display: flex;
+    align-items: center;
+    margin-top: 5.2%;
+}
+
+.divider-vertical {
+    width: 1px; /* Ancho de la línea vertical */
+    height: 100px; /* Altura de la línea vertical */
+    background-color: #ffffff; /* Color de la línea vertical */
+    margin: 0 10px; /* Espacio entre la línea y las imágenes */
+}
+
+.imgSA{
+    width: 335px;
+}
+
+.view {
+    margin-top: 2% ;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.center-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+  
