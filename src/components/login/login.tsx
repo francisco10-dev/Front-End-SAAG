@@ -7,7 +7,9 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { Input } from './loginStyles';
 import { useAuth } from '../../authProvider';
+import UsuarioService from '../../services/usuario.service';
 
+const usuarioService = new UsuarioService();
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -15,14 +17,21 @@ const Login = () => {
   const [band, setBand] = useState(false);
   const { setLoggedIn } = useAuth();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     //Acá debe validarse con la información de la bd
-    if(username ==='admin' && password === 'admin'){ 
-        document.body.style.backgroundImage = 'none';
-        setLoggedIn(true);
-        localStorage.setItem('loggedIn', 'true');
-    }else{
+    try {
+      const data = {
+        nombreUsuario: username,
+        contrasena: password
+      };
+      const usuario = await usuarioService.login(data);
+      document.body.style.backgroundImage = 'none';
+      /* Aquí se puede hacer algo con el objeto de usuario devuelto, 
+      como guardar el token en el estado global o redirigir al usuario a otra página.*/
+      setLoggedIn(true);
+      localStorage.setItem('loggedIn', 'true');
+    } catch (error) {
       setBand(true);
       setTimeout(() => {
         setBand(false);
