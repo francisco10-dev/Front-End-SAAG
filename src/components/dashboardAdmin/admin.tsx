@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import './admin.css';
-import UsuarioService, { Usuario } from '../../services/usuario.service';
-import Select from 'react-select';
+import UsuarioService from '../../services/usuario.service';
+import Select from 'react-select';    // aun falta agregar lo del combo box que va a suplantar al input que esta, esto se instala con: npm install react-select
+import { toast, ToastContainer } from 'react-toastify';  // este es para los mensajes que se ven, esto se instala con: npm install react-toastify
+import 'react-toastify/dist/ReactToastify.css';
 
 const Administrador = () => {
   const [nombreUsuario, setNombreUsuario] = useState('');
   const [contrasena, setContrasena] = useState('');
   const [rol, setRol] = useState('empleado');
+  const [idColaborador, setIdColaborador] = useState(4);
+  const usuarioService = new UsuarioService();
+
   const [selectedColaborador, setSelectedColaborador] = useState(null);
   const [colaboradores, setColaboradores] = useState([]);
 
-  const usuarioService = new UsuarioService();
-
- /* const cargarColaboradores = async () => {
+  /*const cargarColaboradores = async () => {
     try {
       const response = await usuarioService.obtenerColaboradores();
       const options = response.map((colaborador) => ({
@@ -30,19 +33,29 @@ const Administrador = () => {
   }, []);*/
 
   const crearUsuario = async () => {
+    if (!nombreUsuario || !contrasena || !idColaborador || isNaN(idColaborador)) {
+      // Mostrar mensaje emergente de error si faltan campos o el ID de Colaborador no es válido
+
+      toast.error('Todos los campos son obligatorios y el ID de Colaborador debe ser un número válido'+idColaborador+' '+contrasena );
+      return;
+    }
+
     const nuevoUsuario = {
       nombreUsuario,
       contrasena,
       rol,
-     // idColaborador: selectedColaborador.value,
+      idColaborador,
+     // idColaborador: selectedColaborador ? selectedColaborador.value : idColaborador,
     };
 
     try {
       const response = await usuarioService.agregarUsuario(nuevoUsuario);
       console.log('Respuesta del servidor:', response);
+      toast.success('Usuario creado exitosamente');
       limpiarFormulario();
     } catch (error) {
       console.error('Error al crear usuario:', error);
+      toast.error('Error al crear usuario');
     }
   };
 
@@ -50,6 +63,7 @@ const Administrador = () => {
     setNombreUsuario('');
     setContrasena('');
     setRol('empleado');
+    setIdColaborador(4);
     setSelectedColaborador(null);
   };
 
@@ -66,8 +80,15 @@ const Administrador = () => {
               type="text"
               id="nombreUsuario"
               value={nombreUsuario}
-              onChange={(e) => setNombreUsuario(e.target.value)}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                // Utiliza una expresión regular para validar que solo se ingresen letras (mayúsculas o minúsculas)
+                if (/^[a-zA-Z]*$/.test(inputValue)) {
+                  setNombreUsuario(inputValue);
+                }
+              }}
             />
+            <br />
             <br />
             <label htmlFor="contrasena">Contraseña:</label>
             <br />
@@ -75,26 +96,29 @@ const Administrador = () => {
               type="password"
               id="contrasena"
               value={contrasena}
-              onChange={(e) => setContrasena(e.target.value)}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                  setContrasena(inputValue);               
+              }}
             />
             <br />
             <label htmlFor="rol">Tipo de empleado:</label>
             <br />
-            <select
-            id='rol'
-              value={rol}
-              onChange={(e) => setRol(e.target.value)}
-            >
+            <select id='rol' value={rol} onChange={(e) => setRol(e.target.value)}>
               <option value="empleado">Empleado</option>
               <option value="admin">Administrador</option>
             </select>
             <br />
-            <label htmlFor="colaborador">ID de Colaborador:</label>
+            <label htmlFor="idColaborador">ID de Colaborador:</label>
             <br />
-            <Select
-              value={selectedColaborador}
-              onChange={(value) => setSelectedColaborador(value)}
-              options={colaboradores}
+            <input
+              type="text"
+              id="idColaborador"
+              value={idColaborador}
+              onChange={(e) => {
+                const inputValue = e.target.value;
+                setIdColaborador(/^\d+$/.test(inputValue) ? parseInt(inputValue, 10) : idColaborador);
+              }}
             />
           </form>
           <br />
@@ -103,8 +127,16 @@ const Administrador = () => {
           </button>
         </div>
       </div>
+      <ToastContainer />
     </>
   );
 };
-
+// incompleto aun falta por agregar, estan en pruebas 
 export default Administrador;
+
+// El combo box para llenarse con el id de los colaboradores: recordar que es por los colaboradores que no puedo usarlo aún
+/*<Select
+value={selectedColaborador}
+onChange={(value) => setSelectedColaborador(value)}
+options={colaboradores}
+/>*/
