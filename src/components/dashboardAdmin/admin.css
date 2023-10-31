@@ -1,0 +1,47 @@
+    button {
+        background-color: #35aa3f;
+        color: #fff;
+        padding: 10px 15px;
+        border: none;
+        cursor: pointer;
+        margin-bottom: 10px;
+    }
+    
+    .container {
+        float: left;
+        display: grid;
+        grid-template-columns: 0.5fr 1fr;
+    }
+    
+    .usuarios-container {
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: -5px 0 10px rgba(0, 0, 0, 0.2);
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    
+    body {
+        font-family: 'GOTHAM Medium', sans-serif !important;
+        font-size: 18px !important;
+        color: #333 !important;
+    }
+    
+    /* Estilos para los inputs y el combo box */
+    input, select {
+        width: 100%; /* Ancho del 100% para que tengan el mismo tamaño */
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 5px;
+        transition: box-shadow 0.3s;
+        appearance: none;
+    }
+    
+    /* Estilos al enfocar los inputs y el combo box */
+    input:focus, select:focus {
+        box-shadow: 0 0 5px rgba(53, 170, 63, 0.7);
+    }
+    

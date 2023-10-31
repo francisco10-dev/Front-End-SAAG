@@ -109,6 +109,7 @@ export default function MenuPanel() {
   //const settings = ['Perfil', 'Cuenta', 'Dashboard', 'Cerrar sesión'];
   const settings = [
     { icon: null, text: 'Perfil', onClick: () => handleNavigation('/')  },
+    { icon: null, text: 'Perfil', onClick: () => handleNavigation('/administrador')  },
     { icon: null, text: 'Cuenta', onClick: () => handleNavigation('/prueba')  },
     { icon: null, text: 'Dashboard', onClick: () => handleNavigation('/')  },
     { icon: null, text: 'Cerrar sesión', onClick: () => handleNavigation('salir') }
