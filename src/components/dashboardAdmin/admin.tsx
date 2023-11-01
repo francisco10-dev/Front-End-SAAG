@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+// recordar quitar los comentarios 
+import /*React,*/ { useState, /*useEffect*/ } from 'react';
 import './admin.css';
 import UsuarioService from '../../services/usuario.service';
-import Select from 'react-select';    // aun falta agregar lo del combo box que va a suplantar al input que esta, esto se instala con: npm install react-select
+//import Select from 'react-select';    // aun falta agregar lo del combo box que va a suplantar al input que esta, esto se instala con: npm install react-select
 import { toast, ToastContainer } from 'react-toastify';  // este es para los mensajes que se ven, esto se instala con: npm install react-toastify
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -12,8 +13,8 @@ const Administrador = () => {
   const [idColaborador, setIdColaborador] = useState(4);
   const usuarioService = new UsuarioService();
 
-  const [selectedColaborador, setSelectedColaborador] = useState(null);
-  const [colaboradores, setColaboradores] = useState([]);
+ // const [selectedColaborador, setSelectedColaborador] = useState(null);
+ // const [colaboradores, setColaboradores] = useState([]);
 
   /*const cargarColaboradores = async () => {
     try {
@@ -35,19 +36,30 @@ const Administrador = () => {
   const crearUsuario = async () => {
     if (!nombreUsuario || !contrasena || !idColaborador || isNaN(idColaborador)) {
       // Mostrar mensaje emergente de error si faltan campos o el ID de Colaborador no es válido
-
-      toast.error('Todos los campos son obligatorios y el ID de Colaborador debe ser un número válido'+idColaborador+' '+contrasena );
+      toast.error('Todos los campos son obligatorios y el ID de Colaborador debe ser un número válido');
       return;
     }
-
+  
+    if (contrasena.length < 10) {
+      // Validar que la contraseña tenga al menos 10 caracteres
+      toast.error('La contraseña debe tener al menos 10 caracteres.');
+      return;
+    }
+  
+    if (!/[a-z]/.test(contrasena) || !/[A-Z]/.test(contrasena) || !/\d/.test(contrasena) || !/\W/.test(contrasena)) {
+      // Validar que la contraseña contenga al menos una letra minúscula, una letra mayúscula, un número y un carácter especial
+      toast.error('La contraseña debe contener al menos una letra minúscula, una letra mayúscula, un número y un carácter especial.');
+      return;
+    }
+  
     const nuevoUsuario = {
       nombreUsuario,
       contrasena,
       rol,
       idColaborador,
-     // idColaborador: selectedColaborador ? selectedColaborador.value : idColaborador,
+      // idColaborador: selectedColaborador ? selectedColaborador.value : idColaborador,
     };
-
+  
     try {
       const response = await usuarioService.agregarUsuario(nuevoUsuario);
       console.log('Respuesta del servidor:', response);
@@ -58,13 +70,13 @@ const Administrador = () => {
       toast.error('Error al crear usuario');
     }
   };
-
+  
   const limpiarFormulario = () => {
     setNombreUsuario('');
     setContrasena('');
     setRol('empleado');
     setIdColaborador(4);
-    setSelectedColaborador(null);
+   // setSelectedColaborador(null);
   };
 
   return (
@@ -110,7 +122,7 @@ const Administrador = () => {
             </select>
             <br />
             <label htmlFor="idColaborador">ID de Colaborador:</label>
-            <br />
+            <br/>
             <input
               type="text"
               id="idColaborador"
