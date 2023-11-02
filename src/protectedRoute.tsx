@@ -4,7 +4,7 @@ const ProtectedRoute: React.FC<{ element: React.ReactNode; isAuthenticated: bool
   return isAuthenticated ? (
     element
   ) : (
-    <Navigate to="" replace />
+    <Navigate to="/" replace />
   );
 };
 

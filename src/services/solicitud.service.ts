@@ -1,5 +1,7 @@
 import axios from 'axios';
 
+
+
 export interface Solicitud {
     idSolicitud: number;
     conGoceSalarial: boolean;
@@ -21,12 +23,15 @@ export interface Solicitud {
 
 class SolicitudService {
   private axiosInstance;
+  private token = localStorage.getItem('token');
 
   constructor() {
     this.axiosInstance = axios.create({
       baseURL: 'http://localhost:3000/saag',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `${this.token}`
+      
       },
     });
   }
@@ -52,9 +57,9 @@ class SolicitudService {
       const response = await this.axiosInstance.get('/solicitudes/');
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 403) {
+          throw new Error(error.response.data.message);
         } else {
           throw new Error('Error en la solicitud de red');
         }

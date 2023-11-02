@@ -12,7 +12,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [loggedIn, setLoggedIn] = useState<boolean>(localStorage.getItem('loggedIn') === 'true');
+  const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('token'));
 
   return (
     <AuthContext.Provider value={{ loggedIn, setLoggedIn }}>
@@ -20,6 +20,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
     </AuthContext.Provider>
   );
 }
+
+
 
 export function useAuth() {
   const context = useContext(AuthContext);

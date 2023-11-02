@@ -148,6 +148,7 @@ export default function MenuPanel() {
   const handleLogout = () =>{
     setLoggedIn(false);
     localStorage.setItem('loggedIn', 'false');
+    localStorage.removeItem('token');
     navigate('');
   }
 
