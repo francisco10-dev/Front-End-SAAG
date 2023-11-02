@@ -8,10 +8,10 @@
     }
     
     .container {
+        width: 30%;
         float: left;
-        display: grid;
-        grid-template-columns: 0.5fr 1fr;
     }
+    
     
     .usuarios-container {
         display: flex;
@@ -45,3 +45,7 @@
         box-shadow: 0 0 5px rgba(53, 170, 63, 0.7);
     }
     
+    .tabla{
+        float: right;
+        width: 68%;
+    }

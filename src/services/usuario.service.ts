@@ -1,8 +1,11 @@
 import axios from 'axios';
 
 export interface Usuario {
+  idUsuario: number,
   nomUsuario: string;
   password: string;
+  rol: string,
+  idColaborador: number,
 }
 
 class UsuarioService {
@@ -52,7 +55,9 @@ class UsuarioService {
   async obtenerUsuarios(): Promise<Usuario[]> {
     try {
       const response = await this.axiosInstance.get('/usuarios/');
-      return response.data;
+      // Agrega una propiedad "id" única a cada usuario
+      const usuariosConId = response.data.map((usuario: Usuario, index: number) => ({ ...usuario, idUsuario: index + 1 }));
+      return usuariosConId;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
@@ -64,7 +69,8 @@ class UsuarioService {
       throw error;
     }
   }
-
+  
+  
   async obtenerUsuarioPorId(id: string): Promise<Usuario> {
     try {
       const response = await this.axiosInstance.get(`/usuario/${id}`);

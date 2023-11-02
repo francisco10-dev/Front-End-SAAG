@@ -5,6 +5,7 @@ import UsuarioService from '../../services/usuario.service';
 //import Select from 'react-select';    // aun falta agregar lo del combo box que va a suplantar al input que esta, esto se instala con: npm install react-select
 import { toast, ToastContainer } from 'react-toastify';  // este es para los mensajes que se ven, esto se instala con: npm install react-toastify
 import 'react-toastify/dist/ReactToastify.css';
+import TabsUsuarios from "./tabs";
 
 const Administrador = () => {
   const [nombreUsuario, setNombreUsuario] = useState('');
@@ -138,7 +139,14 @@ const Administrador = () => {
             Crear Usuario
           </button>
         </div>
-      </div>
+        <div className='tablaUsuarios'>
+          
+        </div>
+        </div>
+        <div className='tabla'>
+        <TabsUsuarios/>
+        </div>
+     
       <ToastContainer />
     </>
   );
