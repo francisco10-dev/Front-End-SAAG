@@ -5,7 +5,8 @@ import MenuPanel from './components/tools/menu';
 
 const App = () => {
   const { loggedIn } = useAuth(); // Accede a loggedIn y setLoggedIn desde el contexto
-  let content = loggedIn ? <MenuPanel/> : <Login />;
+  const content = loggedIn ? <MenuPanel/> : <Login />;
+  
 
   return (
       <div>

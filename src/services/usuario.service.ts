@@ -7,20 +7,22 @@ export interface Usuario {
 
 class UsuarioService {
   private axiosInstance;
+  private token = localStorage.getItem('token');
 
   constructor() {
     this.axiosInstance = axios.create({
       baseURL: 'http://localhost:3000/saag',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `${this.token}`
       },
     });
   }
 
-  async login(data: any): Promise<Usuario> {
+  async login(data: any): Promise<string> {
     try {
       const response = await this.axiosInstance.post('/login/', data);
-      return response.data;
+      return response.data.token;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {

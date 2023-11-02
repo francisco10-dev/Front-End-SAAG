@@ -8,6 +8,7 @@ import Checkbox from '@mui/material/Checkbox';
 import { Input } from './loginStyles';
 import { useAuth } from '../../authProvider';
 import UsuarioService from '../../services/usuario.service';
+import {jwtDecode} from "jwt-decode";  
 
 const usuarioService = new UsuarioService();
 const Login = () => {
@@ -25,13 +26,18 @@ const Login = () => {
         nombreUsuario: username,
         contrasena: password
       };
-      const usuario = await usuarioService.login(data);
+      const token= await usuarioService.login(data);
+
       document.body.style.backgroundImage = 'none';
       /* Aquí se puede hacer algo con el objeto de usuario devuelto, 
       como guardar el token en el estado global o redirigir al usuario a otra página.*/
       setLoggedIn(true);
-      localStorage.setItem('loggedIn', 'true');
-    } catch (error) {
+      localStorage.setItem('token', token);
+      const usuario =jwtDecode(token);
+      console.log(usuario);
+      
+     
+      } catch (error) {
       setBand(true);
       setTimeout(() => {
         setBand(false);
