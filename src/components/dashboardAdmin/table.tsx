@@ -32,7 +32,7 @@ export default function DataTable(props: DataTableProps) {
   };
 
   return (
-    <div style={{ height: 400, width: '100%' }}>
+    <div style={{ height: 370, width: '100%' }}>
       <TextField
         label="Buscar..."
         variant="standard"
@@ -56,6 +56,8 @@ export default function DataTable(props: DataTableProps) {
             marginBottom: '20px',
             border: 'none', 
             boxShadow: 'none',
+            fontSize: '20px',
+            fontFamily:'GOTHAM Medium',
           }}
       />
     </div>
