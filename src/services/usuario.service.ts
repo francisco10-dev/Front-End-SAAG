@@ -56,10 +56,9 @@ class UsuarioService {
 
   async obtenerUsuarios(): Promise<Usuario[]> {
     try {
-      const response = await this.axiosInstance.get('/usuarios/');
-      // Agrega una propiedad "id" única a cada usuario
-      const usuariosConId = response.data.map((usuario: Usuario, index: number) => ({ ...usuario, idUsuario: index + 1 }));
-      return usuariosConId;
+      const response = await this.axiosInstance.get('/usuarios');
+      const usuarios = response.data; // Obtén los usuarios directamente desde la API
+      return usuarios;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
@@ -71,7 +70,6 @@ class UsuarioService {
       throw error;
     }
   }
-  
   
   async obtenerUsuarioPorId(id: string): Promise<Usuario> {
     try {
@@ -105,9 +103,11 @@ class UsuarioService {
     }
   }
 
-  async eliminarUsuario(id: string): Promise<void> {
+  async eliminarUsuario(id: Number): Promise<void> {
     try {
+      console.log(id);
       await this.axiosInstance.delete(`/eliminar-usuario/${id}`);
+      console.log(id);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {

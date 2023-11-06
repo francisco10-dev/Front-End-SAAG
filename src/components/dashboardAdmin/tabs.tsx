@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import DataTable, { DataTableProps } from './table'; // Asegúrate de importar DataTableProps
 import UsuarioService, { Usuario } from '../../services/usuario.service';
 import { GridColDef } from '@mui/x-data-grid';
+import CustomTabPanel from './CustomTabPanel';
 
 const columns: GridColDef[] = [
   { field: 'idUsuario', headerName: 'ID', width: 110 },
@@ -13,16 +12,6 @@ const columns: GridColDef[] = [
   { field: 'rol', headerName: 'Rol', width: 150 },
   { field: 'idColaborador', headerName: 'ID de Colaborador', width: 250 },
 ];
-
-const applyFilters = (usuarios: Usuario[], filterText: string) => {
-  return usuarios.filter((usuario) => {
-    return (
-      Object.values(usuario).some((value) =>
-        value && value.toString().toLowerCase().includes(filterText.toLowerCase())
-      )
-    );
-  });
-};
 
 export default function TabsUsuarioAdmin() {
   const service = new UsuarioService();
@@ -33,14 +22,29 @@ export default function TabsUsuarioAdmin() {
     setValue(newValue);
   };
 
+  const onDeleteRow = async (idsToDelete: number[]) => {
+    try {
+      for (const idToDelete of idsToDelete) {
+        await service.eliminarUsuario(idToDelete);
+      }
+      // Recargar la tabla después de eliminar los datos
+      obtenerYActualizarUsuarios();
+    } catch (error) {
+      console.error('Error al eliminar usuarios: ', error);
+    }
+  };
+
+  const obtenerYActualizarUsuarios = async () => {
+    try {
+      const usuariosActualizados = await service.obtenerUsuarios();
+      setUsuarios(usuariosActualizados);
+    } catch (error) {
+      console.error('Error al obtener usuarios:', error);
+    }
+  };
+
   useEffect(() => {
-    service.obtenerUsuarios()
-      .then((usuarios) => {
-        setUsuarios(usuarios);
-      })
-      .catch((error) => {
-        console.error('Error al obtener usuarios:', error);
-      });
+    obtenerYActualizarUsuarios();
   }, []);
 
   return (
@@ -60,45 +64,9 @@ export default function TabsUsuarioAdmin() {
           index={index}
           usuarios={usuarios}
           columns={columns}
+          onDeleteRow={onDeleteRow}
         />
       ))}
     </Box>
   );
 }
-
-interface TabPanelProps {
-  index: number;
-  value: number;
-  usuarios: Usuario[];
-  columns: GridColDef[];
-}
-
-function CustomTabPanel(props: TabPanelProps) {
-  const { value, index, usuarios, columns } = props;
-  const filteredUsuarios = applyFilters(usuarios, '');
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`simple-tabpanel-${index}`}
-      aria-labelledby={`simple-tab-${index}`}
-    >
-      {value === index && (
-        <Box sx={{ p: 3 }}>
-          <Typography>
-            <DataTable
-              columns={columns}
-              rows={filteredUsuarios}
-              filterFunction={applyFilters}
-              getRowId={(row: any) => row.idUsuario} // Especifica la propiedad única de cada fila
-            />
-          </Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-
-

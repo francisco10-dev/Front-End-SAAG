@@ -1,21 +1,21 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import TextField from '@mui/material/TextField';
-import {Usuario} from '../../services/usuario.service';
+import { Usuario } from '../../services/usuario.service';
 
 export interface DataTableProps {
   columns: GridColDef[];
-  rows: any[];
-  filterFunction: (rows: any[], filterText: string) => any[];
-  getRowId: (row: any) => any; 
+  rows: Usuario[];
+  filterFunction: (rows: Usuario[], filterText: string) => Usuario[];
+  getRowId: (row: Usuario) => any;
+  onDeleteRow: (idsToDelete: number[]) => void;
 }
 
 export default function DataTable(props: DataTableProps) {
-  const { columns, rows, filterFunction, getRowId } = props;
+  const { columns, rows, filterFunction, getRowId, onDeleteRow } = props;
   const [filterText, setFilterText] = useState('');
-  const [filteredRows, setFilteredRows] = useState(rows); 
-  const [selectedRow, setSelectedRow] = useState<Usuario | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filteredRows, setFilteredRows] = useState(rows);
+  const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({});
 
   const applyFilters = () => {
     const filteredData = filterFunction(rows, filterText);
@@ -26,9 +26,22 @@ export default function DataTable(props: DataTableProps) {
     applyFilters();
   }, [filterText, rows, filterFunction]);
 
-  const handleRowClick = (params: { row: Usuario }) => {
-    setSelectedRow(params.row);
-    setIsModalOpen(true);
+  const handleRowClick = (idUsuario: number) => {
+    setSelectedRows((prevSelectedRows) => ({
+      ...prevSelectedRows,
+      [idUsuario]: !prevSelectedRows[idUsuario],
+    }));
+  };
+
+  const handleDeleteSelected = () => {
+    const selectedIds = Object.keys(selectedRows)
+      .filter((id) => selectedRows[id] === true)
+      .map(Number);
+
+    if (selectedIds.length > 0) {
+      onDeleteRow(selectedIds);
+      setSelectedRows({});
+    }
   };
 
   return (
@@ -38,28 +51,42 @@ export default function DataTable(props: DataTableProps) {
         variant="standard"
         value={filterText}
         onChange={(e) => setFilterText(e.target.value)}
-        style={{ marginBottom: '40px'}}
+        style={{ marginBottom: '40px' }}
       />
       <DataGrid
         rows={filteredRows}
         columns={columns}
+        rowSelectionModel={Object.keys(selectedRows).filter(
+          (id) => selectedRows[id] === true
+        )}
+        onRowSelectionModelChange={(selectionModel: any[]) => {
+          const newSelectedRows: Record<string, boolean> = {};
+          selectionModel.forEach((id) => {
+            newSelectedRows[id] = true;
+          });
+          setSelectedRows(newSelectedRows);
+        }}
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 5 },
           },
         }}
-        getRowId={getRowId} // Usa la función getRowId personalizada
+        getRowId={getRowId}
         pageSizeOptions={[5, 10]}
         checkboxSelection
-        onRowClick={handleRowClick}
+        onRowClick={(params) => {
+          handleRowClick(params.row.idUsuario as number);
+        }}
         style={{
-            marginBottom: '20px',
-            border: 'none', 
-            boxShadow: 'none',
-            fontSize: '20px',
-            fontFamily:'GOTHAM Medium',
-          }}
+          marginBottom: '20px',
+          border: 'none',
+          boxShadow: 'none',
+          fontSize: '20px',
+          fontFamily: 'GOTHAM Medium',
+        }}
       />
+      <button onClick={handleDeleteSelected}>Eliminar seleccionados</button>
     </div>
   );
 }
+
