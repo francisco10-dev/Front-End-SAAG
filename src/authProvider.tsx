@@ -12,7 +12,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('token'));
+  const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('accessToken'));
 
   return (
     <AuthContext.Provider value={{ loggedIn, setLoggedIn }}>

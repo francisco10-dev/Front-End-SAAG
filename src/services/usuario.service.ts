@@ -1,4 +1,5 @@
 import axios from 'axios';
+import axiosApi from '../services/api.service'
 
 export interface Usuario {
   idUsuario: number,
@@ -10,22 +11,15 @@ export interface Usuario {
 
 class UsuarioService {
   private axiosInstance;
-  private token = localStorage.getItem('token');
 
   constructor() {
-    this.axiosInstance = axios.create({
-      baseURL: 'http://localhost:3000/saag',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `${this.token}`
-      },
-    });
+    this.axiosInstance = axiosApi;
   }
 
-  async login(data: any): Promise<string> {
-    try {
+  async login(data: any): Promise<any> {
+    try { 
       const response = await this.axiosInstance.post('/login/', data);
-      return response.data.token;
+      return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
