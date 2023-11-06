@@ -1,4 +1,5 @@
 import axios from 'axios';
+import axiosApi from '../services/api.service'
 
 
 
@@ -23,17 +24,9 @@ export interface Solicitud {
 
 class SolicitudService {
   private axiosInstance;
-  private token = localStorage.getItem('token');
 
   constructor() {
-    this.axiosInstance = axios.create({
-      baseURL: 'http://localhost:3000/saag',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `${this.token}`
-      
-      },
-    });
+    this.axiosInstance = axiosApi;
   }
 
   async agregarSolicitud(data: any): Promise<Solicitud> {
