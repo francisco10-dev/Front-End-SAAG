@@ -191,4 +191,8 @@
         background-position: center top;
     }
 
+    .custom-label {
+        color: white;
+    }
+
 }

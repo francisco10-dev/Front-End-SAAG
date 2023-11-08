@@ -98,7 +98,7 @@ const Login = () => {
             <div className="form-group" id='check'>
             <FormControlLabel
               control={<Checkbox onChange={passwordVisibilidad} color="warning" />}
-              label="Mostrar contraseña"
+              label={<span className="custom-label">Mostrar contraseña</span>}
             />
             </div>
             <button className='btnLogin' type="submit">INGRESAR</button>
