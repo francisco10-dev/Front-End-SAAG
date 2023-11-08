@@ -20,8 +20,6 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
-import FeedIcon from '@mui/icons-material/Feed';
-//import LogoutIcon from '@mui/icons-material/Logout';
 
 import { useAuth } from '../../authProvider';
 import Rutas from '../../routes';
@@ -106,18 +104,18 @@ export default function MenuPanel() {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const { setLoggedIn } = useAuth();
   const navigate = useNavigate();
-  //const settings = ['Perfil', 'Cuenta', 'Dashboard', 'Cerrar sesión'];
+
   const settings = [
-    { icon: null, text: 'Perfil', onClick: () => handleNavigation('/')  },
-    { icon: null, text: 'Perfil', onClick: () => handleNavigation('/administrador')  },
-    { icon: null, text: 'Cuenta', onClick: () => handleNavigation('/prueba')  },
-    { icon: null, text: 'Dashboard', onClick: () => handleNavigation('/')  },
-    { icon: null, text: 'Cerrar sesión', onClick: () => handleNavigation('salir') }
+    { icon: null, text: 'Perfil', onClick: () => navigate('/')  },
+    { icon: null, text: 'Perfil', onClick: () => navigate('/administrador')  },
+    { icon: null, text: 'Cuenta', onClick: () => navigate('/')  },
+    { icon: null, text: 'Dashboard', onClick: () => navigate('/')  },
+    { icon: null, text: 'Cerrar sesión', onClick: () => handleLogout() }
   ];
 
 
   const opciones = [
-    { icon: <FeedIcon />, text: ' Solicitudes', link: '/solicitudes' },
+    { icon: null, text: 'Opción', link: '/' },
     { icon: null, text: 'Opción', link: '/' },
     { icon: null, text: 'Opción', link: '/' },
   ];
@@ -148,16 +146,9 @@ export default function MenuPanel() {
   const handleLogout = () =>{
     setLoggedIn(false);
     localStorage.setItem('loggedIn', 'false');
-    localStorage.removeItem('token');
+    localStorage.removeItem('accessToken');
+    sessionStorage.removeItem('Welcome');
     navigate('');
-  }
-
-  function handleNavigation(route: string) {
-    if(route === 'salir'){
-      handleLogout();
-    }else{
-      navigate(route);
-    }
   }
 
   return (

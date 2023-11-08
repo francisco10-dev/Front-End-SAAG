@@ -1,13 +1,14 @@
 import React, { useState, useEffect  } from 'react';
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/js/bootstrap.js'
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import './login.css'
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import { Input } from './loginStyles';
 import { useAuth } from '../../authProvider';
 import UsuarioService from '../../services/usuario.service';
+import { toast, ToastContainer } from 'react-toastify';
+import LinearProgress from '@mui/material/LinearProgress';
 
 
 const usuarioService = new UsuarioService();
@@ -17,34 +18,40 @@ const Login = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [band, setBand] = useState(false);
   const { setLoggedIn } = useAuth();
+  const [isLoading, setLoading] =useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    //Acá debe validarse con la información de la bd
+    setLoading(true);
     try {
       const data = {
         nombreUsuario: username,
         contrasena: password
       };
       const tokens= await usuarioService.login(data);
-
       document.body.style.backgroundImage = 'none';
-      /* Aquí se puede hacer algo con el objeto de usuario devuelto, 
-      como guardar el token en el estado global o redirigir al usuario a otra página.*/
       setLoggedIn(true);
       localStorage.setItem('accessToken', tokens.accessToken);
       localStorage.setItem('refreshToken', tokens.refreshToken);
-      
-      } catch (error) {
+    } catch (error) {
+        setLoading(false);
+        toast.error('Usuario o contraseña incorrecta', {
+          position: 'bottom-right', 
+          autoClose: 1500,
+          style: {
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            color: 'white', 
+          },
+        }); 
       setBand(true);
       setTimeout(() => {
         setBand(false);
-      }, 5000);
+      }, 1000);
     }
   };
 
   useEffect(() => {
-    document.body.style.backgroundImage = 'url(/src/img/bg-acib.jpg)';
+    document.body.style.backgroundImage = 'url(/bg-acib.jpg)';
     document.body.style.backgroundRepeat = 'no-repeat';
     document.body.style.backgroundSize = 'cover';
   }, []); // Se aplica este fondo cuando se ejecuta el componente.
@@ -58,9 +65,10 @@ const Login = () => {
       <div className='center-container'>
         <div className='logos'>
           <div className="contenedor-imagenes">
-            <img src="/src/img/LOGO.png" alt="" id='acibLogo'/>
+            <img src="/LOGO.png" alt="" id='acibLogo'/>
             <div className="divider-vertical"></div>
-            <img src="/src/img/logoSAAG.png" alt="" className='imgSA'/>
+            <img src="/logoSAAG.png" alt="" className='imgSA'/>
+            <img src="/LOGO.png" alt="" id='acibLogo2'/>
           </div>
         </div>
         <div className='login-container'>
@@ -94,14 +102,11 @@ const Login = () => {
             />
             </div>
             <button className='btnLogin' type="submit">INGRESAR</button>
-            <div className='msj'>
-              {band ? (
-                <h6><ErrorOutlineIcon/>  Usuario o contraseña incorrecta...</h6>
-              ) : null}
-            </div>
+            {isLoading ? <LinearProgress  /> : ''}
           </form>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
   

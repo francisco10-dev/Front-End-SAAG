@@ -1,8 +1,6 @@
 import axios from 'axios';
 import axiosApi from '../services/api.service'
 
-
-
 export interface Solicitud {
     idSolicitud: number;
     conGoceSalarial: boolean;
@@ -92,9 +90,10 @@ class SolicitudService {
     }
   }
 
-  async eliminarSolicitud(id: number): Promise<void> {
+  async eliminarSolicitud(id: number): Promise<number> {
     try {
-      await this.axiosInstance.delete(`/eliminar-solicitud/${id}`);
+       const response = await this.axiosInstance.delete(`/eliminar-solicitud/${id}`);
+       return response.status;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
@@ -106,6 +105,21 @@ class SolicitudService {
       throw error;
     }
   }
+
+  async eliminarSolicitudes(ids: number[]): Promise<number[]> {
+    const statuses: number[] = [];
+  
+    for (const id of ids) {
+      try {
+        const status = await this.eliminarSolicitud(id);
+        statuses.push(status);
+      } catch (error) {
+        statuses.push(0); 
+      }
+    }
+    return statuses;
+  }
+  
 }
 
 export default SolicitudService;
