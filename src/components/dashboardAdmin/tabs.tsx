@@ -19,7 +19,7 @@ export default function TabsUsuarioAdmin() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+    setValue(newValue); event
   };
 
   const onDeleteRow = async (idsToDelete: number[]) => {
