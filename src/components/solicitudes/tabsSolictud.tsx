@@ -45,6 +45,7 @@ export default function TabsSolicitudAdmin() {
   const [value, setValue] = React.useState(0);
   const [solicitudes, setSolicitudes] = React.useState<Solicitud[]>([]);
   const [ approved, setApproved ] = React.useState<Solicitud[]>([]);
+  const [pendings, setPendings] = React.useState<Solicitud[]>([]);
 
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -57,8 +58,10 @@ export default function TabsSolicitudAdmin() {
       try {
         const solicitudesData = await Service.getSolicitudes();
         setSolicitudes(solicitudesData);
-        const solicitudesAprobadas = solicitudesData.filter((solicitud) => solicitud.estado === 'procesada');
-        setApproved(solicitudesAprobadas);
+        const aprobadas = solicitudesData.filter((solicitud) => solicitud.estado === 'procesada');
+        setApproved(aprobadas);
+        const pendientes = solicitudesData.filter((solicitud) => solicitud.estado === 'pendiente');
+        setPendings(pendientes);
       } catch (error) {
         console.error('Error al obtener solicitudes:', error);
       }
@@ -76,7 +79,7 @@ React.useEffect(() => {
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Todas" {...a11yProps(0)} />
           <Tab label="Procesadas" {...a11yProps(1)} />
-          <Tab label="--" {...a11yProps(2)} />
+          <Tab label="Pendientes" {...a11yProps(2)} />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
@@ -86,7 +89,7 @@ React.useEffect(() => {
       <DataTable rows={approved} updateSolicitudes={loadRequests}/>
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
-        Item
+      <DataTable rows={pendings} updateSolicitudes={loadRequests}/>
       </CustomTabPanel>
     </Box>
   );
