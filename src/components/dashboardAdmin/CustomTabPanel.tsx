@@ -27,10 +27,11 @@
                     <DataTable
                         columns={columns}
                         rows={usuarios} // Utiliza los datos reales de usuarios
-                        filterFunction={(rows: Usuario[], filterText: string) => rows}
+                        filterFunction={(rows: Usuario[]) => rows}
                         getRowId={(row: Usuario) => row.idUsuario}
                         onDeleteRow={onDeleteRow}
                     />
+                    
                     </Typography>
                 </Box>
                 )}

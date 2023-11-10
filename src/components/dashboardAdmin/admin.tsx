@@ -1,4 +1,3 @@
-// recordar quitar los comentarios 
 import /*React,*/ { useState, /*useEffect*/ } from 'react';
 import './admin.css';
 import UsuarioService from '../../services/usuario.service';
@@ -66,6 +65,7 @@ const Administrador = () => {
       console.log('Respuesta del servidor:', response);
       toast.success('Usuario creado exitosamente');
       limpiarFormulario();
+      window.location.reload();
     } catch (error) {
       console.error('Error al crear usuario:', error);
       toast.error('Error al crear usuario');
@@ -146,11 +146,12 @@ const Administrador = () => {
         <div className='tabla'>
         <TabsUsuarios/>
         </div>
-     
       <ToastContainer />
     </>
   );
 };
+
+
 // incompleto aun falta por agregar, estan en pruebas 
 export default Administrador;
 

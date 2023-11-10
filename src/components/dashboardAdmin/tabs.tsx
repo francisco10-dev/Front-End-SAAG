@@ -1,6 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import UsuarioService, { Usuario } from '../../services/usuario.service';
 import { GridColDef } from '@mui/x-data-grid';
@@ -15,19 +13,16 @@ const columns: GridColDef[] = [
 
 export default function TabsUsuarioAdmin() {
   const service = new UsuarioService();
-  const [value, setValue] = useState(0);
+  const [value] = useState(0);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
-  };
+
 
   const onDeleteRow = async (idsToDelete: number[]) => {
     try {
       for (const idToDelete of idsToDelete) {
         await service.eliminarUsuario(idToDelete);
       }
-      // Recargar la tabla después de eliminar los datos
       obtenerYActualizarUsuarios();
     } catch (error) {
       console.error('Error al eliminar usuarios: ', error);
@@ -49,14 +44,6 @@ export default function TabsUsuarioAdmin() {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Todos" />
-          <Tab label="Empleados" />
-          <Tab label="Administradores" />
-          <Tab label="Otro" />
-        </Tabs>
-      </Box>
       {[0, 1, 2, 3].map((index) => (
         <CustomTabPanel
           key={index}
