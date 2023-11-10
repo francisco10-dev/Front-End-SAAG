@@ -106,8 +106,7 @@ export default function MenuPanel() {
   const navigate = useNavigate();
 
   const settings = [
-    { icon: null, text: 'Perfil', onClick: () => navigate('/')  },
-    { icon: null, text: 'Perfil', onClick: () => navigate('/administrador')  },
+    { icon: null, text: 'Administración', onClick: () => navigate('/administrador')  },
     { icon: null, text: 'Cuenta', onClick: () => navigate('/')  },
     { icon: null, text: 'Dashboard', onClick: () => navigate('/')  },
     { icon: null, text: 'Cerrar sesión', onClick: () => handleLogout() }
