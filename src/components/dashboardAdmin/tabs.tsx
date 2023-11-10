@@ -17,7 +17,6 @@ export default function TabsUsuarioAdmin() {
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
 
 
-
   const onDeleteRow = async (idsToDelete: number[]) => {
     try {
       for (const idToDelete of idsToDelete) {

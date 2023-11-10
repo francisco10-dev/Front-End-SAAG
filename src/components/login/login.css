@@ -78,17 +78,13 @@
     animation: fadeIn 1.8s ease-in-out forwards;
 }
 
-.msj{
-    color: white;
-    background-color: rgba(0, 0, 0, 0.5);
-    width: 100%;
-    margin-top: 3%;
-    border-radius: 10px;
-}
-
 .error {
     animation: shake 0.5s ease-in-out;
     border-color: red;
+}
+
+#acibLogo2{
+    display: none;
 }
 
   
@@ -135,4 +131,68 @@
 }
 
 
-  
+@media screen and (max-width: 1025px) {
+
+    .view {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+    }
+
+
+    .login-container {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 20px;
+        border: 1px #ccc;
+        border-radius: 14px 0px 0px 14px;
+        color: rgb(14, 15, 15);
+        border-right: none;
+        animation: fadeIn 2s ease-in-out forwards;
+        margin-top: 5%;
+    }
+
+    #acibLogo{
+        display: none;
+    }
+
+    #acibLogo2{
+        display: block;
+        width: 220px;
+        margin-left: 35%;
+        margin-top: 3%;
+    }
+
+    .center-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .logos{
+        display: inline;
+        align-items: center;
+        opacity: 0;
+        animation: fadeIn 1.8s ease-in-out forwards;
+    }
+
+    .contenedor-imagenes {
+        display: inline;
+        align-items: center;
+    }
+
+    .divider-vertical{
+        display: none;
+    }
+
+    body {
+        background-attachment: fixed; 
+        background-position: center top;
+    }
+
+    .custom-label {
+        color: white;
+    }
+
+}

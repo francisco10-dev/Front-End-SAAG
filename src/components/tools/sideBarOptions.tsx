@@ -6,11 +6,10 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-import MailIcon from '@mui/icons-material/Mail';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useNavigate } from 'react-router-dom';
+import PeopleIcon from '@mui/icons-material/People';
+import FolderCopyIcon from '@mui/icons-material/FolderCopy';
 
 interface SubOption {
   text: string;
@@ -27,21 +26,16 @@ interface Module {
 
 const modules: Module[] = [
   {
-    text: 'Módulo 1',
-    icon: <LibraryBooksIcon />,
+    text: 'Colaboradores',
+    icon: <PeopleIcon />,
     link: '',
     subOptions: [
-      { text: 'Sub opción 1', link: '/prueba',icon: <LibraryBooksIcon /> },
-      { text: 'Sub opción 2', link: '/', icon: <LibraryBooksIcon /> },
+      { text: 'Solicitudes', link: '/solicitudes',icon: <LibraryBooksIcon /> },
+      { text: 'Ausencias', link: '/asuencias',icon: <LibraryBooksIcon /> },
+      { text: 'Expedientes', link: '/', icon: <FolderCopyIcon /> },
     ],
   },
-  { text: 'Módulo 2', icon: <AccountCircleIcon />, link: '/' },
-  { text: 'Módulo', icon: <AssignmentTurnedInIcon />, link: '/prueba' },
-  { text: 'Módulo', icon: <MailIcon />, link: '/ruta' },
-  { text: 'Módulo', icon: <InboxIcon />, link: '/ruta' },
-  { text: 'Módulo', icon: <AccountCircleIcon />, link: '/ruta' },
-  { text: 'Módulo', icon: <AccountCircleIcon />, link: '/ruta' },
-  { text: 'Módulo', icon: <AccountCircleIcon />, link: '/ruta' },
+  { text: 'Módulo', icon: <AccountCircleIcon />, link: '/' },
 ];
 
 interface SidebarListProps {

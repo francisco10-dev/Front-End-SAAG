@@ -1,72 +1,62 @@
 import axios from 'axios';
 import axiosApi from '../services/api.service'
 
-export interface Solicitud {
-    idSolicitud: number;
-    conGoceSalarial: boolean;
-    tipoSolicitud: string;
-    asunto?: any;
-    nombreColaborador: string;
-    nombreEncargado?: any;
-    fechaSolicitud: string;
-    fechaInicio?: any;
+export interface Ausencia {
+    idAusencia: number;
+    fechaAusencia?: any;
     fechaFin?: any;
-    horaInicio?: any;
-    horaFin?: any;
-    sustitucion: string;
-    nombreSustituto: string;
-    estado: string;
-    comentarioTalentoHumano: string;
+    razon: any;
+    nombreColaborador: string;
     idColaborador: number;
 }
 
-class SolicitudService {
+class AusenciaService {
   private axiosInstance;
 
   constructor() {
     this.axiosInstance = axiosApi;
   }
 
-  async agregarSolicitud(data: any): Promise<Solicitud> {
+  async agregarAusencia(data: any): Promise<Ausencia> {
     try {
-      const response = await this.axiosInstance.post('/agregar-solicitud/', data);
+      const response = await this.axiosInstance.post('/agregar-ausencia/', data);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
           throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
         } else {
-          throw new Error('Error en la solicitud de red');
+          throw new Error('Error en la ausencia de red');
         }
       }
       throw error;
     }
   }
 
-  async getSolicitudes(): Promise<Solicitud[]> {
+  async getAusencias(): Promise<Ausencia[]> {
     try {
-      const response = await this.axiosInstance.get('/solicitudes/');
+      const response = await this.axiosInstance.get('/ausencias/');
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         if (error.response.status === 403) {
           throw new Error(error.response.data.message);
         } else {
-          throw new Error('Error en la solicitud de red');
+          throw new Error('Error en la ausencia de red');
         }
       }
       throw error;
     }
   }
 
-  async getSolicitudPorId(id: number): Promise<Solicitud | null> {
+  async getAusenciaPorId(id: number): Promise<Ausencia | null> {
     try {
-      const response = await this.axiosInstance.get(`/solicitud/${id}`);
+      const response = await this.axiosInstance.get(`/ausencia/${id}`);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
         if (error.response.status === 404) {
-          return null; // La solicitud no se encontró
+          return null; 
         }
         throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
       }
@@ -74,44 +64,44 @@ class SolicitudService {
     }
   }
 
-  async actualizarSolicitud(id: number, data: any): Promise<Solicitud> {
+  async actualizarAusencia(id: number, data: any): Promise<Ausencia> {
     try {
-      const response = await this.axiosInstance.put(`/actualizar-solicitud/${id}`, data);
+      const response = await this.axiosInstance.put(`/actualizar-ausencia/${id}`, data);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
           throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
         } else {
-          throw new Error('Error en la solicitud de red');
+          throw new Error('Error en la ausencia de red');
         }
       }
       throw error;
     }
   }
 
-  async eliminarSolicitud(id: number): Promise<number> {
+  async eliminarAusencia(id: number): Promise<number> {
     try {
-       const response = await this.axiosInstance.delete(`/eliminar-solicitud/${id}`);
+       const response = await this.axiosInstance.delete(`/eliminar-ausencia/${id}`);
        return response.status;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
           throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
         } else {
-          throw new Error('Error en la solicitud de red');
+          throw new Error('Error en la ausencia de red');
         }
       }
       throw error;
     }
   }
 
-  async eliminarSolicitudes(ids: number[]): Promise<number[]> {
+  async eliminarAusencias(ids: number[]): Promise<number[]> {
     const statuses: number[] = [];
   
     for (const id of ids) {
       try {
-        const status = await this.eliminarSolicitud(id);
+        const status = await this.eliminarAusencia(id);
         statuses.push(status);
       } catch (error) {
         statuses.push(0); 
@@ -122,4 +112,4 @@ class SolicitudService {
   
 }
 
-export default SolicitudService;
+export default AusenciaService;
