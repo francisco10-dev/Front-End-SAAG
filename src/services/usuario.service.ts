@@ -97,7 +97,7 @@ class UsuarioService {
     }
   }
 
-  async eliminarUsuario(id: Number): Promise<void> {
+  async eliminarUsuario(id: number): Promise<void> {
     try {
       console.log(id);
       await this.axiosInstance.delete(`/eliminar-usuario/${id}`);
