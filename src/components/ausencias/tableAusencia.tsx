@@ -23,7 +23,7 @@ export default function DataTable(props: DataTableProps) {
 
   const columns: (GridColDef & { renderCell?: any })[] = [
     { field: 'idAusencias', headerName: 'ID', width: 60, disableColumnMenu: true },
-    { field: 'fechaAusencia', headerName: 'Fecha', width: 200, valueGetter: (params) => utils.formatDate(params.value) },
+    { field: 'fechaAusencia', headerName: 'Fecha de Ausencia', width: 200, valueGetter: (params) => utils.formatDate(params.value) },
     { field: 'fechaFin', headerName: 'Fecha', width: 200, valueGetter: (params) => utils.formatDate(params.value) },
     { field: 'razon', headerName: 'Asunto', width: 100 },
     { field: 'nombreColaborador', headerName: 'Colaborador', width: 100 },
