@@ -1,15 +1,9 @@
-import { createContext, useContext,useEffect, useState, ReactNode } from 'react';
-import {jwtDecode} from "jwt-decode";
-
+import { createContext, useContext, useState, ReactNode } from 'react';
 
 interface AuthContextType {
   loggedIn: boolean;
   setLoggedIn: (loggedIn: boolean) => void;
-  userRole?: string;
-
 }
-
-
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -19,36 +13,13 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('accessToken'));
-  const [userRole, setUserRole] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (token){
-      login(token);
-    }
-  }, []);
-
-  const login = (token: string) => {
-    try{
-      const decodedToken: any = jwtDecode(token);
-      if(decodedToken){
-        setUserRole(decodedToken.rol);
-      }
-
-    }catch (error){
-      console.error('Error al decodificar el token');
-    }
-
-  };
 
   return (
-    <AuthContext.Provider value={{ loggedIn, setLoggedIn, userRole}}>
+    <AuthContext.Provider value={{ loggedIn, setLoggedIn }}>
       {children}
     </AuthContext.Provider>
   );
 }
-
-
 
 
 
