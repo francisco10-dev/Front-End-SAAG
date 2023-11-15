@@ -11,7 +11,6 @@
     columns: GridColDef[];
     onDeleteRow: (idsToDelete: number[]) => void;
     }
-
         function CustomTabPanel(props: TabPanelProps) {
             const { value, index, usuarios, columns, onDeleteRow } = props;
             return (

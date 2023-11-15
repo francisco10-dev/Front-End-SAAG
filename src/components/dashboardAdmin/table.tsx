@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Usuario } from '../../services/usuario.service';
 
-export interface DataTableProps {
+interface DataTableProps {
   columns: GridColDef[];
   rows: Usuario[];
   filterFunction: (rows: Usuario[], filterText: string) => Usuario[];
@@ -12,53 +12,41 @@ export interface DataTableProps {
 
 export default function DataTable(props: DataTableProps) {
   const { columns, rows, filterFunction, getRowId, onDeleteRow } = props;
-  const [filterText] = useState('');
   const [filteredRows, setFilteredRows] = useState(rows);
-  const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({});
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
-  const applyFilters = () => {
-    const filteredData = filterFunction(rows, filterText);
-    setFilteredRows(filteredData);
-  };
+  const applyFilters = () => setFilteredRows(filterFunction(rows, ''));
 
   useEffect(() => {
     applyFilters();
-  }, [filterText, rows, filterFunction]);
+  }, [rows, filterFunction]);
 
-  const handleRowClick = (idUsuario: number) => {
-    setSelectedRows((prevSelectedRows) => ({
-      ...prevSelectedRows,
-      [idUsuario]: !prevSelectedRows[idUsuario],
-    }));
+  const handleCheckboxChange = (selectionModel: any) => {
+    const selectedIds = selectionModel.map((id: string) => Number(id));
+
+    // Verificar si la fila ya está seleccionada
+    const updatedSelectedRows = selectedRows.includes(selectedIds[0])
+      ? selectedRows.filter((id) => id !== selectedIds[0]) // Desmarcar la fila si ya está seleccionada
+      : [...selectedRows, selectedIds[0]]; // Marcar la fila si no está seleccionada
+
+    setSelectedRows(updatedSelectedRows);
   };
 
   const handleDeleteSelected = () => {
-    const selectedIds = Object.keys(selectedRows)
-      .filter((id) => selectedRows[id] === true)
-      .map(Number);
-
-    if (selectedIds.length > 0) {
-      onDeleteRow(selectedIds);
-      setSelectedRows({});
+    if (selectedRows.length > 0) {
+      onDeleteRow(selectedRows);
+      setSelectedRows([]);
     }
   };
 
   return (
     <div style={{ height: 370, width: '100%' }}>
-
       <DataGrid
         rows={filteredRows}
         columns={columns}
-        rowSelectionModel={Object.keys(selectedRows).filter(
-          (id) => selectedRows[id] === true
-        )}
-        onRowSelectionModelChange={(selectionModel: any[]) => {
-          const newSelectedRows: Record<string, boolean> = {};
-          selectionModel.forEach((id) => {
-            newSelectedRows[id] = true;
-          });
-          setSelectedRows(newSelectedRows);
-        }}
+        checkboxSelection
+        onRowSelectionModelChange={handleCheckboxChange}
+        rowSelectionModel={selectedRows.map(String)}
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 5 },
@@ -66,10 +54,6 @@ export default function DataTable(props: DataTableProps) {
         }}
         getRowId={getRowId}
         pageSizeOptions={[5, 10]}
-        checkboxSelection
-        onRowClick={(params) => {
-          handleRowClick(params.row.idUsuario as number);
-        }}
         style={{
           marginBottom: '20px',
           border: 'none',
@@ -82,3 +66,4 @@ export default function DataTable(props: DataTableProps) {
     </div>
   );
 }
+
