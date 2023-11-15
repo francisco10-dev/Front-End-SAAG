@@ -3,7 +3,7 @@ import axiosApi from '../services/api.service'
 
 export interface Usuario {
   idUsuario: number,
-  nomUsuario: string;
+  nombreUsuario: string;
   password: string;
   rol: string,
   idColaborador: number,

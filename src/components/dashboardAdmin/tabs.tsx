@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
 import UsuarioService, { Usuario } from '../../services/usuario.service';
 import { GridColDef } from '@mui/x-data-grid';
 import CustomTabPanel from './CustomTabPanel';
@@ -15,7 +16,8 @@ export default function TabsUsuarioAdmin() {
   const service = new UsuarioService();
   const [value] = useState(0);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
-
+  const [filterText, setFilterText] = useState('');
+  console.log('Usuarios en CustomTabPanel:', usuarios);
 
   const onDeleteRow = async (idsToDelete: number[]) => {
     try {
@@ -43,12 +45,28 @@ export default function TabsUsuarioAdmin() {
 
   return (
     <Box sx={{ width: '100%' }}>
+      <TextField
+        label="Buscar..."
+        variant="standard"
+        value={filterText}
+        onChange={(e) => setFilterText(e.target.value)}
+        style={{ marginBottom: '20px' }}
+      />
       {[0, 1, 2, 3].map((index) => (
         <CustomTabPanel
           key={index}
           value={value}
           index={index}
-          usuarios={usuarios}
+          usuarios={usuarios.filter((usuario) => {
+            const formattedId = usuario.idUsuario.toString();
+            const nombreUsuario = usuario.nombreUsuario ? usuario.nombreUsuario.toLowerCase().trim() : '';
+            const searchText = filterText.toLowerCase().trim();
+            console.log(usuario.nombreUsuario);
+            return (
+              nombreUsuario.includes(searchText) ||
+              formattedId.includes(searchText)
+            );
+          })}
           columns={columns}
           onDeleteRow={onDeleteRow}
         />
@@ -56,3 +74,4 @@ export default function TabsUsuarioAdmin() {
     </Box>
   );
 }
+

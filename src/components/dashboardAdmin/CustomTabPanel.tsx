@@ -26,7 +26,7 @@
                     <Typography>
                     <DataTable
                         columns={columns}
-                        rows={usuarios} // Utiliza los datos reales de usuarios
+                        rows={usuarios} 
                         filterFunction={(rows: Usuario[]) => rows}
                         getRowId={(row: Usuario) => row.idUsuario}
                         onDeleteRow={onDeleteRow}

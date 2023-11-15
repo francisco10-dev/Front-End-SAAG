@@ -1,6 +1,5 @@
-import  { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import TextField from '@mui/material/TextField';
 import { Usuario } from '../../services/usuario.service';
 
 export interface DataTableProps {
@@ -13,7 +12,7 @@ export interface DataTableProps {
 
 export default function DataTable(props: DataTableProps) {
   const { columns, rows, filterFunction, getRowId, onDeleteRow } = props;
-  const [filterText, setFilterText] = useState('');
+  const [filterText] = useState('');
   const [filteredRows, setFilteredRows] = useState(rows);
   const [selectedRows, setSelectedRows] = useState<Record<string, boolean>>({});
 
@@ -46,13 +45,7 @@ export default function DataTable(props: DataTableProps) {
 
   return (
     <div style={{ height: 370, width: '100%' }}>
-      <TextField
-        label="Buscar..."
-        variant="standard"
-        value={filterText}
-        onChange={(e) => setFilterText(e.target.value)}
-        style={{ marginBottom: '40px' }}
-      />
+
       <DataGrid
         rows={filteredRows}
         columns={columns}
@@ -89,4 +82,3 @@ export default function DataTable(props: DataTableProps) {
     </div>
   );
 }
-
