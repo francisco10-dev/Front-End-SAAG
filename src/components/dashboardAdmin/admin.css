@@ -30,17 +30,15 @@
         color: #333 !important;
     }
     
-    /* Estilos para los inputs y el combo box */
     input, select {
-        width: 100%; /* Ancho del 100% para que tengan el mismo tamaño */
+        width: 100%; 
         border: 1px solid #ccc;
         border-radius: 5px;
         padding: 5px;
         transition: box-shadow 0.3s;
         appearance: none;
     }
-    
-    /* Estilos al enfocar los inputs y el combo box */
+
     input:focus, select:focus {
         box-shadow: 0 0 5px rgba(53, 170, 63, 0.7);
     }

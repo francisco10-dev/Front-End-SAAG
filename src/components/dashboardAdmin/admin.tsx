@@ -1,8 +1,8 @@
 import /*React,*/ { useState, /*useEffect*/ } from 'react';
 import './admin.css';
 import UsuarioService from '../../services/usuario.service';
-//import Select from 'react-select';    // aun falta agregar lo del combo box que va a suplantar al input que esta, esto se instala con: npm install react-select
-import { toast, ToastContainer } from 'react-toastify';  // este es para los mensajes que se ven, esto se instala con: npm install react-toastify
+//import Select from 'react-select';    
+import { toast, ToastContainer } from 'react-toastify';  
 import 'react-toastify/dist/ReactToastify.css';
 import TabsUsuarios from "./tabs";
 
@@ -35,19 +35,16 @@ const Administrador = () => {
 
   const crearUsuario = async () => {
     if (!nombreUsuario || !contrasena || !idColaborador || isNaN(idColaborador)) {
-      // Mostrar mensaje emergente de error si faltan campos o el ID de Colaborador no es válido
       toast.error('Todos los campos son obligatorios y el ID de Colaborador debe ser un número válido');
       return;
     }
   
     if (contrasena.length < 10) {
-      // Validar que la contraseña tenga al menos 10 caracteres
       toast.error('La contraseña debe tener al menos 10 caracteres.');
       return;
     }
   
     if (!/[a-z]/.test(contrasena) || !/[A-Z]/.test(contrasena) || !/\d/.test(contrasena) || !/\W/.test(contrasena)) {
-      // Validar que la contraseña contenga al menos una letra minúscula, una letra mayúscula, un número y un carácter especial
       toast.error('La contraseña debe contener al menos una letra minúscula, una letra mayúscula, un número y un carácter especial.');
       return;
     }
@@ -81,7 +78,7 @@ const Administrador = () => {
   };
 
   return (
-    <>
+    <div>
       <h1>Administrador SAAG</h1>
       <div className="container">
         <div className="usuarios-container">
@@ -95,7 +92,6 @@ const Administrador = () => {
               value={nombreUsuario}
               onChange={(e) => {
                 const inputValue = e.target.value;
-                // Utiliza una expresión regular para validar que solo se ingresen letras (mayúsculas o minúsculas)
                 if (/^[a-zA-Z]*$/.test(inputValue)) {
                   setNombreUsuario(inputValue);
                 }
@@ -147,7 +143,7 @@ const Administrador = () => {
         <TabsUsuarios/>
         </div>
       <ToastContainer />
-    </>
+    </div>
   );
 };
 

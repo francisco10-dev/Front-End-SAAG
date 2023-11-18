@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { Usuario } from '../../services/usuario.service';
 
@@ -11,7 +11,7 @@ interface DataTableProps {
 }
 
 export default function DataTable(props: DataTableProps) {
-  const { columns, rows, filterFunction, getRowId, onDeleteRow } = props;
+  const {columns, rows, filterFunction, getRowId, onDeleteRow } = props;
   const [filteredRows, setFilteredRows] = useState(rows);
   const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
@@ -19,18 +19,7 @@ export default function DataTable(props: DataTableProps) {
 
   useEffect(() => {
     applyFilters();
-  }, [rows, filterFunction]);
-
-  const handleCheckboxChange = (selectionModel: any) => {
-    const selectedIds = selectionModel.map((id: string) => Number(id));
-
-    // Verificar si la fila ya está seleccionada
-    const updatedSelectedRows = selectedRows.includes(selectedIds[0])
-      ? selectedRows.filter((id) => id !== selectedIds[0]) // Desmarcar la fila si ya está seleccionada
-      : [...selectedRows, selectedIds[0]]; // Marcar la fila si no está seleccionada
-
-    setSelectedRows(updatedSelectedRows);
-  };
+  }, [rows,filterFunction]);
 
   const handleDeleteSelected = () => {
     if (selectedRows.length > 0) {
@@ -39,14 +28,18 @@ export default function DataTable(props: DataTableProps) {
     }
   };
 
+  const handleSelectionModelChange = (selectionModel: any) => {
+    setSelectedRows(selectionModel);
+  };
+
   return (
     <div style={{ height: 370, width: '100%' }}>
       <DataGrid
         rows={filteredRows}
         columns={columns}
         checkboxSelection
-        onRowSelectionModelChange={handleCheckboxChange}
-        rowSelectionModel={selectedRows.map(String)}
+        rowSelectionModel={selectedRows}
+        onRowSelectionModelChange={handleSelectionModelChange}
         initialState={{
           pagination: {
             paginationModel: { page: 0, pageSize: 5 },
@@ -66,4 +59,5 @@ export default function DataTable(props: DataTableProps) {
     </div>
   );
 }
+
 

@@ -4,12 +4,13 @@ import TextField from '@mui/material/TextField';
 import UsuarioService, { Usuario } from '../../services/usuario.service';
 import { GridColDef } from '@mui/x-data-grid';
 import CustomTabPanel from './CustomTabPanel';
+import { toast } from 'react-toastify';  
 
 const columns: GridColDef[] = [
   { field: 'idUsuario', headerName: 'ID', width: 110 },
   { field: 'nombreUsuario', headerName: 'Nombre de Usuario', width: 250 },
   { field: 'rol', headerName: 'Rol', width: 150 },
-  { field: 'idColaborador', headerName: 'ID de Colaborador', width: 250 },
+  { field: 'idColaborador', headerName: 'ID del Colaborador', width: 250 },
 ];
 
 export default function TabsUsuarioAdmin() {
@@ -17,25 +18,33 @@ export default function TabsUsuarioAdmin() {
   const [value] = useState(0);
   const [usuarios, setUsuarios] = useState<Usuario[]>([]);
   const [filterText, setFilterText] = useState('');
-  console.log('Usuarios en CustomTabPanel:', usuarios);
+
 
   const onDeleteRow = async (idsToDelete: number[]) => {
-    try {
-      for (const idToDelete of idsToDelete) {
-        await service.eliminarUsuario(idToDelete);
+    const cantidadRegistros = idsToDelete.length;
+    const confirmMessage = `¿Estás seguro de que quieres eliminar ${cantidadRegistros} usuario(s)?`;
+    const userConfirmed = window.confirm(confirmMessage);
+    if (userConfirmed) {
+      try {
+        for (const idToDelete of idsToDelete) {
+          await service.eliminarUsuario(idToDelete);
+        }
+        toast.success('Se han eliminado: '+ cantidadRegistros + 'usuarios');
+        obtenerYActualizarUsuarios();
+      } catch (error) {
+        toast.error('Error al eliminar usuarios: ' + error);
       }
-      obtenerYActualizarUsuarios();
-    } catch (error) {
-      console.error('Error al eliminar usuarios: ', error);
+    } else {
+      toast.error('Eliminación cancelada por el usuario');
     }
   };
-
+  
   const obtenerYActualizarUsuarios = async () => {
     try {
       const usuariosActualizados = await service.obtenerUsuarios();
       setUsuarios(usuariosActualizados);
     } catch (error) {
-      console.error('Error al obtener usuarios:', error);
+      toast.error('Error al obtener usuarios:' + error);
     }
   };
 
@@ -61,7 +70,6 @@ export default function TabsUsuarioAdmin() {
             const formattedId = usuario.idUsuario.toString();
             const nombreUsuario = usuario.nombreUsuario ? usuario.nombreUsuario.toLowerCase().trim() : '';
             const searchText = filterText.toLowerCase().trim();
-            console.log(usuario.nombreUsuario);
             return (
               nombreUsuario.includes(searchText) ||
               formattedId.includes(searchText)
