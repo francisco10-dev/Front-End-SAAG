@@ -116,9 +116,9 @@ export default function MenuPanel() {
 
 
   const opciones = [
-    { icon: null, text: 'Opción', link: '/' },
-    { icon: null, text: 'Opción', link: '/' },
-    { icon: null, text: 'Opción', link: '/' },
+    { icon: null, text: '', link: '/' },
+    { icon: null, text: '', link: '/' },
+    { icon: null, text: '', link: '/' },
   ];
 
   const handleDrawerOpen = () => {
@@ -156,7 +156,7 @@ export default function MenuPanel() {
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
-        <Toolbar>
+        <Toolbar sx={{backgroundColor: 'rgb(27,61,81)'}} >
           <IconButton
             color="inherit"
             aria-label="open drawer"

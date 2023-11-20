@@ -29,16 +29,15 @@ const Login = () => {
         nombreUsuario: username,
         contrasena: password
       };
-      setLoggedIn(true);
-
       const tokens= await usuarioService.login(data);
-      localStorage.setItem('accessToken', tokens.accessToken);
-      localStorage.setItem('refreshToken', tokens.refreshToken);
-      
-      const decodedToken: any = jwtDecode(tokens.accessToken);
-      setUserRole(decodedToken.rol);
-
-      document.body.style.backgroundImage = 'none';
+      if(tokens) {
+        setLoggedIn(true);
+        localStorage.setItem('accessToken', tokens.accessToken);
+        localStorage.setItem('refreshToken', tokens.refreshToken);
+        const decodedToken: any = jwtDecode(tokens.accessToken);
+        setUserRole(decodedToken.rol);
+        document.body.style.backgroundImage = 'none';
+      }
     } catch (error) {
         setLoading(false);
         toast.error('Usuario o contraseña incorrecta', {
@@ -108,7 +107,7 @@ const Login = () => {
             />
             </div>
             <button className='btnLogin' type="submit">INGRESAR</button>
-            {isLoading ? <LinearProgress  /> : ''}
+            {isLoading ? <LinearProgress sx={{width: 250, marginLeft: 3}}/> : ''}
           </form>
         </div>
       </div>
