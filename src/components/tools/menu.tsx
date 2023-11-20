@@ -102,15 +102,17 @@ export default function MenuPanel() {
   const [open, setOpen] = React.useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const { setLoggedIn } = useAuth();
+  const { userRole, setLoggedIn } = useAuth();
   const navigate = useNavigate();
 
   const settings = [
-    { icon: null, text: 'Administración', onClick: () => navigate('/administrador')  },
+    { icon: null, text: 'Administración', onClick: () => navigate('/administrador'), role: 'admin'  },
     { icon: null, text: 'Cuenta', onClick: () => navigate('/')  },
     { icon: null, text: 'Dashboard', onClick: () => navigate('/')  },
     { icon: null, text: 'Cerrar sesión', onClick: () => handleLogout() }
   ];
+
+  const filteredSettings = settings.filter(setting => !setting.role || setting.role === userRole);
 
 
   const opciones = [
@@ -271,7 +273,7 @@ export default function MenuPanel() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting, index) => (
+              {filteredSettings.map((setting, index) => (
                 <MenuItem key={index} onClick={() => setting.onClick()}>
                   <Typography textAlign="center">{setting.text}</Typography>
                   {setting.icon}

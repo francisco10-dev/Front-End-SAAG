@@ -31,7 +31,7 @@ const modules: Module[] = [
     link: '',
     subOptions: [
       { text: 'Solicitudes', link: '/solicitudes',icon: <LibraryBooksIcon /> },
-      { text: 'Ausencias', link: '/asuencias',icon: <LibraryBooksIcon /> },
+      { text: 'Ausencias', link: '/ausencias',icon: <LibraryBooksIcon /> },
       { text: 'Expedientes', link: '/', icon: <FolderCopyIcon /> },
     ],
   },
