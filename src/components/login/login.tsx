@@ -9,7 +9,7 @@ import { useAuth } from '../../authProvider';
 import UsuarioService from '../../services/usuario.service';
 import { toast, ToastContainer } from 'react-toastify';
 import LinearProgress from '@mui/material/LinearProgress';
-
+import { jwtDecode } from 'jwt-decode';
 
 const usuarioService = new UsuarioService();
 const Login = () => {
@@ -17,8 +17,9 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [band, setBand] = useState(false);
-  const { setLoggedIn } = useAuth();
+  const { setLoggedIn, setUserRole } = useAuth();
   const [isLoading, setLoading] =useState(false);
+
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,10 +30,14 @@ const Login = () => {
         contrasena: password
       };
       const tokens= await usuarioService.login(data);
-      document.body.style.backgroundImage = 'none';
-      setLoggedIn(true);
-      localStorage.setItem('accessToken', tokens.accessToken);
-      localStorage.setItem('refreshToken', tokens.refreshToken);
+      if(tokens) {
+        setLoggedIn(true);
+        localStorage.setItem('accessToken', tokens.accessToken);
+        localStorage.setItem('refreshToken', tokens.refreshToken);
+        const decodedToken: any = jwtDecode(tokens.accessToken);
+        setUserRole(decodedToken.rol);
+        document.body.style.backgroundImage = 'none';
+      }
     } catch (error) {
         setLoading(false);
         toast.error('Usuario o contraseña incorrecta', {
@@ -102,7 +107,7 @@ const Login = () => {
             />
             </div>
             <button className='btnLogin' type="submit">INGRESAR</button>
-            {isLoading ? <LinearProgress  /> : ''}
+            {isLoading ? <LinearProgress sx={{width: 250, marginLeft: 3}}/> : ''}
           </form>
         </div>
       </div>

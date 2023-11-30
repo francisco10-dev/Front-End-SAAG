@@ -102,21 +102,23 @@ export default function MenuPanel() {
   const [open, setOpen] = React.useState(false);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const { setLoggedIn } = useAuth();
+  const { userRole, setLoggedIn } = useAuth();
   const navigate = useNavigate();
 
   const settings = [
-    { icon: null, text: 'Administración', onClick: () => navigate('/administrador')  },
+    { icon: null, text: 'Administración', onClick: () => navigate('/administrador'), role: 'admin'  },
     { icon: null, text: 'Cuenta', onClick: () => navigate('/')  },
     { icon: null, text: 'Dashboard', onClick: () => navigate('/')  },
     { icon: null, text: 'Cerrar sesión', onClick: () => handleLogout() }
   ];
 
+  const filteredSettings = settings.filter(setting => !setting.role || setting.role === userRole);
+
 
   const opciones = [
-    { icon: null, text: 'Opción', link: '/' },
-    { icon: null, text: 'Opción', link: '/' },
-    { icon: null, text: 'Opción', link: '/' },
+    { icon: null, text: '', link: '/' },
+    { icon: null, text: '', link: '/' },
+    { icon: null, text: '', link: '/' },
   ];
 
   const handleDrawerOpen = () => {
@@ -154,7 +156,7 @@ export default function MenuPanel() {
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
-        <Toolbar>
+        <Toolbar sx={{backgroundColor: 'rgb(27,61,81)'}} >
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -271,7 +273,7 @@ export default function MenuPanel() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting, index) => (
+              {filteredSettings.map((setting, index) => (
                 <MenuItem key={index} onClick={() => setting.onClick()}>
                   <Typography textAlign="center">{setting.text}</Typography>
                   {setting.icon}
