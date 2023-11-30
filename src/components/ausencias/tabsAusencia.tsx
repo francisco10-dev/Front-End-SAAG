@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import DataTable from './tableAusencia';
 import AusenciaService from '../../services/ausencia.service';
 import { Ausencia } from '../../services/ausencia.service';
+import { CircularProgress } from '@mui/material';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -44,7 +45,8 @@ export default function TabsAusenciaAdmin() {
   const Service = new AusenciaService();
   const [value, setValue] = React.useState(0);
   const [ausencias, setAusencias] = React.useState<Ausencia[]>([]);
-  const [ approved, setApproved ] = React.useState<Ausencia[]>([]);
+  const [approved, setApproved] = React.useState<Ausencia[]>([]);
+  const [loading, setLoading] = React.useState(false);
 
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -53,6 +55,7 @@ export default function TabsAusenciaAdmin() {
   };
 
   const loadRequests = () => {
+    setLoading(true);
     const fetchData = async () => {
       try {
         const ausenciasData = await Service.getAusencias();
@@ -61,33 +64,39 @@ export default function TabsAusenciaAdmin() {
         setApproved(ausenciasAprobadas);
       } catch (error) {
         console.error('Error al obtener ausencias:', error);
+      }finally {
+        setLoading(false); // Marcamos que la carga ha finalizado, independientemente de si fue exitosa o no
       }
     };
     fetchData();
   }
 
-React.useEffect(() => {
-  loadRequests();
-}, [value]);
+  React.useEffect(() => {
+    loadRequests();
+  }, [value]);
+
+  const renderContent = (data: Ausencia[]) =>
+    loading ? (
+      <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%' }} />
+    ) : (
+      <DataTable rows={data} updateAusencias={loadRequests} />
+    );
 
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Todas" {...a11yProps(0)} />
-          <Tab label="Procesadas" {...a11yProps(1)} />
+          <Tab label="Grafico" {...a11yProps(1)} />
           <Tab label="--" {...a11yProps(2)} />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-      <DataTable rows={ausencias} updateAusencias={loadRequests}/>
+      {renderContent(ausencias)}
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-      <DataTable rows={approved} updateAusencias={loadRequests}/>
+      {renderContent(approved)}
       </CustomTabPanel>
-      <CustomTabPanel value={value} index={2}>
-        Item
-      </CustomTabPanel>
-    </Box>
+      </Box>
   );
 }
