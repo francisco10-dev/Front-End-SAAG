@@ -32,6 +32,11 @@ const EditSolicitudModal: React.FC<EditSolicitudModalProps> = ({ open, solicitud
 
   useEffect(() => {
     setSolicitudState(solicitud);
+    const employee = localStorage.getItem('employee');
+    if(employee){
+      const encargado = JSON.parse(employee);
+      setNombreEncargado(encargado.nombre);
+    }
   }, [solicitud]);
 
 
@@ -119,11 +124,11 @@ const EditSolicitudModal: React.FC<EditSolicitudModalProps> = ({ open, solicitud
             <TextField
               label="Tramitado por..."
               value={nombreEncargado}
-              onChange={(e) => setNombreEncargado(e.target.value)}
+              //onChange={(e) => setNombreEncargado(e.target.value)}
               fullWidth
               margin='normal'
               variant='standard'
-              required
+              disabled
             />
             <Button type="submit">Guardar</Button>
             <Button onClick={() => setIsFormOpen(false)}>Cancelar</Button>

@@ -29,12 +29,13 @@ const Login = () => {
         nombreUsuario: username,
         contrasena: password
       };
-      const tokens= await usuarioService.login(data);
-      if(tokens) {
+      const response = await usuarioService.login(data);
+      if(response) {
         setLoggedIn(true);
-        localStorage.setItem('accessToken', tokens.accessToken);
-        localStorage.setItem('refreshToken', tokens.refreshToken);
-        const decodedToken: any = jwtDecode(tokens.accessToken);
+        localStorage.setItem('accessToken', response.accessToken);
+        localStorage.setItem('refreshToken', response.refreshToken);
+        localStorage.setItem('employee', JSON.stringify(response.colaborador));
+        const decodedToken: any = jwtDecode(response.accessToken);
         setUserRole(decodedToken.rol);
         document.body.style.backgroundImage = 'none';
       }
