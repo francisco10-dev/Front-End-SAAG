@@ -1,10 +1,17 @@
-import /*React,*/ { useState, /*useEffect*/ } from 'react';
+import { useState, useEffect } from 'react';
 import './admin.css';
 import UsuarioService from '../../services/usuario.service';
-//import Select from 'react-select';    
+import ColaboradorService from '../../services/colaborador.service';
+import Select from 'react-select';    
 import { toast, ToastContainer } from 'react-toastify';  
 import 'react-toastify/dist/ReactToastify.css';
 import TabsUsuarios from "./tabs";
+
+
+interface ColaboradorOption {
+  value: number;
+  label: string;
+}
 
 const Administrador = () => {
   const [nombreUsuario, setNombreUsuario] = useState('');
@@ -12,15 +19,15 @@ const Administrador = () => {
   const [rol, setRol] = useState('empleado');
   const [idColaborador, setIdColaborador] = useState(4);
   const usuarioService = new UsuarioService();
+  const colaboradorService = new ColaboradorService();
+  const [selectedColaborador, setSelectedColaborador] = useState<ColaboradorOption | null>(null);
+  const [colaboradores, setColaboradores] = useState<ColaboradorOption[]>([]);
 
- // const [selectedColaborador, setSelectedColaborador] = useState(null);
- // const [colaboradores, setColaboradores] = useState([]);
-
-  /*const cargarColaboradores = async () => {
+  const cargarColaboradores = async () => {
     try {
-      const response = await usuarioService.obtenerColaboradores();
+      const response = await colaboradorService.colaboradorSinUsuario();
       const options = response.map((colaborador) => ({
-        value: colaborador.id,
+        value: colaborador.idColaborador,
         label: colaborador.nombre,
       }));
       setColaboradores(options);
@@ -31,9 +38,10 @@ const Administrador = () => {
 
   useEffect(() => {
     cargarColaboradores();
-  }, []);*/
+  }, []);
 
   const crearUsuario = async () => {
+    console.log(idColaborador);
     if (!nombreUsuario || !contrasena || !idColaborador || isNaN(idColaborador)) {
       toast.error('Todos los campos son obligatorios y el ID de Colaborador debe ser un número válido');
       return;
@@ -54,7 +62,6 @@ const Administrador = () => {
       contrasena,
       rol,
       idColaborador,
-      // idColaborador: selectedColaborador ? selectedColaborador.value : idColaborador,
     };
   
     try {
@@ -74,7 +81,7 @@ const Administrador = () => {
     setContrasena('');
     setRol('empleado');
     setIdColaborador(4);
-   // setSelectedColaborador(null);
+    setSelectedColaborador(null);
   };
 
   return (
@@ -120,15 +127,35 @@ const Administrador = () => {
             <br />
             <label htmlFor="idColaborador">ID de Colaborador:</label>
             <br/>
-            <input
-              type="text"
-              id="idColaborador"
-              value={idColaborador}
-              onChange={(e) => {
-                const inputValue = e.target.value;
-                setIdColaborador(/^\d+$/.test(inputValue) ? parseInt(inputValue, 10) : idColaborador);
-              }}
-            />
+            <Select
+            value={
+              colaboradores.find(
+                colaborador =>
+                  colaborador.value ===
+                  (selectedColaborador ? selectedColaborador.value : null)
+              ) || null
+            }
+            onChange={(selectedOption: ColaboradorOption | null) => {
+              console.log(selectedOption?.value);
+              console.log(selectedOption?.label);
+              if (selectedOption && selectedOption.value != null && selectedOption.label != null) {
+                const selectedValue = selectedOption.value;
+                console.log(selectedValue);
+                setIdColaborador(selectedValue);
+                setSelectedColaborador({
+                  value: selectedOption.value,
+                  label: selectedOption.label,
+                });
+              } else {
+                setIdColaborador(0);
+                setSelectedColaborador(null);
+              }
+            }}
+            options={colaboradores.map(colaborador => ({
+              value: colaborador.value,
+              label: colaborador.label,
+            }))}
+          />
           </form>
           <br />
           <button type="button" onClick={crearUsuario}>
@@ -147,13 +174,6 @@ const Administrador = () => {
   );
 };
 
-
-// incompleto aun falta por agregar, estan en pruebas 
 export default Administrador;
 
-// El combo box para llenarse con el id de los colaboradores: recordar que es por los colaboradores que no puedo usarlo aún
-/*<Select
-value={selectedColaborador}
-onChange={(value) => setSelectedColaborador(value)}
-options={colaboradores}
-/>*/
+

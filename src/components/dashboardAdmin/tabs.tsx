@@ -1,22 +1,31 @@
 import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import UsuarioService, { Usuario } from '../../services/usuario.service';
+import UsuarioService from '../../services/usuario.service';
+import ColaboradorService from '../../services/colaborador.service';
 import { GridColDef } from '@mui/x-data-grid';
 import CustomTabPanel from './CustomTabPanel';
 import { toast } from 'react-toastify';  
+
+export interface ColabUsuario{
+  idUsuario: number,
+  nombreUsuario: string;
+  rol: string,
+  correo: string,
+}
 
 const columns: GridColDef[] = [
   { field: 'idUsuario', headerName: 'ID', width: 110 },
   { field: 'nombreUsuario', headerName: 'Nombre de Usuario', width: 250 },
   { field: 'rol', headerName: 'Rol', width: 150 },
-  { field: 'idColaborador', headerName: 'ID del Colaborador', width: 250 },
+  { field: 'correo', headerName: 'correo del Colaborador', width: 250 },
 ];
 
 export default function TabsUsuarioAdmin() {
   const service = new UsuarioService();
+  const colaborador = new ColaboradorService();
   const [value] = useState(0);
-  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [ColabUsuario, setUsuarios] = useState<ColabUsuario[]>([]);
   const [filterText, setFilterText] = useState('');
 
 
@@ -42,11 +51,37 @@ export default function TabsUsuarioAdmin() {
   const obtenerYActualizarUsuarios = async () => {
     try {
       const usuariosActualizados = await service.obtenerUsuarios();
-      setUsuarios(usuariosActualizados);
+  
+      const consultasColaboradores = await Promise.all(
+        usuariosActualizados.map(async (usuario) => {
+          // Utiliza el servicio obtenerColaboradores en lugar de obtenerColaboradorPorId
+          const colaboradores = await colaborador.obtenerColaboradores();
+          
+          // Busca el colaborador correspondiente al usuario por su id
+          const datosColaborador = colaboradores.find((colaborador) => colaborador.idColaborador === usuario.idColaborador);
+  
+          // Verifica si se encontró el colaborador
+          if (datosColaborador) {
+            return {
+              idUsuario: usuario.idUsuario,
+              nombreUsuario: usuario.nombreUsuario,
+              rol: usuario.rol,
+              correo: datosColaborador.correoElectronico,
+            };
+          } else {
+            // Puedes manejar el caso donde no se encuentra el colaborador según tus necesidades
+            throw new Error(`No se encontró el colaborador para el usuario con ID: ${usuario.idUsuario}`);
+          }
+        })
+      );
+  
+      setUsuarios(consultasColaboradores);
     } catch (error) {
-      toast.error('Error al obtener usuarios:' + error);
+      toast.error('Error al obtener usuarios: ' + error);
     }
   };
+  
+  
 
   useEffect(() => {
     obtenerYActualizarUsuarios();
@@ -66,9 +101,9 @@ export default function TabsUsuarioAdmin() {
           key={index}
           value={value}
           index={index}
-          usuarios={usuarios.filter((usuario) => {
-            const formattedId = usuario.idUsuario.toString();
-            const nombreUsuario = usuario.nombreUsuario ? usuario.nombreUsuario.toLowerCase().trim() : '';
+          colabUsuario={ColabUsuario.filter((ColabUsuario) => {
+            const formattedId = ColabUsuario.idUsuario.toString();
+            const nombreUsuario = ColabUsuario.nombreUsuario ? ColabUsuario.nombreUsuario.toLowerCase().trim() : '';
             const searchText = filterText.toLowerCase().trim();
             return (
               nombreUsuario.includes(searchText) ||

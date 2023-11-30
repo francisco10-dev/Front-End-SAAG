@@ -2,17 +2,17 @@
     import Typography from '@mui/material/Typography';
     import { GridColDef } from '@mui/x-data-grid';
     import DataTable from './table';
-    import { Usuario } from '../../services/usuario.service';
+    import { ColabUsuario } from './tabs';
 
     interface TabPanelProps {
     index: number;
     value: number;
-    usuarios: Usuario[];
+    colabUsuario: ColabUsuario[];
     columns: GridColDef[];
     onDeleteRow: (idsToDelete: number[]) => void;
     }
         function CustomTabPanel(props: TabPanelProps) {
-            const { value, index, usuarios, columns, onDeleteRow } = props;
+            const { value, index, colabUsuario, columns, onDeleteRow } = props;
             return (
             <div
                 role="tabpanel"
@@ -25,9 +25,9 @@
                     <Typography>
                     <DataTable
                         columns={columns}
-                        rows={usuarios} 
-                        filterFunction={(rows: Usuario[]) => rows}
-                        getRowId={(row: Usuario) => row.idUsuario}
+                        rows={colabUsuario} 
+                        filterFunction={(rows: ColabUsuario[]) => rows}
+                        getRowId={(row: ColabUsuario) => row.idUsuario}
                         onDeleteRow={onDeleteRow}
                     />
                     

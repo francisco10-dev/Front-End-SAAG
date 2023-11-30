@@ -51,7 +51,7 @@ class UsuarioService {
   async obtenerUsuarios(): Promise<Usuario[]> {
     try {
       const response = await this.axiosInstance.get('/usuarios');
-      const usuarios = response.data; // Obtén los usuarios directamente desde la API
+      const usuarios = response.data; 
       return usuarios;
     } catch (error) {
       if (axios.isAxiosError(error)) {

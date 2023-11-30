@@ -1,12 +1,12 @@
 import  { useState, useEffect } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { Usuario } from '../../services/usuario.service';
+import { ColabUsuario } from './tabs';
 
 interface DataTableProps {
   columns: GridColDef[];
-  rows: Usuario[];
-  filterFunction: (rows: Usuario[], filterText: string) => Usuario[];
-  getRowId: (row: Usuario) => any;
+  rows: ColabUsuario[];
+  filterFunction: (rows: ColabUsuario[], filterText: string) => ColabUsuario[];
+  getRowId: (row: ColabUsuario) => any;
   onDeleteRow: (idsToDelete: number[]) => void;
 }
 
