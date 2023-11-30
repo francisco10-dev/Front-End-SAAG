@@ -6,6 +6,9 @@ import Select from 'react-select';
 import { toast, ToastContainer } from 'react-toastify';  
 import 'react-toastify/dist/ReactToastify.css';
 import TabsUsuarios from "./tabs";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
+
 
 
 interface ColaboradorOption {
@@ -22,19 +25,27 @@ const Administrador = () => {
   const colaboradorService = new ColaboradorService();
   const [selectedColaborador, setSelectedColaborador] = useState<ColaboradorOption | null>(null);
   const [colaboradores, setColaboradores] = useState<ColaboradorOption[]>([]);
-
+  const [mostrarContrasena, setMostrarContrasena] = useState(false);
+  const alternarVisibilidadContrasena = () => {
+    setMostrarContrasena(!mostrarContrasena);
+  };
   const cargarColaboradores = async () => {
     try {
       const response = await colaboradorService.colaboradorSinUsuario();
-      const options = response.map((colaborador) => ({
-        value: colaborador.idColaborador,
-        label: colaborador.nombre,
-      }));
-      setColaboradores(options);
+      if (response.length > 0) {
+        const options = response.map((colaborador) => ({
+          value: colaborador.idColaborador,
+          label: colaborador.nombre,
+        }));
+        setColaboradores(options);
+      } else {
+        setColaboradores([{ value: 0, label: "No hay registros" }]);
+      }
     } catch (error) {
-      console.error('Error al cargar colaboradores:', error);
+      setColaboradores([{ value: 0, label: "No existen colaboradores disponibles" }]);
     }
   };
+  
 
   useEffect(() => {
     cargarColaboradores();
@@ -66,13 +77,12 @@ const Administrador = () => {
   
     try {
       const response = await usuarioService.agregarUsuario(nuevoUsuario);
-      console.log('Respuesta del servidor:', response);
-      toast.success('Usuario creado exitosamente');
+      toast.success('Usuario creado exitosamente'+ response);
       limpiarFormulario();
       window.location.reload();
+    
     } catch (error) {
-      console.error('Error al crear usuario:', error);
-      toast.error('Error al crear usuario');
+      toast.error('Error al crear usuario' + error);
     }
   };
   
@@ -80,7 +90,6 @@ const Administrador = () => {
     setNombreUsuario('');
     setContrasena('');
     setRol('empleado');
-    setIdColaborador(4);
     setSelectedColaborador(null);
   };
 
@@ -108,15 +117,19 @@ const Administrador = () => {
             <br />
             <label htmlFor="contrasena">Contraseña:</label>
             <br />
-            <input
-              type="password"
-              id="contrasena"
-              value={contrasena}
-              onChange={(e) => {
-                const inputValue = e.target.value;
-                  setContrasena(inputValue);               
-              }}
-            />
+            <div>
+              <div className="input-with-icon">
+                <input
+                  type={mostrarContrasena ? 'text' : 'password'}
+                  id="contrasena"
+                  value={contrasena}
+                  onChange={(e) => setContrasena(e.target.value)}
+                />
+                <span onClick={alternarVisibilidadContrasena}>
+                  <FontAwesomeIcon icon={mostrarContrasena ? faEye : faEyeSlash} />
+                </span>
+              </div>
+            </div>
             <br />
             <label htmlFor="rol">Tipo de empleado:</label>
             <br />
@@ -128,33 +141,20 @@ const Administrador = () => {
             <label htmlFor="idColaborador">ID de Colaborador:</label>
             <br/>
             <Select
-            value={
-              colaboradores.find(
-                colaborador =>
-                  colaborador.value ===
-                  (selectedColaborador ? selectedColaborador.value : null)
-              ) || null
-            }
+            value={selectedColaborador || null}
             onChange={(selectedOption: ColaboradorOption | null) => {
-              console.log(selectedOption?.value);
-              console.log(selectedOption?.label);
-              if (selectedOption && selectedOption.value != null && selectedOption.label != null) {
-                const selectedValue = selectedOption.value;
-                console.log(selectedValue);
-                setIdColaborador(selectedValue);
-                setSelectedColaborador({
-                  value: selectedOption.value,
-                  label: selectedOption.label,
-                });
+              if (selectedOption) {
+                const { value, label } = selectedOption;
+                console.log(value);
+                console.log(label);
+                setIdColaborador(value || 0);
+                setSelectedColaborador(selectedOption);
               } else {
                 setIdColaborador(0);
                 setSelectedColaborador(null);
               }
             }}
-            options={colaboradores.map(colaborador => ({
-              value: colaborador.value,
-              label: colaborador.label,
-            }))}
+            options={colaboradores.map(({ value, label }) => ({ value, label }))}
           />
           </form>
           <br />

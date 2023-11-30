@@ -40,6 +40,7 @@ export default function TabsUsuarioAdmin() {
         }
         toast.success('Se han eliminado: '+ cantidadRegistros + 'usuarios');
         obtenerYActualizarUsuarios();
+        window.location.reload();
       } catch (error) {
         toast.error('Error al eliminar usuarios: ' + error);
       }
@@ -54,13 +55,8 @@ export default function TabsUsuarioAdmin() {
   
       const consultasColaboradores = await Promise.all(
         usuariosActualizados.map(async (usuario) => {
-          // Utiliza el servicio obtenerColaboradores en lugar de obtenerColaboradorPorId
           const colaboradores = await colaborador.obtenerColaboradores();
-          
-          // Busca el colaborador correspondiente al usuario por su id
           const datosColaborador = colaboradores.find((colaborador) => colaborador.idColaborador === usuario.idColaborador);
-  
-          // Verifica si se encontró el colaborador
           if (datosColaborador) {
             return {
               idUsuario: usuario.idUsuario,
@@ -69,7 +65,6 @@ export default function TabsUsuarioAdmin() {
               correo: datosColaborador.correoElectronico,
             };
           } else {
-            // Puedes manejar el caso donde no se encuentra el colaborador según tus necesidades
             throw new Error(`No se encontró el colaborador para el usuario con ID: ${usuario.idUsuario}`);
           }
         })

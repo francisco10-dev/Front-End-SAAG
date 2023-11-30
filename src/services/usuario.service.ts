@@ -81,7 +81,7 @@ class UsuarioService {
     }
   }
 
-  async actualizarUsuario(id: string, data: any): Promise<Usuario> {
+  async actualizarUsuario(id: number, data: any): Promise<Usuario> {
     try {
       const response = await this.axiosInstance.put(`/actualizar-usuario/${id}`, data);
       return response.data;
