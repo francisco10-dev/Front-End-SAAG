@@ -24,9 +24,13 @@ import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import { useAuth } from '../../authProvider';
 import Rutas from '../../routes';
 import SidebarList from './sideBarOptions';
+import UsuarioService from '../../services/usuario.service';
+import { showConfirmation } from '../solicitudes/utils';
 
 
 const drawerWidth = 240;
+
+const usuarioService = new UsuarioService();
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -144,12 +148,25 @@ export default function MenuPanel() {
     setAnchorElUser(null);
   };
 
-  const handleLogout = () =>{
-    setLoggedIn(false);
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    sessionStorage.removeItem('Welcome');
-    navigate('');
+  const handleLogout = async () =>{
+    handleCloseUserMenu();
+    const confirmed = await showConfirmation();
+    if (confirmed){
+      const token = localStorage.getItem('refreshToken');
+
+      if(token){
+        const response = await usuarioService.logout(token);
+
+          if(response.status === 200){
+            setLoggedIn(false);
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('refreshToken');
+            sessionStorage.removeItem('Welcome');
+            navigate('');
+          }    
+      }
+    }
+
   }
 
   return (
