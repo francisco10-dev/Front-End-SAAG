@@ -5,17 +5,20 @@ import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowLeftIcon from '@mui/icons-material/ArrowLeft';
 import { useNavigate } from 'react-router-dom';
 import { sideBarOptions, sideBarOption } from './sideBarOptions';
-import { Tooltip } from '@mui/material';
+import { Tooltip, useTheme, useMediaQuery} from '@mui/material';
 
 interface SideBarProps {
   isOpen: boolean;
   isOpenState: Record<string, boolean>;
   setIsOpenState: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+  handleSidebar: () => void;
 }
 
-export default function SideBar({ isOpen, isOpenState, setIsOpenState }: SideBarProps) {
+export default function SideBar({ isOpen, isOpenState, setIsOpenState, handleSidebar }: SideBarProps) {
   const navigate = useNavigate();
   const [navigationLinks, setNavigationLinks] = useState<sideBarOption[]>(sideBarOptions);
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const storedActive = localStorage.getItem('active');
@@ -45,6 +48,9 @@ export default function SideBar({ isOpen, isOpenState, setIsOpenState }: SideBar
   const handleNavigation = (ruta: any, text: any) => {
     navigate(ruta);
     setActiveLinkByText(text);
+    if (isSmallScreen) {
+      handleSidebar();
+    }
   };
 
   const toggleDropdown = (text: string) => {

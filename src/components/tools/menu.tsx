@@ -62,6 +62,10 @@ export default function MenuPanel() {
     setIsOpen(!isOpen);
   };
 
+  const handleSidebar = () => {
+    setIsOpen(true);
+  };
+
   React.useEffect(() => {
     localStorage.setItem('isOpenState', JSON.stringify(isOpenState));
     
@@ -117,10 +121,15 @@ export default function MenuPanel() {
             </Box>
         </Toolbar>
       </AppBar>
-      <SideBar  isOpen={isOpen} isOpenState={isOpenState} setIsOpenState={setIsOpenState}/>
-      <Box component="main" sx={{ flexGrow: 1, p: 3, marginLeft: !isOpen ? '260px' : '95px' }} className="main-content">
-          <DrawerHeader />
-          <Rutas />
+      <SideBar  isOpen={isOpen} isOpenState={isOpenState} setIsOpenState={setIsOpenState} handleSidebar={handleSidebar}/>
+      <Box 
+        component="main" 
+        sx={{ flexGrow: 1, p: 3, 
+        marginLeft: { xs: '0px', md: !isOpen ? '260px' : '95px'}, }} 
+        className="main-content"
+      >
+        <DrawerHeader />
+        <Rutas />
       </Box>
     </Box>
   );
