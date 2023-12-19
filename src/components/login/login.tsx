@@ -2,16 +2,17 @@ import React, { useState, useEffect  } from 'react';
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap/dist/js/bootstrap.js'
 import './login.css'
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import { Input } from './loginStyles';
 import { useAuth } from '../../authProvider';
 import UsuarioService from '../../services/usuario.service';
 import { toast, ToastContainer } from 'react-toastify';
-import LinearProgress from '@mui/material/LinearProgress';
 import { jwtDecode } from 'jwt-decode';
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const usuarioService = new UsuarioService();
+
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -19,7 +20,6 @@ const Login = () => {
   const [band, setBand] = useState(false);
   const { setLoggedIn, setUserRole } = useAuth();
   const [isLoading, setLoading] =useState(false);
-
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,30 +30,48 @@ const Login = () => {
         contrasena: password
       };
       const response = await usuarioService.login(data);
-      if(response) {
-        setLoggedIn(true);
-        localStorage.setItem('accessToken', response.accessToken);
-        localStorage.setItem('refreshToken', response.refreshToken);
-        localStorage.setItem('employee', JSON.stringify(response.colaborador));
-        const decodedToken: any = jwtDecode(response.accessToken);
-        setUserRole(decodedToken.rol);
-        document.body.style.backgroundImage = 'none';
+      if (response) {
+        handleSuccessfulLogin(response);
       }
     } catch (error) {
-        setLoading(false);
-        toast.error('Usuario o contraseña incorrecta', {
-          position: 'bottom-right', 
-          autoClose: 1500,
-          style: {
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            color: 'white', 
-          },
-        }); 
-      setBand(true);
-      setTimeout(() => {
-        setBand(false);
-      }, 1000);
+      setLoading(false);
+      displayErrorToast();
+      setBandWithTimeout();
     }
+  };
+  
+  const handleSuccessfulLogin = (response: any) => {
+    setLoggedIn(true);
+    saveTokens(response);
+    saveUserData(response);
+    document.body.style.backgroundImage = 'none';
+  };
+  
+  const saveTokens = (response: any) => {
+    localStorage.setItem('accessToken', response.accessToken);
+    localStorage.setItem('refreshToken', response.refreshToken);
+  };
+  
+  const saveUserData = (response: any) => {
+    localStorage.setItem('employee', JSON.stringify(response.colaborador));
+    const decodedToken: any = jwtDecode(response.accessToken);
+    setUserRole(decodedToken.rol);
+  };
+  
+  const displayErrorToast = () => {
+    toast.error('Usuario o contraseña incorrecta', {
+      position: 'bottom-right',
+      autoClose: 1500,
+      style: {
+        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+        color: 'white',
+      },
+    });
+  };
+  
+  const setBandWithTimeout = () => {
+    setBand(true);
+    setTimeout(() => setBand(false), 1000);
   };
 
   useEffect(() => {
@@ -62,9 +80,6 @@ const Login = () => {
     document.body.style.backgroundSize = 'cover';
   }, []); // Se aplica este fondo cuando se ejecuta el componente.
 
-  const passwordVisibilidad = () => {
-    setPasswordVisible(!passwordVisible);
-  };
 
   return (
     <div className='view'>
@@ -78,7 +93,7 @@ const Login = () => {
           </div>
         </div>
         <div className='login-container'>
-          <form onSubmit={handleLogin}>
+          <form onSubmit={handleLogin} className='form'>
             <div className='form-group'>
               <Input
                 type="text"
@@ -100,15 +115,13 @@ const Login = () => {
                 className={band ? 'error' : ''}
                 required
               />
+              <span className="password-toggle" onClick={() => setPasswordVisible(!passwordVisible)}>
+                {passwordVisible ?  <VisibilityOffIcon/> : <RemoveRedEyeIcon/>}
+              </span>
             </div>
-            <div className="form-group" id='check'>
-            <FormControlLabel
-              control={<Checkbox onChange={passwordVisibilidad} color="warning" />}
-              label={<span className="custom-label">Mostrar contraseña</span>}
-            />
-            </div>
-            <button className='btnLogin' type="submit">INGRESAR</button>
-            {isLoading ? <LinearProgress sx={{width: 250, marginLeft: 3}}/> : ''}
+            <button className={`btnLogin ${isLoading ? 'loading' : ''}`} type="submit">
+              {isLoading ? <CircularProgress size={27} color="inherit" /> : 'INGRESAR'}
+            </button>          
           </form>
         </div>
       </div>
