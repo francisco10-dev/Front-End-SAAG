@@ -13,42 +13,23 @@
   
 .form-group {
     margin-bottom: 10px;
+    position: relative;
+    display: inline-block;
+    width: 300px;
 }
   
 .btnLogin {
     padding: 10px 15px;
-    background-color: rgb(20, 64, 145);
+    background-color: rgb(27, 61, 81);
     color: #e4d6d6;
     border: none;
     border-radius: 15px;
     cursor: pointer;
-    width: 100%;
-    margin-top: 3%;
+    width: 300px;
+    margin-top: 8%;
+    position: relative;
 }
   
-.btnLogin:hover{
-    background-color: rgb(51, 11, 88)
-}
-
-.eyeBtn{
-    background-color: transparent;
-    border: none;
-    color: white;
-}
-
-.eyeBtn:hover{
-    transform: scale(1.1);
-}
-
-#check{
-    width: 300px;
-    margin-left: 2%;
-}
-
-#see{
-    margin-right: 115px;
-    color: white;
-}
 
 @keyframes fadeIn {
     from {
@@ -69,7 +50,6 @@
         transform: translateX(0);
     }
 }
-
 
 .logos{
     display: flex;
@@ -195,4 +175,24 @@
         color: white;
     }
 
+}
+  
+.password-toggle {
+    position: absolute;
+    top: 56%;
+    right: 8px;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.btnLogin.loading {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }

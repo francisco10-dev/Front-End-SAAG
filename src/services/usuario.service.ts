@@ -32,6 +32,22 @@ class UsuarioService {
     }
   }
 
+  async logout(token: string): Promise<any> {
+    try { 
+      const response = await this.axiosInstance.post(`/logout/${token}`);
+      return response;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
+        } else {
+          throw new Error('Error en la solicitud de red');
+        }
+      }
+      throw error;
+    }
+  }
+
   async agregarUsuario(data: any): Promise<Usuario> {
     try {
       const response = await this.axiosInstance.post('/agregar-usuario/', data);

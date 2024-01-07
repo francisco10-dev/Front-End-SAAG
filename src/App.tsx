@@ -1,6 +1,6 @@
 import './App.css';
 import Login from './components/login/login';
-import { useAuth } from './authProvider'; // Asegúrate de importar useAuth desde el archivo correcto
+import { useAuth } from './authProvider'; 
 import MenuPanel from './components/tools/menu';
 import { useEffect, useState } from 'react';
 import Welcome from './components/welcome/welcome';

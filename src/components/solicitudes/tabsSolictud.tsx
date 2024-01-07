@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import DataTable from './tableSolicitud';
 import SolicitudService from '../../services/solicitud.service';
 import { Solicitud } from '../../services/solicitud.service';
+import { CircularProgress } from '@mui/material';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -46,7 +47,7 @@ export default function TabsSolicitudAdmin() {
   const [solicitudes, setSolicitudes] = React.useState<Solicitud[]>([]);
   const [ approved, setApproved ] = React.useState<Solicitud[]>([]);
   const [pendings, setPendings] = React.useState<Solicitud[]>([]);
-
+  const [loading, setLoading] = React.useState(false); 
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -54,6 +55,7 @@ export default function TabsSolicitudAdmin() {
   };
 
   const loadRequests = () => {
+    setLoading(true); 
     const fetchData = async () => {
       try {
         const solicitudesData = await Service.getSolicitudes();
@@ -64,6 +66,8 @@ export default function TabsSolicitudAdmin() {
         setPendings(pendientes);
       } catch (error) {
         console.error('Error al obtener solicitudes:', error);
+      }finally {
+        setLoading(false); // Marcamos que la carga ha finalizado, independientemente de si fue exitosa o no
       }
     };
     fetchData();
@@ -72,6 +76,13 @@ export default function TabsSolicitudAdmin() {
 React.useEffect(() => {
   loadRequests();
 }, [value]);
+
+const renderContent = (data: Solicitud[]) =>
+  loading ? (
+    <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%' }} />
+  ) : (
+    <DataTable rows={data} updateSolicitudes={loadRequests} />
+  );
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -83,13 +94,13 @@ React.useEffect(() => {
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-      <DataTable rows={solicitudes} updateSolicitudes={loadRequests}/>
+      {renderContent(solicitudes)}
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-      <DataTable rows={approved} updateSolicitudes={loadRequests}/>
+      {renderContent(approved)}
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
-      <DataTable rows={pendings} updateSolicitudes={loadRequests}/>
+      {renderContent(pendings)}
       </CustomTabPanel>
     </Box>
   );
