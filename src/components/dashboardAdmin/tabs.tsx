@@ -26,9 +26,16 @@ export default function TabsUsuarioAdmin() {
   const colaborador = new ColaboradorService();
   const [value] = useState(0);
   const [ColabUsuario, setUsuarios] = useState<ColabUsuario[]>([]);
+  const [selectedUsuario] = useState<ColabUsuario | null>(null);
   const [filterText, setFilterText] = useState('');
+  const [, setIsModalOpen] = useState(false);
 
-
+  const onUpdateRow = async () => {
+    if (selectedUsuario) {
+      setIsModalOpen(true);
+    }
+  };
+  
   const onDeleteRow = async (idsToDelete: number[]) => {
     const cantidadRegistros = idsToDelete.length;
     const confirmMessage = `¿Estás seguro de que quieres eliminar ${cantidadRegistros} usuario(s)?`;
@@ -107,9 +114,11 @@ export default function TabsUsuarioAdmin() {
           })}
           columns={columns}
           onDeleteRow={onDeleteRow}
+          onUpdateRow={onUpdateRow}
         />
       ))}
     </Box>
   );
 }
+
 

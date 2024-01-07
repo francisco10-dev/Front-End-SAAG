@@ -10,9 +10,10 @@
     colabUsuario: ColabUsuario[];
     columns: GridColDef[];
     onDeleteRow: (idsToDelete: number[]) => void;
+    onUpdateRow: (idsToUpdate: number) => void;
     }
         function CustomTabPanel(props: TabPanelProps) {
-            const { value, index, colabUsuario, columns, onDeleteRow } = props;
+            const { value, index, colabUsuario, columns, onDeleteRow, onUpdateRow } = props;
             return (
             <div
                 role="tabpanel"
@@ -29,6 +30,7 @@
                         filterFunction={(rows: ColabUsuario[]) => rows}
                         getRowId={(row: ColabUsuario) => row.idUsuario}
                         onDeleteRow={onDeleteRow}
+                        onUpdateRow={onUpdateRow}
                     />
                     
                     </Typography>

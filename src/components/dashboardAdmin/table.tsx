@@ -8,6 +8,7 @@ interface DataTableProps {
   filterFunction: (rows: ColabUsuario[], filterText: string) => ColabUsuario[];
   getRowId: (row: ColabUsuario) => any;
   onDeleteRow: (idsToDelete: number[]) => void;
+  onUpdateRow: (idsToUpdate: number) => void;
 }
 
 export default function DataTable(props: DataTableProps) {
