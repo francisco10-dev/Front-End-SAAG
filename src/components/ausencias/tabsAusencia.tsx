@@ -7,6 +7,7 @@ import DataTable from './tableAusencia';
 import AusenciaService from '../../services/ausencia.service';
 import { Ausencia } from '../../services/ausencia.service';
 import { CircularProgress } from '@mui/material';
+import Bars from './graphicAusencia';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -64,7 +65,7 @@ export default function TabsAusenciaAdmin() {
         setApproved(ausenciasAprobadas);
       } catch (error) {
         console.error('Error al obtener ausencias:', error);
-      }finally {
+      } finally {
         setLoading(false); // Marcamos que la carga ha finalizado, independientemente de si fue exitosa o no
       }
     };
@@ -92,11 +93,15 @@ export default function TabsAusenciaAdmin() {
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-      {renderContent(ausencias)}
+        {renderContent(ausencias)}
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
+        {}
+        <Bars />
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={2}>
       {renderContent(approved)}
       </CustomTabPanel>
-      </Box>
+    </Box>
   );
 }
