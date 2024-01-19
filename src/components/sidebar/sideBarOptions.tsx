@@ -48,6 +48,18 @@ export const sideBarOptions: sideBarOption[] = [
         icon: <FolderCopyIcon />,
         isActive: false,
       },
+      {
+        href: '/auditorias',
+        text: 'Auditorías Tablas',
+        icon: <FolderCopyIcon />,
+        isActive: false,
+      },
+      {
+        href: '/auditorias-login',
+        text: 'Auditorías Login',
+        icon: <FolderCopyIcon />,
+        isActive: false,
+      },
     ],
   },
 ];

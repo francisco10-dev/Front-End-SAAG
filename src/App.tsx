@@ -1,15 +1,15 @@
-import './App.css';
+import React, { useEffect, useState } from 'react';
 import Login from './components/login/login';
 import { useAuth } from './authProvider'; 
 import MenuPanel from './components/tools/menu';
-import { useEffect, useState } from 'react';
 import Welcome from './components/welcome/welcome';
 
-const App = () => {
-  const { loggedIn } = useAuth(); // Accede a loggedIn y setLoggedIn desde el contexto
+
+const App: React.FC = () => {
+  const { loggedIn, logout} = useAuth();
   const [showWelcome, setShowWelcome] = useState(false);
-  const content = loggedIn ? <MenuPanel/> : <Login />;
-  
+
+ 
   useEffect(() => {
     const hasShownWelcome = sessionStorage.getItem('Welcome');
 
@@ -18,14 +18,40 @@ const App = () => {
       setTimeout(() => {
         setShowWelcome(false);
         sessionStorage.setItem('Welcome', 'true');
-      }, 2000); // duración en segundos que dura la pantalla de bienvenida.
+      }, 10000);
     }
   }, [loggedIn]);
 
+  // Funcionalidad para controlar la inactividad del usuario
+  useEffect(() => {
+      let inactivityTimer: NodeJS.Timeout;
+
+      const handleUserActivity = () => {
+        clearTimeout(inactivityTimer);
+
+        inactivityTimer = setTimeout(() => {
+        logout();
+        },10 * 60 *1000);  //Tiempo de inactividad establecido de 10 minutos
+      };
+
+      window.addEventListener('mousemove', handleUserActivity);
+      window.addEventListener('keydown', handleUserActivity);
+
+      handleUserActivity();
+
+      return() => {
+        window.removeEventListener('mousemove', handleUserActivity);
+        window.removeEventListener('keydown', handleUserActivity);
+        clearTimeout(inactivityTimer);
+      };
+      
+  }, [logout]);
+
+
   return (
-      <div>
-        {showWelcome ? <Welcome /> : content}
-      </div>
+    <div>
+      {showWelcome ? <Welcome /> : (loggedIn? <MenuPanel /> : <Login />)}
+    </div>
   );
 };
 

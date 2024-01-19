@@ -1,11 +1,15 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
+import { useNavigate } from 'react-router-dom';
+import UsuarioService from './services/usuario.service';
+
 
 interface AuthContextType {
   loggedIn: boolean;
   setLoggedIn: (loggedIn: boolean) => void;
   userRole: string | null;
   setUserRole: (userRole: string) => void;
+  logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -15,6 +19,7 @@ interface AuthProviderProps {
 }
 
 const decodeToken = () => {
+  
   try{
     const token = localStorage.getItem('accessToken');
     if(token){
@@ -30,13 +35,34 @@ const decodeToken = () => {
   }
 };
 
+
 export function AuthProvider({ children }: AuthProviderProps) {
   const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('accessToken'));
   const [userRole, setUserRole] = useState<string | null>(decodeToken());
+  const navigate = useNavigate();
+  const usuarioService = new UsuarioService();
+
+   const logout = async() => {
+  
+    const token = localStorage.getItem('refreshToken');
+          if (token) {
+
+            console.log('enra aqui')
+            const response = await usuarioService.logout(token);
+            
+            if (response.status === 200) {
+              localStorage.removeItem('accessToken');
+              localStorage.removeItem('refreshToken');
+              sessionStorage.removeItem('Welcome');
+              setLoggedIn(false);
+              navigate('/');
+            }
+          }
+  };
 
 
   return (
-    <AuthContext.Provider value={{ loggedIn, setLoggedIn, userRole, setUserRole }}>
+    <AuthContext.Provider value={{ loggedIn, setLoggedIn, userRole, setUserRole, logout }}>
       {children}
     </AuthContext.Provider>
   );

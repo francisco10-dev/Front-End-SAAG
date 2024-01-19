@@ -4,7 +4,6 @@ import Popover from '@mui/material/Popover';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import UsuarioService from '../../services/usuario.service';
 import { showConfirmation } from '../solicitudes/utils';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../authProvider';
@@ -17,8 +16,7 @@ import 'react-toastify/dist/ReactToastify.css';
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
   const navigate = useNavigate();
-  const { userRole, setLoggedIn } = useAuth();
-  const usuarioService = new UsuarioService();
+  const { userRole,logout } = useAuth();
 
   const settings = [
     { icon: <LockClockIcon sx={{ marginRight: 1 }} />, text: 'Administración', onClick: () => navigate('/administrador'), role: 'admin' },
@@ -35,26 +33,12 @@ export default function AccountPopover() {
     if (confirmed) {
       try {
         toast.loading('Cerrando sesión...', { autoClose: false, position: 'bottom-center' });
-        const token = localStorage.getItem('refreshToken');
-        if (token) {
-          const response = await usuarioService.logout(token);
-          if (response.status === 200) {
-            setLoggedIn(false);
-            removeItems();
-            navigate('/');
-          }
-        }
+        logout();
       } finally {
         toast.dismiss();
       }
     }
   };
-
-  const removeItems = () =>{
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    sessionStorage.removeItem('Welcome');
-  }
 
   const handleOpen = (event:any) => setOpen(event.currentTarget);
 
