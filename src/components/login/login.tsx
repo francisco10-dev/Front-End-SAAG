@@ -100,7 +100,7 @@ const Login = () => {
                 id="username"
                 value={username}
                 placeholder='Usuario'
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e : React.ChangeEvent<HTMLInputElement>) => setUsername(e.target.value)}
                 className={band ? 'error' : ''}
                 required
               />
@@ -111,7 +111,7 @@ const Login = () => {
                 id="password"
                 placeholder='Contraseña'
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e : React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
                 className={band ? 'error' : ''}
                 required
               />
