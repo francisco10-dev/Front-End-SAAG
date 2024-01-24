@@ -1,4 +1,4 @@
-/*import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Bar } from 'react-chartjs-2';
 import {Chart,CategoryScale,LinearScale,PointElement,BarElement,Title,Tooltip,Legend,Filler} from 'chart.js';
 
@@ -284,4 +284,4 @@ function formatFirstDayOfYear() {
   return new Date(today.getFullYear(), 0, 1).toISOString().split('T')[0];
 }
 
-export default Bars;*/
+export default Bars;

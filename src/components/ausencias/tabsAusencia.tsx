@@ -7,7 +7,7 @@ import DataTable from './tableAusencia';
 import AusenciaService from '../../services/ausencia.service';
 import { Ausencia } from '../../services/ausencia.service';
 import { CircularProgress } from '@mui/material';
-//import Bars from './graphicAusencia';
+import Bars from './graphicAusencia';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -95,10 +95,10 @@ export default function TabsAusenciaAdmin() {
       <CustomTabPanel value={value} index={0}>
         {renderContent(ausencias)}
       </CustomTabPanel>
-      {/* <CustomTabPanel value={value} index={1}>
+      {<CustomTabPanel value={value} index={1}>
         {}
         <Bars />
-      </CustomTabPanel> */}
+      </CustomTabPanel>}
       <CustomTabPanel value={value} index={2}>
       {renderContent(approved)}
       </CustomTabPanel>
