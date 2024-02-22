@@ -43,6 +43,7 @@
     "tippy.js": "^6.3.7"
   },
   "devDependencies": {
+    "@types/chart.js": "^2.9.41",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@types/react-reconciler": "^0.28.6",
