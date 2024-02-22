@@ -111,8 +111,8 @@
                 }}
                 options={colaboradores.map(({ value, label }) => ({ value, label }))}
             />
-            <Button type="submit">Guardar</Button>
-            <Button onClick={onClose}>Cancelar</Button>
+            <Button className='button' type="submit">Guardar</Button>
+            <Button className='button' onClick={onClose}>Cancelar</Button>
             </form>
         </DialogContent>
         </Dialog>
