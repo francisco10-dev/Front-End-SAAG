@@ -158,7 +158,7 @@ const Administrador = () => {
           />
           </form>
           <br />
-          <button type="button" onClick={crearUsuario}>
+          <button className='button' type="button" onClick={crearUsuario}>
             Crear Usuario
           </button>
         </div>
