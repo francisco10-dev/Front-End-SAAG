@@ -56,7 +56,7 @@ export default function DataTable(props: DataTableProps) {
           fontFamily: 'GOTHAM Medium',
         }}
       />
-      <button className='button' onClick={handleDeleteSelected}>Eliminar seleccionados</button>
+      <button className='boton' onClick={handleDeleteSelected}>Eliminar seleccionados</button>
     </div>
   );
 }

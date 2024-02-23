@@ -99,7 +99,7 @@
                 margin="normal"
                 required
             />
-            <Select
+            <Select className='slect'
                 value={colaboradores.find((colaborador) => colaborador.value === (idColaborador || null)) || null}
                 onChange={(selectedOption: ColaboradorOption | null) => {
                 if (selectedOption) {
@@ -111,8 +111,8 @@
                 }}
                 options={colaboradores.map(({ value, label }) => ({ value, label }))}
             />
-            <Button className='button' type="submit">Guardar</Button>
-            <Button className='button' onClick={onClose}>Cancelar</Button>
+            <Button className='boton' type="submit">Guardar</Button>
+            <Button className='boton' onClick={onClose}>Cancelar</Button>
             </form>
         </DialogContent>
         </Dialog>

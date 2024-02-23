@@ -102,7 +102,7 @@ const Administrador = () => {
           <form>
             <label htmlFor="nombreUsuario">Nombre de Usuario:</label>
             <br />
-            <input
+            <input className='Input'
               type="text"
               id="nombreUsuario"
               value={nombreUsuario}
@@ -119,7 +119,7 @@ const Administrador = () => {
             <br />
             <div>
               <div className="input-with-icon">
-                <input
+                <input className='Input'
                   type={mostrarContrasena ? 'text' : 'password'}
                   id="contrasena"
                   value={contrasena}
@@ -133,14 +133,14 @@ const Administrador = () => {
             <br />
             <label htmlFor="rol">Tipo de empleado:</label>
             <br />
-            <select id='rol' value={rol} onChange={(e) => setRol(e.target.value)}>
+            <select className='slect' id='rol' value={rol} onChange={(e) => setRol(e.target.value)}>
               <option value="empleado">Empleado</option>
               <option value="admin">Administrador</option>
             </select>
             <br />
             <label htmlFor="idColaborador">ID de Colaborador:</label>
             <br/>
-            <Select
+            <Select className='slect'
             value={selectedColaborador || null}
             onChange={(selectedOption: ColaboradorOption | null) => {
               if (selectedOption) {
@@ -158,7 +158,7 @@ const Administrador = () => {
           />
           </form>
           <br />
-          <button className='button' type="button" onClick={crearUsuario}>
+          <button className='boton' type="button" onClick={crearUsuario}>
             Crear Usuario
           </button>
         </div>
