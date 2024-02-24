@@ -37,6 +37,12 @@ export const sideBarOptions: sideBarOption[] = [
         isActive: false,
       },
       {
+        href: '/solicitud-form',
+        text: 'Solicitud',
+        icon: <TextSnippetIcon />,
+        isActive: false,
+      },
+      {
         href: '/ausencias',
         text: 'Ausencias',
         icon: <AccessTimeIcon />,
