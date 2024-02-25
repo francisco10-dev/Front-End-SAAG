@@ -6,7 +6,6 @@ import Box from '@mui/material/Box';
 import DataTable from './tableSolicitud';
 import SolicitudService from '../../services/solicitud.service';
 import { Solicitud } from '../../services/solicitud.service';
-import { CircularProgress } from '@mui/material';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -77,13 +76,6 @@ React.useEffect(() => {
   loadRequests();
 }, [value]);
 
-const renderContent = (data: Solicitud[]) =>
-  loading ? (
-    <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%' }} />
-  ) : (
-    <DataTable rows={data} updateSolicitudes={loadRequests} />
-  );
-
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
@@ -94,13 +86,13 @@ const renderContent = (data: Solicitud[]) =>
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-      {renderContent(solicitudes)}
+        <DataTable isLoading={loading} rows={solicitudes} updateSolicitudes={loadRequests} />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-      {renderContent(approved)}
+        <DataTable isLoading={loading} rows={approved} updateSolicitudes={loadRequests} />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
-      {renderContent(pendings)}
+        <DataTable isLoading={loading} rows={pendings} updateSolicitudes={loadRequests} />
       </CustomTabPanel>
     </Box>
   );
