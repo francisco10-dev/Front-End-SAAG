@@ -33,9 +33,11 @@ const Login = () => {
       const response = await usuarioService.login(data);
       if (response.status === 200) {
         handleSuccessfulLogin(response.data);
+      }else{
+        console.log('NO')
       }
     } catch (error) {
-      if(error instanceof Error && error.message.includes('401: Unauthorized')){
+      if(error instanceof Error && error.message.includes('401')){
         displayErrorToast('Credenciales de acceso incorrectas.');
       }else{
         displayErrorToast('Ocurrió un error al comunicarse con el servidor, por favor intente más tarde.');
