@@ -1,7 +1,6 @@
 import './form.css';
 import React, { useState } from 'react';
-import { Input, Select } from 'antd';
-import { DatePicker, Typography } from 'antd';
+import { Input, Select, DatePicker, Typography, Progress } from 'antd';
 import Button from '@mui/material/Button';
 import { colors } from '@mui/material';
 
@@ -24,6 +23,7 @@ const Form = () => {
   const [nombreSustituto, setNombreSustituto] = useState('');
   const [estado, setEstado] = useState('');
   const [comentarioTalentoHumano, setComentarioTalentoHumano] = useState('');
+  const [mostrarProgress, setMostrarProgress] = useState(false);
 
   const handleTipoSolicitudChange = (value: any) => {
     setTipoSolicitud(value);
@@ -50,9 +50,15 @@ const Form = () => {
   };
 
   const handleSustitucionChange = (value: any) => {
-    setSustitucion(value);
-    if (value === 'NO') {
-      setNombreSustituto(''); // Si se selecciona "NO", borra el valor del nombre del sustituto
+    if (value === 'SI') {
+      setMostrarProgress(true);
+      setTimeout(() => {
+        setSustitucion(value);
+        setMostrarProgress(false);
+      }, 350); // Cambiado a 500 milisegundos
+    } else {
+      setSustitucion(value);
+      setNombreSustituto('');
     }
   };
 
@@ -67,22 +73,19 @@ const Form = () => {
   return (
     <div className='box'>
       <div className="contenedor-campos">
+        <div className="columna-1">
         <div className="campo">
           <Text type='secondary'>Nombre colaborador</Text>
           <Input placeholder="Nombre colaborador" value={nombreColaborador} onChange={(e) => setNombreColaborador(e.target.value)} className="inputWidth" style={{ width: 290 }} />
         </div>
-        <div className="campo">
-          <Text type='secondary'>Nombre encargado</Text>
-          <Input placeholder="Nombre encargado" value={nombreEncargado} onChange={(e) => setNombreEncargado(e.target.value)} style={{ width: 290 }} />
-        </div>
-        <div className="campo">
+        <div className="campo campo-goce">
           <Text type='secondary'>Goce salarial</Text>
           <Select placeholder="Con goce salarial" value={goceSalarial} onChange={handleGoceChange} style={{ width: 100 }}>
             <Option value="SI">SI</Option>
             <Option value="NO">NO</Option>
           </Select>
         </div>
-        <div className="campo">
+        <div className='campo campo-tipo'>
           <Text type='secondary'>Tipo</Text>
           <Select showSearch placeholder="Tipo de solicitud" value={tipoSolicitud} onChange={handleTipoSolicitudChange} style={{ width: 150 }}>
             <Option value="Incapacidad">Incapacidad</Option>
@@ -92,10 +95,6 @@ const Form = () => {
             <Option value="Injustificada">Injustificada</Option>
           </Select>
         </div>
-        <div className="campo">
-          <Text type='secondary'>Asunto</Text>
-          <TextArea placeholder="Asunto" value={asunto} onChange={(e) => setAsunto(e.target.value)} allowClear />
-        </div>
         <div className="fechas">
           <div className="campo">
             <DatePicker placeholder="Fecha de inicio" value={fechaInicio} onChange={handleFechaInicioChange} />
@@ -104,40 +103,59 @@ const Form = () => {
             <DatePicker placeholder="Fecha de fin" value={fechaFin} onChange={handleFechaFinChange} />
           </div>
         </div>
-        <div className="campo">
-          <Text type='secondary'>Requiere sustituto</Text>
-          <Select placeholder="Sustitución" value={sustitucion} onChange={handleSustitucionChange} style={{ width: 100 }}>
-            <Option value="SI">SI</Option>
-            <Option value="NO">NO</Option>
-          </Select>
+        <div className="campo campo-asunto">
+          <Text type='secondary'>Asunto</Text>
+          <TextArea placeholder="Asunto" value={asunto} onChange={(e) => setAsunto(e.target.value)} allowClear />
         </div>
-        {/* Renderiza el input del nombre del sustituto solo si la sustitución es "SI" */}
-        {sustitucion === 'SI' && (
-          <div className="campo">
-            <Text type='secondary'>Nombre del sustituto</Text>
-            <Input
-              placeholder="Nombre del sustituto"
-              value={nombreSustituto}
-              onChange={(e) => setNombreSustituto(e.target.value)}
-              style={{ width: 290 }}
-            />
+        </div>
+        <div className="columna-2">
+        <div className="campo campo-encargado">
+          <Text type='secondary'>Nombre encargado</Text>
+          <Input placeholder="Nombre encargado" value={nombreEncargado} onChange={(e) => setNombreEncargado(e.target.value)} style={{ width: 290 }} />
+        </div>
+        <div className="box-sustituto">
+          <div className="campo campo-nombre-sustituto">
+            <Text type='secondary'>Requiere sustituto</Text>
+            <Select
+              placeholder="Sustitución"
+              value={sustitucion}
+              onChange={handleSustitucionChange}
+              style={{ width: 100 }}
+            >
+              <Option value="SI">SI</Option>
+              <Option value="NO">NO</Option>
+            </Select>
           </div>
-        )}
-        <div className="campo">
+          <div className="progress-bar">
+            {mostrarProgress && <Progress percent={100} status="active" />}
+          </div>
+          {sustitucion === 'SI' && !mostrarProgress && (
+            <div className="campo">
+              <Text type='secondary'>Nombre del sustituto</Text>
+              <Input
+                placeholder="Nombre del sustituto"
+                value={nombreSustituto}
+                onChange={(e) => setNombreSustituto(e.target.value)}
+                style={{ width: 290 }}
+              />
+            </div>
+          )}
+        </div>
+        <div className="campo campo-estado">
           <Text type='secondary'>Estado</Text>
-          <Select placeholder="Estado" value={estado} onChange={handleEstadoChange} style={{ width: 100 }}>
-            <Option value="Activo">Activo</Option>
-            <Option value="Inactivo">Inactivo</Option>
+          <Select placeholder="Estado" value={estado} onChange={handleEstadoChange} style={{ width: 110 }}>
+            <Option value="Activo">Aceptada</Option>
+            <Option value="Inactivo">Rechazada</Option>
           </Select>
         </div>
-        <div className="campo">
+        <div className="campo campo-comentario">
           <Text type='secondary'>Comentario</Text>
           <TextArea placeholder="Comentario de Talento Humano" value={comentarioTalentoHumano} onChange={(e) => setComentarioTalentoHumano(e.target.value)} allowClear />
+        </div>
         </div>
         <Button className='button-submit' variant="contained" color="success">
           <Text className='text'>Enviar</Text>
         </Button>
-
       </div>
     </div>
   );
