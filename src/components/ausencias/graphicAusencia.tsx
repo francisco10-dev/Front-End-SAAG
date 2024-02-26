@@ -3,7 +3,8 @@ import { Bar } from 'react-chartjs-2';
 import SolicitudService, { Solicitud } from '../../services/solicitud.service';
 import { Chart, CategoryScale, LinearScale, PointElement, BarElement, Title, Tooltip, Legend, Filler } from 'chart.js';
 import { Modal, Table, DatePicker } from 'antd';
-import { Moment } from 'moment';
+import moment, { Moment } from 'moment'; 
+import { CalendarOutlined } from '@ant-design/icons';
 import '../ausencias/graphicStyle.css'
 
 Chart.register(CategoryScale, LinearScale, PointElement, BarElement, Title, Tooltip, Legend, Filler);
@@ -11,7 +12,8 @@ Chart.register(CategoryScale, LinearScale, PointElement, BarElement, Title, Tool
 const solicitudService = new SolicitudService();
 
 const Bars = () => {
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  
+  const [selectedYear, setSelectedYear] = React.useState(moment().year());
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
   const [recuentosSolicitudesPorMes, setRecuentosSolicitudesPorMes] = useState<Record<number, Record<string, number[]>>>({});
   const [sumasIndicadoresPorTipo, setSumasIndicadoresPorTipo] = useState({});
@@ -86,9 +88,12 @@ const Bars = () => {
     setRecuentosSolicitudesPorMes(updatedRecuentosSolicitudesPorMes);
   }, [selectedYear]);
 
-  const handleYearChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedYear = parseInt(event.target.value);
-    setSelectedYear(selectedYear);
+  const handleYearChange = (_date: Moment | null, dateString: string | string[]) => {
+    if (dateString && typeof dateString === 'string') {
+      const selectedYear = moment(dateString, 'YYYY').year();
+      setSelectedYear(selectedYear); 
+    }
+  
 
     const filteredSolicitudes = solicitudes.filter(solicitud => {
       const fechaSolicitud = new Date(solicitud.fechaSolicitud);
@@ -183,7 +188,7 @@ const Bars = () => {
   const datasets = tiposSolicitudes.map(tipo => ({
     label: `Solicitudes ${tipo}`,
     data: nombresMeses.map((_nombreMes, index) =>
-      (recuentosSolicitudesPorMes[index]?.[tipo] || []).reduce((acc, cur) => acc + cur, 0) || 0
+      ((recuentosSolicitudesPorMes[index]?.[tipo] || []).reduce((acc, cur) => acc + cur, 0) || 0).toFixed(2)
     ),
     backgroundColor: colorPorTipo[tipo as keyof typeof colorPorTipo],
     borderRadius: 5,
@@ -240,16 +245,9 @@ const Bars = () => {
     }
   };
 
-  const handleDatePickerChange1 = (_date: Moment | null, dateString: string | string[]) => {
-    if (typeof dateString === 'string') {
-      const selectedYear = parseInt(dateString); 
-      setSelectedYear(selectedYear); 
-    }
-  };
-
   const handleDatePickerChange = (_date: Moment | null, dateString: string | string[]) => {
     if (typeof dateString === 'string') {
-      const selectedYear = parseInt(dateString); 
+      const selectedYear = moment(dateString, 'YYYY').year();
       setSelectedYear(selectedYear); 
     }
   };
@@ -257,13 +255,12 @@ const Bars = () => {
   if (Object.keys(recuentosSolicitudesPorMes).length === 0) {
     return (
       <div>
-        <DatePicker picker="year" onChange={handleDatePickerChange1} style={{ marginBottom: '1rem' }} />
+        <DatePicker picker="year" onChange={handleYearChange}  style={{ marginBottom: '2rem', marginLeft: '1rem' }} />
         <Bar data={datosBarras} options={options} />
         <p>No hay datos para el año seleccionado.</p>
       </div>
     );
   }
-
   const showModalAnuales = () => {
     setModalVisibleAnuales(true);
   };
@@ -359,7 +356,13 @@ const Bars = () => {
   return (
     <div style={{ maxWidth: '800px', minWidth: '400px', width: '100%', margin: '0 auto', marginLeft: '-1rem' }}>
       <div style={{ position: 'relative', width: '100%', height: 0, paddingBottom: '50%', minWidth: '61rem', minHeight: '50rem', marginLeft: '2rem' }}>
-        <DatePicker picker="year" onChange={handleDatePickerChange} style={{ marginBottom: '1rem' }} />
+        <DatePicker
+      picker="year"
+      onChange={handleDatePickerChange}
+      value={moment(`${selectedYear}`, 'YYYY')}
+      style={{ marginBottom: '1rem' }}
+      suffixIcon={<CalendarOutlined />}
+    />
         <Bar data={datosBarras} options={options} />
         <div style={{ display: 'flex', justifyContent: 'center', marginLeft: '1rem', marginTop: '1rem' }}>
           <button
@@ -397,7 +400,7 @@ const Bars = () => {
           </button>
           <Modal
             title="Total de Indicadores Anuales"
-            visible={modalVisibleAnuales}
+            open ={modalVisibleAnuales}
             onCancel={handleCancelAnuales}
             footer={null}
             centered
@@ -406,7 +409,7 @@ const Bars = () => {
           </Modal>
           <Modal
             title="Detalles Por Mes"
-            visible={modalVisiblePorMes}
+            open ={modalVisiblePorMes}
             onCancel={handleCancelPorMes}
             footer={null}
             style={{ minWidth: '50%' }}
