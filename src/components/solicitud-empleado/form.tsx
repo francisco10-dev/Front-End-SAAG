@@ -1,13 +1,19 @@
 import './form.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input, Select, DatePicker, Typography, Progress, Checkbox, TimePicker } from 'antd';
 import Button from '@mui/material/Button';
+import { toast, ToastContainer } from 'react-toastify';
+import moment from 'moment';
+import SolicitudService from '../../services/solicitud.service';
 const { Option } = Select;
 const { TextArea } = Input;
 const { Text } = Typography;
 const { RangePicker } = DatePicker;
 
 const Form = () => {
+
+
+  const [idUsuario, setId] = useState('');
   const [tipoSolicitud, setTipoSolicitud] = useState('');
   const [asunto, setAsunto] = useState('');
   const [goceSalarial, setGoce] = useState('');
@@ -24,6 +30,17 @@ const Form = () => {
   const [estado, setEstado] = useState('');
   const [comentarioTalentoHumano, setComentarioTalentoHumano] = useState('');
   const [mostrarProgress, setMostrarProgress] = useState(false);
+
+  useEffect(() => {
+    // Lógica para recuperar los datos y establecer el nombre del colaborador
+    recuperarDatos();
+  }, []); // El segundo argumento del useEffect es un array vacío para que se ejecute solo una vez al montar el componente
+
+
+  const handleChange = (event: any) => {
+    // Lógica para manejar cambios en el input si es necesario
+    setNombreColaborador(event.target.value);
+  };
 
   const handleTipoSolicitudChange = (value: any) => {
     setTipoSolicitud(value);
@@ -74,19 +91,96 @@ const Form = () => {
     setEstado(value);
   };
 
+  const recuperarDatos = () => {
+    const employee = localStorage.getItem('employee');
+    if (employee) {
+      const employeeParse = JSON.parse(employee);
+      setId(employeeParse.idColaborador);
+      setNombreColaborador(employeeParse.nombre);
+    }
+  }
+  const limpiarFormulario = () => {
+    setTipoSolicitud('');
+    setAsunto('');
+    setGoce('');
+    setNombreEncargado('');
+    setFechaSolicitud(null);
+    setFechaInicio(null);
+    setFechaFin(null);
+    setHoraInicio(null);
+    setHoraFin(null);
+    setEsRangoDias(false);
+    setSustitucion('');
+    setNombreSustituto('');
+    setEstado('');
+    setComentarioTalentoHumano('');
+    setMostrarProgress(false);
+  };
+
+  const [enviandoSolicitud, setEnviandoSolicitud] = useState(false); // Nuevo estado para el estado de envío de la solicitud
+
+  const enviarSolicitud = async () => {
+    const fechaSolicitud = new Date(); // Esto creará un nuevo objeto Date con la fecha y hora actuales
+    const fechaSolicitudFormateada = moment(fechaSolicitud, "DD-MM-YYYY").format("YYYY-MM-DD");
+    const fechaInicioFormateada = moment(fechaInicio, "DD-MM-YYYY").format("YYYY-MM-DD");
+    const fechaFinFormateada = moment(fechaFin, "DD-MM-YYYY").format("YYYY-MM-DD");
+    const horaInicioFormateada = null; // Agrega segundos si son necesarios
+    const horaFinFormateada = null; // Agrega segundos
+    const goceSalarialFormat = parseInt(goceSalarial); // Parsea la cadena "1" a un número
+    setEnviandoSolicitud(true); // Establecer el estado de envío a true
+    const nuevaSolicitud = {
+      // Crear objeto de solicitud con los datos del formulario
+      idSolicitud: null, // Esto podría ser un valor predeterminado o nulo, dependiendo de cómo manejes las solicitudes nuevas
+      conGoceSalarial: goceSalarialFormat,
+      tipoSolicitud: tipoSolicitud,
+      asunto: asunto,
+      nombreColaborador: nombreColaborador,
+      nombreEncargado: nombreEncargado,
+      fechaSolicitud: fechaSolicitudFormateada,
+      fechaInicio: fechaInicioFormateada,
+      fechaFin: fechaFinFormateada,
+      horaInicio: horaInicioFormateada,
+      horaFin: horaFinFormateada,
+      sustitucion: sustitucion,
+      nombreSustituto: nombreSustituto,
+      estado: estado,
+      comentarioTalentoHumano: comentarioTalentoHumano,
+      idColaborador: idUsuario // Asegúrate de proporcionar el id del colaborador aquí
+    };
+
+    try {
+      // Llamar al método de envío de solicitud de tu servicio de solicitud
+      console.log(nuevaSolicitud);
+      const solicitudService = new SolicitudService();
+      const response = await solicitudService.agregarSolicitud(nuevaSolicitud);
+      console.log(response);
+      toast.success('La solicitud se ha procesado exitosamente.');
+      limpiarFormulario();
+      // Manejar el éxito (p. ej., limpiar el formulario)
+      setEnviandoSolicitud(false); // Establecer el estado de envío a false
+      // Limpia el formulario, muestra una notificación, redirige, etc.
+    } catch (error) {
+      // Manejar el error (p. ej., mostrar un mensaje de error)
+      console.error('Error al enviar la solicitud:', error);
+      setEnviandoSolicitud(false); // Establecer el estado de envío a false
+      // Muestra una notificación de error, etc.
+    }
+  };
+
+
   return (
     <div className='box'>
       <div className="contenedor-campos">
         <div className="columna-1">
           <div className="campo">
             <Text type='secondary'>Nombre colaborador</Text>
-            <Input placeholder="Nombre colaborador" value={nombreColaborador} onChange={(e) => setNombreColaborador(e.target.value)} className="inputWidth" style={{ width: 290 }} />
+            <Input placeholder="Nombre colaborador" value={nombreColaborador} onChange={(e) => setNombreColaborador(e.target.value)} className="inputWidth" style={{ width: 290 }} disabled />
           </div>
           <div className="campo campo-goce">
             <Text type='secondary'>Goce salarial</Text>
             <Select placeholder="Con goce salarial" value={goceSalarial} onChange={handleGoceChange} style={{ width: 100 }}>
-              <Option value="SI">SI</Option>
-              <Option value="NO">NO</Option>
+              <Option value="1">SI</Option>
+              <Option value="0">NO</Option>
             </Select>
           </div>
           <div className='campo campo-tipo'>
@@ -129,13 +223,13 @@ const Form = () => {
                     placeholder="Hora de inicio"
                     value={horaInicio}
                     onChange={handleHoraInicioChange}
-                    format="HH:mm"
+                    format="HH:mm:ss"
                     style={{ marginRight: '5px' }} />
                   <TimePicker
                     placeholder="Hora de fin"
                     value={horaFin}
                     onChange={handleHoraFinChange}
-                    format="HH:mm"
+                    format="HH:mm:ss"
                   />
                 </div>
               </div>
@@ -191,7 +285,13 @@ const Form = () => {
             <TextArea placeholder="Comentario de Talento Humano" value={comentarioTalentoHumano} onChange={(e) => setComentarioTalentoHumano(e.target.value)} allowClear />
           </div>
         </div>
-        <Button className='button-submit' variant="contained" color="success">
+        <Button
+          className='button-submit'
+          variant="contained"
+          color="success"
+          onClick={enviarSolicitud} // Llama a la función enviarSolicitud cuando se hace clic en el botón
+          disabled={enviandoSolicitud} // Deshabilita el botón mientras se está enviando la solicitud
+        >
           <Text className='text'>Enviar</Text>
         </Button>
       </div>
