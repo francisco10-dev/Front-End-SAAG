@@ -127,7 +127,7 @@ const Form = () => {
             </Select>
           </div>
           <div className="progress-bar">
-            {mostrarProgress && <Progress percent={100} status="active" />}
+          {mostrarProgress && <Progress percent={100} status="active" style={{ width: '290px' }} />}
           </div>
           {sustitucion === 'SI' && !mostrarProgress && (
             <div className="campo">
