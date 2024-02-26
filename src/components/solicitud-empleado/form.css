@@ -25,6 +25,12 @@
     grid-column: 2;
   }
 }
+@media (max-width: 768px) {
+ .contenedor-campos{
+    display: grid;
+    grid-template-columns: 1;
+ }
+}
 
 .fechas {
   display: flex;
