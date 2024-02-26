@@ -1,5 +1,5 @@
 import './form.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Input, Select, DatePicker, Typography, Progress, Checkbox, TimePicker } from 'antd';
 import Button from '@mui/material/Button';
 import { toast, ToastContainer } from 'react-toastify';
@@ -31,9 +31,16 @@ const Form = () => {
   const [comentarioTalentoHumano, setComentarioTalentoHumano] = useState('');
   const [mostrarProgress, setMostrarProgress] = useState(false);
 
-  // const handleIdUsuarioChange = (value: any) => {
-  //   setId(value);
-  // };
+  useEffect(() => {
+    // Lógica para recuperar los datos y establecer el nombre del colaborador
+    recuperarDatos();
+  }, []); // El segundo argumento del useEffect es un array vacío para que se ejecute solo una vez al montar el componente
+
+
+  const handleChange = (event: any) => {
+    // Lógica para manejar cambios en el input si es necesario
+    setNombreColaborador(event.target.value);
+  };
 
   const handleTipoSolicitudChange = (value: any) => {
     setTipoSolicitud(value);
@@ -96,7 +103,6 @@ const Form = () => {
     setTipoSolicitud('');
     setAsunto('');
     setGoce('');
-    setNombreColaborador('');
     setNombreEncargado('');
     setFechaSolicitud(null);
     setFechaInicio(null);
@@ -114,7 +120,6 @@ const Form = () => {
   const [enviandoSolicitud, setEnviandoSolicitud] = useState(false); // Nuevo estado para el estado de envío de la solicitud
 
   const enviarSolicitud = async () => {
-    recuperarDatos();
     const fechaSolicitud = new Date(); // Esto creará un nuevo objeto Date con la fecha y hora actuales
     const fechaSolicitudFormateada = moment(fechaSolicitud, "DD-MM-YYYY").format("YYYY-MM-DD");
     const fechaInicioFormateada = moment(fechaInicio, "DD-MM-YYYY").format("YYYY-MM-DD");
@@ -169,7 +174,7 @@ const Form = () => {
         <div className="columna-1">
           <div className="campo">
             <Text type='secondary'>Nombre colaborador</Text>
-            <Input placeholder="Nombre colaborador" value={nombreColaborador} onChange={(e) => setNombreColaborador(e.target.value)} className="inputWidth" style={{ width: 290 }} />
+            <Input placeholder="Nombre colaborador" value={nombreColaborador} onChange={(e) => setNombreColaborador(e.target.value)} className="inputWidth" style={{ width: 290 }} disabled />
           </div>
           <div className="campo campo-goce">
             <Text type='secondary'>Goce salarial</Text>
