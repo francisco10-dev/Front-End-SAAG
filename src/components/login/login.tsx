@@ -24,19 +24,27 @@ const Login = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    toast.dismiss();
     try {
       const data = {
         nombreUsuario: username,
         contrasena: password
       };
       const response = await usuarioService.login(data);
-      if (response) {
-        handleSuccessfulLogin(response);
+      if (response.status === 200) {
+        handleSuccessfulLogin(response.data);
+      }else{
+        console.log('NO')
       }
     } catch (error) {
-      setLoading(false);
-      displayErrorToast();
+      if(error instanceof Error && error.message.includes('401')){
+        displayErrorToast('Credenciales de acceso incorrectas.');
+      }else{
+        displayErrorToast('Ocurrió un error al comunicarse con el servidor, por favor intente más tarde.');
+      }
       setBandWithTimeout();
+    }finally{
+      setLoading(false);
     }
   };
   
@@ -58,10 +66,10 @@ const Login = () => {
     setUserRole(decodedToken.rol);
   };
   
-  const displayErrorToast = () => {
-    toast.error('Usuario o contraseña incorrecta', {
+  const displayErrorToast = (message: string) => {
+    toast.error(message, {
       position: 'bottom-right',
-      autoClose: 1500,
+      autoClose: false,
       style: {
         backgroundColor: 'rgba(0, 0, 0, 0.7)',
         color: 'white',
@@ -116,7 +124,7 @@ const Login = () => {
                 required
               />
               <span className="password-toggle" onClick={() => setPasswordVisible(!passwordVisible)}>
-                {passwordVisible ?  <VisibilityOffIcon/> : <RemoveRedEyeIcon/>}
+                {passwordVisible ?  <VisibilityOffIcon className='showPasswordBtn' /> : <RemoveRedEyeIcon className='showPasswordBtn'/>}
               </span>
             </div>
             <button className={`btnLogin ${isLoading ? 'loading' : ''}`} type="submit">

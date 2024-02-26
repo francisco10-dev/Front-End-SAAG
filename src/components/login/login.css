@@ -176,6 +176,10 @@
     }
 
 }
+
+.showPasswordBtn {
+    color: white;
+}
   
 .password-toggle {
     position: absolute;

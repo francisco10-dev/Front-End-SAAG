@@ -74,7 +74,7 @@ a {
 .sidebar ul li a {
   display: flex;
   width: 240px;
-  padding: 10px 10px;
+  padding: 10px 0px;
   margin: 0 0 10px;
   font-size: 14px;
   position: relative;
@@ -102,6 +102,7 @@ a{
   display: inline-block;
   vertical-align: text-bottom;
   transition: all 0.5s 0.3s ease;
+  margin-top: 2.3%;
 }
 
 .sidebar ul li a .count {
@@ -202,7 +203,6 @@ a{
 
 .active{
   color: #015dfc;
-  text-decoration: underline;
 }
 
 .ul{
