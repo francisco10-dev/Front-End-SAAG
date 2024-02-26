@@ -55,3 +55,8 @@
 .contenedor-campos .button-submit .text {
   color: whitesmoke;
 }
+
+.campo-asunto,
+.campo-comentario {
+  width: 18rem;
+}
