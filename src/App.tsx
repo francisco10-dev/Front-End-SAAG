@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import Login from './components/login/login';
 import { useAuth } from './authProvider'; 
-import MenuPanel from './components/tools/menu';
 import Welcome from './components/welcome/welcome';
+import Main from './components/tools/panel';
 
 
 const App: React.FC = () => {
@@ -50,7 +50,7 @@ const App: React.FC = () => {
 
   return (
     <div>
-      {showWelcome ? <Welcome /> : (loggedIn? <MenuPanel /> : <Login />)}
+      {showWelcome ? <Welcome /> : (loggedIn? <Main/> : <Login />)}
     </div>
   );
 };
