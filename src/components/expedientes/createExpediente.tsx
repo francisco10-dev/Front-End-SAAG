@@ -408,6 +408,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
               <Form.Item
                 name="puesto"
                 label="Puesto"
+                
               >
                  <Select
                     style={{ width: '100%' }}
@@ -417,6 +418,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
                       { value: '1', label: 'Asistente' },
                       { value: '2', label: 'Programador' },
                     ]}
+                    disabled
                   />
               </Form.Item>
             </Col>
