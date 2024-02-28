@@ -20,6 +20,7 @@ import Badge from '../../solicitudes/badge';
 function Row(props: { row: Solicitud }) {
   
   const [open, setOpen] = useState(false);
+  //@ts-ignore
   const [row, setRow] = useState<Solicitud>(props.row);
 
   return (

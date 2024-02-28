@@ -1,6 +1,5 @@
 import { Box } from "@mui/material";
 import { useState, useEffect } from "react";
-import { Spin } from "antd";
 import { Typography } from "@mui/material";
 import '../expedientes.css'
 import PersonalInfo from "./personalInfo";

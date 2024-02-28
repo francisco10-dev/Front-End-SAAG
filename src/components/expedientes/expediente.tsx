@@ -1,4 +1,4 @@
-import { Button, Paper, Typography, Avatar } from '@mui/material';
+import { Button, Paper, Typography } from '@mui/material';
 import ExpedienteService, {Expediente } from '../../services/expediente.service';
 import { useState, useEffect } from 'react';
 import Loader from './skeleton';

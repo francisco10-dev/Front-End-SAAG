@@ -18,6 +18,7 @@ import ExpedienteService from '../../services/expediente.service';
 import ColaboradorService from '../../services/colaborador.service';
 import '../../App.css'
 
+//@ts-ignore
 const licenseOptions: SelectProps['options'] = [
   { label: 'Licencia A1', value: 'A1' },
   { label: 'Licencia A2', value: 'A2' },
@@ -41,7 +42,7 @@ interface EmployeeData {
   edad: string;
   correoElectronico: string;
   unidad: string;
-  puesto: string;
+ puesto: string;
   fechaNacimiento: string;
   fechaIngreso: string;
   fechaSalida: string;
@@ -73,6 +74,7 @@ interface Props{
 
 const Formulario = ({openForm, setOpenForm, reload}:Props) => {
 
+  //@ts-ignore
   const [open, setOpen] = useState(false);
   const [phoneNumbers, setPhoneNumbers] = useState<string[]>([]);
   const [visible, setVisible] = useState(false);
@@ -84,6 +86,8 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
   const isLargeScreen = useMediaQuery({ query: '(min-width:750px)' }); 
   const service = new ExpedienteService();
   const [isLoading, setLoading] = useState(false);
+  
+  //@ts-ignore
   const [status, setStatus] = useState('Activo');
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -119,6 +123,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
     setVisible(false);
   };
 
+  //@ts-ignore
   const showDrawer = () => {
     setOpen(true);
   };
@@ -231,6 +236,10 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
     setStatus(value);
     handleChange('estado', value);
   };
+
+  const handleChangePuesto = (value: string) => {
+    handleChange('puesto', value);
+  }
 
   const handleChange = (fieldName : any, value : any) => {
     setEmployeeData({
@@ -400,7 +409,15 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
                 name="puesto"
                 label="Puesto"
               >
-                <Input placeholder="Ingrese el puesto" onChange={(e) => handleChange('puesto', e.target.value)} />
+                 <Select
+                    style={{ width: '100%' }}
+                    defaultValue='Asistente'
+                    onChange={handleChangePuesto}
+                    options={[
+                      { value: '1', label: 'Asistente' },
+                      { value: '2', label: 'Programador' },
+                    ]}
+                  />
               </Form.Item>
             </Col>
           </Row>
