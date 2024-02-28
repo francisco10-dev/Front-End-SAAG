@@ -12,6 +12,7 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LockClockIcon from '@mui/icons-material/LockClock';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Avatar } from '@mui/material';
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
@@ -50,7 +51,7 @@ export default function AccountPopover() {
           color: 'white',
         }}
       >
-        <AccountCircle />
+        <Avatar />
       </IconButton>
       <Popover
         open={!!open}
