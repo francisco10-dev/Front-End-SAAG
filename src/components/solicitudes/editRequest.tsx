@@ -19,7 +19,7 @@ interface EditSolicitudModalProps {
   open: boolean;
   solicitud: Solicitud | null;
   onClose: () => void;
-  onSolicitudUpdate: (solicitudId: number) => void;
+  onSolicitudUpdate: (id: number, status: string) => void;
 }
 
 const EditSolicitudModal: React.FC<EditSolicitudModalProps> = ({ open, solicitud, onClose,onSolicitudUpdate, }) => {
@@ -54,7 +54,7 @@ const EditSolicitudModal: React.FC<EditSolicitudModalProps> = ({ open, solicitud
             setFechaRecibido(null);
             setComentarios('');
             setNombreEncargado('');
-            onSolicitudUpdate(solicitud.idSolicitud);
+            onSolicitudUpdate(data.idSolicitud, 'procesada');
             onClose();
         }
     }

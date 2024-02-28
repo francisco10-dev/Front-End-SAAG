@@ -11,12 +11,14 @@ import { Box } from '@mui/material';
 
 export interface DataTableProps {
   rows: any[];
-  updateSolicitudes: (solicitudes: Solicitud[]) => void;
+  deleteRows: (ids: number[]) => void;
   isLoading: boolean;
+  onSolicitudUpdate: (id: number, status: string) => void;
+  load: () => void;
 }
 
-export default function DataTable(props: DataTableProps) {
-  const { rows } = props;
+export default function DataTable({rows, deleteRows, isLoading, onSolicitudUpdate, load}: DataTableProps) {
+
   const [filterText, setFilterText] = useState('');
   const [filteredRows, setFilteredRows] = useState(rows); 
   const [selectedRow ,setSelectedRow] = useState<Solicitud | null>(null);
@@ -42,7 +44,6 @@ export default function DataTable(props: DataTableProps) {
     },
   ];
 
-  
   const onEditClick = () => {
     const data = rows.find((solicitud) => solicitud.idSolicitud === selectedIds[0]);
     if (data) {
@@ -51,31 +52,39 @@ export default function DataTable(props: DataTableProps) {
     }
   };
 
+
+  const onRefresh = () => {
+    load();
+  }
+
   const onDeleteClick = async () => {
     const confirmation= await utils.showConfirmation();
     if(confirmation) {
         await utils.dropRequests(selectedIds);
-        props.updateSolicitudes(props.rows.filter(solicitud => !selectedIds.includes(solicitud.idSolicitud)));
+        deleteRows(selectedIds)
     }
   };
 
+  
   const applyFilters = () => {
-    const filteredData = rows.filter((row) => {
-      const formattedDate = utils.formatDate(row.fechaSolicitud); 
-      return (
-        (row.nombreColaborador && row.nombreColaborador.toLowerCase().includes(filterText.toLowerCase())) ||
-        (row.estado && row.estado.toLowerCase().includes(filterText.toLowerCase())) ||
-        (row.idColaborador && row.idColaborador.toString().includes(filterText)) ||
-        (row.idSolicitud && row.idSolicitud.toString().includes(filterText)) ||
-        (formattedDate.toLowerCase().includes(filterText.toLowerCase()))
-      );
-    });
+    const filteredData = rows.filter((row) => filterRow(row));
     setFilteredRows(filteredData);
+  };
+
+  const filterRow = (row: Solicitud) => {
+    const formattedDate = utils.formatDate(row.fechaSolicitud);
+    return (
+      (row.nombreColaborador && row.nombreColaborador.toLowerCase().includes(filterText.toLowerCase())) ||
+      (row.estado && row.estado.toLowerCase().includes(filterText.toLowerCase())) ||
+      (row.idColaborador && row.idColaborador.toString().includes(filterText)) ||
+      (row.idSolicitud && row.idSolicitud.toString().includes(filterText)) ||
+      (formattedDate.toLowerCase().includes(filterText.toLowerCase()))
+    );
   };
 
   useEffect(() => {
     applyFilters();
-  },);
+  },[filterText, rows]);
 
   const handleRowClick = (params: { row: Solicitud }) => {
     setSelectedRow(params.row);
@@ -87,7 +96,7 @@ export default function DataTable(props: DataTableProps) {
 
 
   return (
-    <div style={{ height: 360, width: '100%', scrollbarWidth: 'thin' }}>
+    <div style={{ height: '60vh', width: '100%' }}>
      <TextField 
         label="Buscar..."
         variant="standard"
@@ -103,7 +112,7 @@ export default function DataTable(props: DataTableProps) {
             paginationModel: { page: 0, pageSize: 50 },
           },
         }}
-        loading={props.isLoading}
+        loading={isLoading}
         localeText={esES.components.MuiDataGrid.defaultProps.localeText}
         getRowId={getRowId}
         pageSizeOptions={[5, 10, 20, 30, 50]}
@@ -115,7 +124,7 @@ export default function DataTable(props: DataTableProps) {
           toolbar: tools.CustomToolbar
         }}
         slotProps={{
-          toolbar: { onEditClick,onDeleteClick, selectedIds }
+          toolbar: { onRefresh, onEditClick,onDeleteClick, selectedIds }
         }}
         style={{
             marginBottom: '16px',
@@ -123,9 +132,7 @@ export default function DataTable(props: DataTableProps) {
             boxShadow: 'none',
         }}
       /> 
-      <EditSolicitudModal open={isModalOpen} solicitud={selectedSolicitud} onClose={() => setIsModalOpen(false)} onSolicitudUpdate={(solicitudId) => {
-          props.updateSolicitudes([...props.rows.filter(solicitud => solicitud.idSolicitud !== solicitudId)]);
-        }} />
+      <EditSolicitudModal open={isModalOpen} solicitud={selectedSolicitud} onClose={() => setIsModalOpen(false)} onSolicitudUpdate={onSolicitudUpdate} />
         <ToastContainer/>
     </div>
   );

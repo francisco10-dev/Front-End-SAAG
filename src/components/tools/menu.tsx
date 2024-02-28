@@ -77,7 +77,7 @@ export default function MenuPanel() {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar position="fixed" open={open}>
+      <AppBar position="fixed" open={open} sx={{zIndex: 900}}>
         <Toolbar sx={{backgroundColor: 'rgb(27,61,81)'}} >
           <div className='button'  onClick={toggleSideBar}>
             {!isOpen ? <MenuOpenIcon /> : <MenuIcon />}

@@ -77,7 +77,7 @@ class SolicitudService {
   async actualizarSolicitud(id: number, data: any): Promise<Solicitud> {
     try {
       const response = await this.axiosInstance.put(`/actualizar-solicitud/${id}`, data);
-      return response.data;
+      return response.data.solicitud;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
@@ -118,6 +118,22 @@ class SolicitudService {
       }
     }
     return statuses;
+  }
+
+  async getSolicitudesPorColaborador(id: number): Promise<Solicitud[]> {
+    try {
+      const response = await this.axiosInstance.get('/solicitudes-por-colaborador/'+id);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 403) {
+          throw new Error(error.response.data.message);
+        } else {
+          throw new Error('Error en la solicitud de red');
+        }
+      }
+      throw error;
+    }
   }
   
 }

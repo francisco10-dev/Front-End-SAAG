@@ -1,0 +1,129 @@
+.preview-box {
+    width: '100%';
+    max-width: 620px;
+    min-width: 450px;
+    margin-left: 5%;
+    margin-right: auto;
+    height: 80vh;
+    overflow: auto;
+    scrollbar-width: thin;
+}
+
+.loader{
+    width: 98%;
+    max-width: 620px;
+    min-width: 450px;
+    margin-left: 5%;
+    height: 487px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.no-info{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-top: 120px; 
+}
+
+.image-{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: solid 1px #ddd;
+    border-radius: 50px;
+    width: 100px;
+    height: 100px;
+}
+
+.acordion{
+    margin-bottom: 2%;
+}
+
+.idExpe{
+    position: absolute;
+    top: 0;
+    color: white;
+    right: 0;
+    background-color: rgb(27, 61, 81);
+    padding: 1%;
+}
+
+.imageSeccion{
+    height: 100px;
+    width: 100px;
+    margin-bottom: 20px;
+    margin-right: 20px;
+}
+
+.container-expediente {
+    margin: 25px;
+    padding: 40px;
+    position: relative;
+}
+
+.container-input-foto{
+  border: dashed 1px;
+  margin-bottom: 20px;
+  position: relative;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: border-color 0.3s ease-in-out;
+  display: flex;
+  opacity: 0.7;
+  align-items: center;
+  justify-content: center;
+  width: 100px; /* Ancho predeterminado */
+  height: 100px; /* Altura predeterminada */
+}
+
+.input-Foto{
+    opacity: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.space {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.spin-antd {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 25%;
+}
+
+.box-data-grid {
+    height: 80vh;
+    width: '100%';
+    cursor: 'pointer';
+}
+/* sx={{ height: 100, width: 380, margin: 2, marginTop: 10, display: 'flex'*/
+.foto-info-seccion {
+    height: 100px;
+    width: 380px;
+    margin: 2px;
+    margin-top: 20px;
+    display: flex;
+}
+
+.spinDocs {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.tableContainerDocs {
+    max-height: 400px;
+    overflow: auto;
+}
