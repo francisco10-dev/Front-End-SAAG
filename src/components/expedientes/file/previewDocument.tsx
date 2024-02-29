@@ -1,9 +1,8 @@
-import { Modal, Spin } from 'antd';
+import { Modal } from 'antd';
 import FileViewer from './pdf';
 import { Box } from '@mui/material';
-import ExpedienteService, { Documento } from '../../../services/expediente.service';
+import ExpedienteService from '../../../services/expediente.service';
 import { useState, useEffect } from 'react';
-import {CircularProgress} from '@mui/material';
 
 interface Props {
   setOpen: (value: boolean) => void;

@@ -41,7 +41,6 @@ const EditInfo = ({expediente, setIsEdit, imageUrl, loadData}: Props) => {
   const [nombre, setNombre] = useState(colaborador.nombre);
   const [identificacion, setIdentificacion] = useState(colaborador.identificacion);
   const [correo, setCorreo] = useState(colaborador.correoElectronico);
-  const [edad, setEdad] = useState(colaborador.edad);
   const [domicilio, setDomicilio] = useState(colaborador.domicilio);
   const [fechaNacimiento, setFechaNacimiento] = useState(colaborador.fechaNacimiento);
   const [unidad, setUnidad] = useState(colaborador.unidad);
@@ -121,7 +120,6 @@ const EditInfo = ({expediente, setIsEdit, imageUrl, loadData}: Props) => {
         nombre: nombre,
         identificacion: identificacion,
         correoElectronico: correo,
-        edad: edad,
         domicilio: domicilio,
         fechaNacimiento: fechaNacimiento,
         unidad: unidad,
@@ -230,7 +228,7 @@ const EditInfo = ({expediente, setIsEdit, imageUrl, loadData}: Props) => {
             </Box>
           </Box>
         </Box>
-      <Grid container spacing={2}>
+      <Grid container spacing={1}>
         <Grid item xs={12} sm={6} md={3}>
          <Form.Item<FieldType>
             label="Identificación"
@@ -249,16 +247,6 @@ const EditInfo = ({expediente, setIsEdit, imageUrl, loadData}: Props) => {
             style={{ width: '150%' }}
           >
             <Input onChange={(e)=> setCorreo(e.target.value)} />
-          </Form.Item>
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-         <Form.Item<FieldType>
-            label="Edad"
-            name="edad"
-            initialValue={colaborador.edad}
-            style={{ width: '150%' }}
-          >
-            <Input type='number' onChange={(e)=> setEdad(+e.target.value)}/>
           </Form.Item>
         </Grid>
         <Grid item xs={12} sm={6} md={3}>

@@ -2,6 +2,7 @@ import { createContext, useContext, useState, ReactNode } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import UsuarioService from './services/usuario.service';
+import { Colaborador } from './services/colaborador.service';
 
 
 interface AuthContextType {
@@ -10,6 +11,8 @@ interface AuthContextType {
   userRole: string | null;
   setUserRole: (userRole: string) => void;
   logout: () => void;
+  colaborador: Colaborador | null;
+  setColaborador: (colaborador: Colaborador | null) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,10 +38,20 @@ const decodeToken = () => {
   }
 };
 
+const StoredData = () => {
+  const data = localStorage.getItem('employee');
+  if(data){
+    const colaborador = JSON.parse(data);
+    return colaborador;
+  }
+  return null;
+}
+
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('accessToken'));
   const [userRole, setUserRole] = useState<string | null>(decodeToken());
+  const [colaborador, setColaborador] = useState<Colaborador | null>(StoredData());
   const navigate = useNavigate();
   const usuarioService = new UsuarioService();
 
@@ -62,7 +75,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
 
   return (
-    <AuthContext.Provider value={{ loggedIn, setLoggedIn, userRole, setUserRole, logout }}>
+    <AuthContext.Provider value={{ loggedIn, setLoggedIn, userRole, setUserRole, logout, colaborador, setColaborador }}>
       {children}
     </AuthContext.Provider>
   );

@@ -9,7 +9,7 @@ import Formulario from "../createExpediente";
 import { CustomToolbar } from "./gridToolBar";
 
 const columns: GridColDef[] = [
-    { field: 'idExpediente', headerName: 'N# Expediente', width: 110 },
+    { field: 'idExpediente', headerName: 'N# Registro', width: 110 },
     { field: 'colaborador', headerName: 'Colaborador', sortable: false, width: 200,
       renderCell: (params) => (
         <div>
@@ -106,7 +106,7 @@ const List = ({selected, selectedExpediente}: Props) => {
                     id="outlined-basic" 
                     label="Buscar" 
                     variant="standard" 
-                    sx={{marginBottom: 5, width: 500, marginRight: 2}}
+                    sx={{marginBottom: 5,  marginRight: 2}}
                     value={filterText}
                     onChange={(e) => setFilterText(e.target.value)}
                 />

@@ -23,3 +23,8 @@ export const calcularAntiguedad = (fechaIngreso: Date, fechaActual: Date) => {
 
   return periodoTexto;
 };
+
+export function calcularEdad(fechaNacimiento: Date): number {
+  const fechaActual = new Date();
+  return differenceInYears(fechaActual, fechaNacimiento);
+}

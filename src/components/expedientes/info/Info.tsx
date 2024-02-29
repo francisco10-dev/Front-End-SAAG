@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Grid, Typography } from '@mui/material';
 import { Expediente } from '../../../services/expediente.service';
-import { calcularAntiguedad } from './period';
+import { calcularAntiguedad, calcularEdad } from './period';
 import { formatDate } from '../../solicitudes/utils';
 
 interface Props {
@@ -61,6 +61,14 @@ const Info: React.FC<Props> = ({ expediente, size, marginBottom }: Props) => {
             </Grid>
           )
         ))}
+        <Grid item xs={12} sm={6} md={size} key="fechaIngreso" >
+          <Typography variant="body2">
+            Edad:
+          </Typography>
+          <Typography variant="body2" color="textSecondary">
+            {calcularEdad(colaborador.fechaNacimiento) + ' años'}
+          </Typography>
+        </Grid>
         <Grid item xs={12} sm={6} md={size} key="fechaIngreso" >
           <Typography variant="body2">
             Fecha de ingreso:

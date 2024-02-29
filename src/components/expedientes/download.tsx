@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button } from '@mui/material';
 import ExpedienteService from '../../services/expediente.service';
 import { saveAs } from 'file-saver';

@@ -264,7 +264,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
   return (
     <>
       <Drawer
-        title="Nuevo expediente"
+        title="Ingresar nuevo"
         width={800}
         onClose={onClose}
         open={openForm}
@@ -376,13 +376,13 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
               </Col>
           </Row>
           <Row gutter={16}>
-            <Col span={isLargeScreen ? 12 : 24}>
+          <Col span={isLargeScreen ? 12 : 24}>
               <Form.Item
-                name="edad"
-                label="Edad"
+                name="fechaNacimiento"
+                label="Fecha de nacimiento"
                 rules={[{ required: true, message: 'Complete este campo' }]}
               >
-                <Input placeholder="Ingrese edad" type="number" onChange={(e) => handleChange('edad', e.target.value)} />
+                <DatePicker  onChange={(date, dateString) => onChange(date, dateString, 'fechaNacimiento')} placeholder="Seleccione" style={{ width: '100%' }} />
               </Form.Item>
             </Col>
             <Col span={isLargeScreen ? 12 : 24}>
@@ -426,15 +426,6 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
           <Row gutter={16}>
             <Col span={isLargeScreen ? 12 : 24}>
               <Form.Item
-                name="fechaNacimiento"
-                label="Fecha de nacimiento"
-                rules={[{ required: true, message: 'Complete este campo' }]}
-              >
-                <DatePicker  onChange={(date, dateString) => onChange(date, dateString, 'fechaNacimiento')} placeholder="Seleccione" style={{ width: '100%' }} />
-              </Form.Item>
-            </Col>
-            <Col span={isLargeScreen ? 12 : 24}>
-              <Form.Item
                 name="fechaIngreso"
                 label="Fecha de ingreso"
                 rules={[{ required: true, message: 'Complete este campo' }]}
@@ -442,8 +433,6 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
                 <DatePicker  onChange={(date, dateString) => onChange(date, dateString, 'fechaIngreso')} placeholder="Seleccione" style={{ width: '100%' }}/>
               </Form.Item>
             </Col>
-          </Row>
-          <Row gutter={16}>
             <Col span={isLargeScreen ? 12 : 24}>
               <Form.Item
                 name="fechaSalida"
@@ -451,7 +440,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
               >
                 <DatePicker  onChange={(date, dateString) => onChange(date, dateString, 'fechaSalida')} placeholder="Seleccione" style={{ width: '100%' }}/>
               </Form.Item>
-            </Col>
+            </Col>            
           </Row>
           <Row gutter={16}>
             <Col span={24}>
