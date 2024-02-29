@@ -276,8 +276,9 @@ const Form = () => {
           <div className="campo campo-estado">
             <Text type='secondary'>Estado</Text>
             <Select placeholder="Estado" value={estado} onChange={handleEstadoChange} style={{ width: 110 }}>
-              <Option value="Activo">Aceptada</Option>
-              <Option value="Inactivo">Rechazada</Option>
+              <Option value="Aprobado">Aprobado</Option> {/*el admin es el unico que puede aprobar solicitudes */}
+              {/*<Option value="Pendiente">Aprobar</Option> */}  {/*el supervisor aprueba una solicud para enviarla a admin */}
+              <Option value="Rechazado">Rechazada</Option> {/* Rezachazada se muestra para seleccionar a admin y supervisor */}
             </Select>
           </div>
           <div className="campo campo-comentario">
