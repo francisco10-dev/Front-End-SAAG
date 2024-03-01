@@ -9,8 +9,8 @@ export interface Solicitud {
     nombreColaborador: string;
     nombreEncargado?: any;
     fechaSolicitud: string;
-    fechaInicio?: any;
-    fechaFin?: any;
+    fechaInicio?: string;
+    fechaFin?: string;
     horaInicio?: any;
     horaFin?: any;
     sustitucion: string;

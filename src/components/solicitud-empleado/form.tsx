@@ -2,7 +2,7 @@ import './form.css';
 import React, { useState, useEffect } from 'react';
 import { Input, Select, DatePicker, Typography, Progress, Checkbox, TimePicker } from 'antd';
 import Button from '@mui/material/Button';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import moment from 'moment';
 import SolicitudService from '../../services/solicitud.service';
 const { Option } = Select;
@@ -53,11 +53,11 @@ const Form = () => {
   const handleFechaInicioChange = (date: any) => {
     setFechaInicio(date);
   };
-
-  const handleFechaFinChange = (date: any) => {
+  
+  const handleFechaFinChange = (date: any) => {;
     setFechaFin(date);
   };
-
+  
   const handleHoraInicioChange = (time: any) => {
     setHoraInicio(time);
   };
@@ -117,13 +117,20 @@ const Form = () => {
     setMostrarProgress(false);
   };
 
+  const formatearFecha = (fecha:any) => {
+    const anio = fecha.$y;
+    const mes = (fecha.$M + 1).toString().padStart(2, '0');
+    const dia = fecha.$D.toString().padStart(2, '0');
+    return `${anio}-${mes}-${dia}`;
+  };
+
   const [enviandoSolicitud, setEnviandoSolicitud] = useState(false); // Nuevo estado para el estado de envío de la solicitud
 
   const enviarSolicitud = async () => {
     const fechaSolicitud = new Date(); // Esto creará un nuevo objeto Date con la fecha y hora actuales
     const fechaSolicitudFormateada = moment(fechaSolicitud, "DD-MM-YYYY").format("YYYY-MM-DD");
-    const fechaInicioFormateada = moment(fechaInicio, "DD-MM-YYYY").format("YYYY-MM-DD");
-    const fechaFinFormateada = moment(fechaFin, "DD-MM-YYYY").format("YYYY-MM-DD");
+    const fechaInicioFormateada = formatearFecha(fechaInicio);
+    const fechaFinFormateada = formatearFecha(fechaFin);
     const horaInicioFormateada = null; // Agrega segundos si son necesarios
     const horaFinFormateada = null; // Agrega segundos
     const goceSalarialFormat = parseInt(goceSalarial); // Parsea la cadena "1" a un número
@@ -212,6 +219,7 @@ const Form = () => {
               <div className='hora'>
                 <RangePicker
                   placeholder={['Fecha de inicio', 'Fecha de fin']}
+                  format={dateFormat}
                   value={[fechaInicio, fechaFin]}
                   onChange={(dates: any) => {
                     handleFechaInicioChange(dates[0]);
