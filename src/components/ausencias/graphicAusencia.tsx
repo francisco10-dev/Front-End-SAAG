@@ -54,9 +54,9 @@ const Bars = () => {
       let indicador = 0;
 
       if (solicitud.fechaInicio !== null && solicitud.fechaFin !== null && solicitud.horaInicio === null && solicitud.horaFin === null) {
-        indicador = IndicadorDiurnoPorFecha(solicitud.fechaInicio, solicitud.fechaFin);
+        indicador = IndicadorDiurnoPorFecha(solicitud.fechaInicio!, solicitud.fechaFin!);
       } else if (solicitud.fechaInicio !== null && solicitud.fechaFin !== null && solicitud.horaInicio !== null && solicitud.horaFin !== null) {
-        indicador = IndicadorDiurnoPorHora(solicitud.horaInicio, solicitud.horaFin);
+        indicador = IndicadorDiurnoPorHora(solicitud.horaInicio!, solicitud.horaFin!);
       }
 
       if (!updatedSumasIndicadoresPorTipo[solicitud.tipoSolicitud]) {

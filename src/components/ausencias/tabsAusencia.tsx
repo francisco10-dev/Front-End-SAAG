@@ -1,13 +1,13 @@
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import DataTable from './tableAusencia';
-import AusenciaService from '../../services/ausencia.service';
-import { Ausencia } from '../../services/ausencia.service';
-import { CircularProgress } from '@mui/material';
 import Bars from './graphicAusencia';
+import SolicitudService from '../../services/solicitud.service';
+import { Solicitud } from '../../services/solicitud.service';
+import { CircularProgress } from '@mui/material';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -42,13 +42,12 @@ function a11yProps(index: number) {
   };
 }
 
-export default function TabsAusenciaAdmin() {
-  const Service = new AusenciaService();
-  const [value, setValue] = React.useState(0);
-  const [ausencias, setAusencias] = React.useState<Ausencia[]>([]);
-  const [approved, setApproved] = React.useState<Ausencia[]>([]);
-  const [loading, setLoading] = React.useState(false);
-
+export default function TabsSolicitudAdmin() {
+  const Service = new SolicitudService();
+  const [value, setValue] = useState(0);
+  const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
+  const [approved, setApproved] = useState<Solicitud[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -59,12 +58,10 @@ export default function TabsAusenciaAdmin() {
     setLoading(true);
     const fetchData = async () => {
       try {
-        const ausenciasData = await Service.getAusencias();
-        setAusencias(ausenciasData);
-        const ausenciasAprobadas = ausenciasData.filter((ausencia) => ausencia.razon === 'procesada');
-        setApproved(ausenciasAprobadas);
+        const solicitudesData = await Service.getSolicitudes();
+        updateRows(solicitudesData);
       } catch (error) {
-        console.error('Error al obtener ausencias:', error);
+        console.error('Error al obtener solicitudes:', error);
       } finally {
         setLoading(false); // Marcamos que la carga ha finalizado, independientemente de si fue exitosa o no
       }
@@ -72,35 +69,68 @@ export default function TabsAusenciaAdmin() {
     fetchData();
   }
 
-  React.useEffect(() => {
+  useEffect(() => {
     loadRequests();
-  }, [value]);
+  }, []);
 
-  const renderContent = (data: Ausencia[]) =>
-    loading ? (
-      <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%' }} />
-    ) : (
-      <DataTable rows={data} updateAusencias={loadRequests} />
-    );
+  const setData = (data: Solicitud[]) => {
+    const aprobadas = data.filter((solicitud) => solicitud.estado === 'Aprobado');
+    setApproved(aprobadas);
+  }
+
+  const updateRows = (nuevoArray: Solicitud[]) => {
+    setSolicitudes(nuevoArray);
+    setData(nuevoArray);
+  };
+
+  // Método para eliminar filas, pero no lo vas a usar
+  // const deleteRows = (ids: number[]) => {
+  //   const nuevoArray = solicitudes.filter((elemento) => !ids.includes(elemento.idSolicitud));
+  //   updateRows(nuevoArray);
+  // };
+
+  // Método para cambiar el estado, pero no lo vas a usar
+  // const changeStatus = (id: number, status: string) => {
+  //   const nuevoArray = solicitudes.map((solicitud) =>
+  //     solicitud.idSolicitud === id ? { ...solicitud, estado: status } : solicitud
+  //   );
+  //   updateRows(nuevoArray);
+  // };
+
+
+  if (loading) {
+    return <div><CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%' }} /></div>;
+  }
 
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Todas" {...a11yProps(0)} />
-          <Tab label="Grafico" {...a11yProps(1)} />
-          <Tab label="--" {...a11yProps(2)} />
+          <Tab label="Proximos Ausentes" {...a11yProps(1)} />
+          <Tab label="Ausentes" {...a11yProps(2)} />
+          <Tab label="Grafico" {...a11yProps(3)} />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        {renderContent(ausencias)}
+        <DataTable isLoading={loading} rows={solicitudes} /*deleteRows={deleteRows} onSolicitudUpdate={changeStatus}*/ load={loadRequests} />
       </CustomTabPanel>
-      {<CustomTabPanel value={value} index={1}>
-        {}
-        <Bars />
-      </CustomTabPanel>}
+      <CustomTabPanel value={value} index={1}>
+        <DataTable isLoading={loading}  
+        rows={approved.filter(item => item.fechaInicio && new Date(item.fechaInicio) > new Date()).sort((a, b) => {
+        if (!a.fechaInicio || !b.fechaInicio) return 0;
+        return new Date(a.fechaInicio).getTime() - new Date(b.fechaInicio).getTime();})}
+        /*deleteRows={deleteRows} onSolicitudUpdate={changeStatus}*/ load={loadRequests}/>
+      </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
-      {renderContent(approved)}
+        <DataTable isLoading={loading} 
+        rows={approved.filter(item => item.fechaInicio && new Date(item.fechaInicio) < new Date()).sort((a, b) => {
+          if (!a.fechaInicio || !b.fechaInicio) return 0;
+          return new Date(b.fechaInicio).getTime() - new Date(a.fechaInicio).getTime();})}
+        /*deleteRows={deleteRows} onSolicitudUpdate={changeStatus}*/ load={loadRequests} />
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={3}>
+        <Bars />
       </CustomTabPanel>
     </Box>
   );
