@@ -219,7 +219,6 @@ const Form = () => {
               <div className='hora'>
                 <RangePicker
                   placeholder={['Fecha de inicio', 'Fecha de fin']}
-                  format={dateFormat}
                   value={[fechaInicio, fechaFin]}
                   onChange={(dates: any) => {
                     handleFechaInicioChange(dates[0]);
