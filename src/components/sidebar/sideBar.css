@@ -185,7 +185,7 @@ ul{
 }
   
 .sidebar::-webkit-scrollbar-thumb {
-  background-color:rgb(128, 180, 133); 
+  background-color:rgb(219, 233, 241); 
   border-radius: 10px; 
 }
   
@@ -194,7 +194,7 @@ ul{
 }
   
 .sidebar::-webkit-scrollbar-thumb:hover {
-  background-color:rgb(27, 61, 81); 
+  background-color:rgb(219, 233, 241); 
 }
 
 a{

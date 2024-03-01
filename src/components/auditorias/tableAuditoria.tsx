@@ -80,7 +80,7 @@ export default function DataTable(props: DataTableProps) {
 
 
   return (
-    <div style={{ height: 400, width: '85%' }}>
+    <div style={{ height: '60vh', width: '100%' }}>
      <TextField 
         label="Buscar..."
         variant="standard"

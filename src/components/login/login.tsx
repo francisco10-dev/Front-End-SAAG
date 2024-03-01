@@ -18,7 +18,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [band, setBand] = useState(false);
-  const { setLoggedIn, setUserRole } = useAuth();
+  const { setLoggedIn, setUserRole, setColaborador } = useAuth();
   const [isLoading, setLoading] =useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -62,6 +62,7 @@ const Login = () => {
   
   const saveUserData = (response: any) => {
     localStorage.setItem('employee', JSON.stringify(response.colaborador));
+    setColaborador(response.colaborador);
     const decodedToken: any = jwtDecode(response.accessToken);
     setUserRole(decodedToken.rol);
   };

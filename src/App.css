@@ -3,4 +3,35 @@
     min-height: 50px;  /* Altura mínima */
     overflow: auto;    /* Hacer scroll si el contenido es más grande que la celda */
 }
+
+.folder {
+    width: 62px;
+    transition: transform 0.3s ease-in-out;
+    cursor: pointer;
+}
   
+.folder:hover {
+    transform: scale(1.1);
+}
+
+
+.custom-scrollbar {
+    overflow: auto;
+}
+  
+.custom-scrollbar::-webkit-scrollbar {
+    width: 12px;
+}
+  
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #bbb; /* Color del thumb (parte deslizable) */
+    border-radius: 6px; /* Radio del borde del thumb */
+}
+  
+.custom-scrollbar::-webkit-scrollbar-track {
+    background-color: #eee; /* Color del track (parte no deslizable) */
+}
+
+
+
+

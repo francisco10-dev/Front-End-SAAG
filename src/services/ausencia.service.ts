@@ -3,7 +3,7 @@ import axiosApi from '../services/api.service'
 
 export interface Ausencia {
     idAusencia: number;
-    fechaAusencia?: any;
+    fechaAusencia: any;
     fechaFin?: any;
     razon: any;
     nombreColaborador: string;
@@ -108,6 +108,23 @@ class AusenciaService {
       }
     }
     return statuses;
+  }
+
+  async AusenciasPorColaborador(id: number): Promise<Ausencia[]> {
+    try {
+      const response = await this.axiosInstance.get('/ausencias-por-colaborador/'+id);
+      return response.data;
+    } catch (error) {
+      console.log(error)
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 403) {
+          throw new Error(error.response.data.message);
+        } else {
+          throw new Error('Error en la ausencia de red');
+        }
+      }
+      throw error;
+    }
   }
   
 }

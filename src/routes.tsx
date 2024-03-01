@@ -8,6 +8,7 @@ import ProtectedRoute from './protectedRoute';
 import Form from './components/solicitud-empleado/form';
 import { useAuth } from './authProvider'; 
 import Administrador from './components/dashboardAdmin/admin';
+import Panel from './components/expedientes/panel';
 
 const Rutas = () => {
     const { loggedIn, userRole } = useAuth();
@@ -21,6 +22,7 @@ const Rutas = () => {
             <Route path="/administrador" element={<ProtectedRoute element={<Administrador/>} isAuthenticated={loggedIn  && userRole === 'admin'} />}/>
             <Route path="/auditorias" element={<ProtectedRoute element={<TabsAuditoria/>} isAuthenticated={loggedIn  && userRole === 'admin'} />}/>
             <Route path="/auditorias-login" element={<ProtectedRoute element={<TabsAuditoriaLogin/>} isAuthenticated={loggedIn  && userRole === 'admin'} />}/>
+            <Route path="/panel-expedientes" element={<ProtectedRoute element={<Panel/>} isAuthenticated={loggedIn  && userRole === 'admin'} />}/>
         </Routes>
     );
 };
