@@ -118,10 +118,25 @@ const Form = () => {
   };
 
   const formatearFecha = (fecha:any) => {
+    if(fecha){
     const anio = fecha.$y;
     const mes = (fecha.$M + 1).toString().padStart(2, '0');
     const dia = fecha.$D.toString().padStart(2, '0');
     return `${anio}-${mes}-${dia}`;
+    }else{
+      return null
+    }
+  };
+
+  const formatearHora= (horas:any) => {
+    if(horas){
+    console.log('estas sobn',horas);
+    const hora = horas.$H.toString().padStart(2, '0');;
+    const min = horas.$m.toString().padStart(2, '0');
+    return `${hora}-${min}`;
+    }else{
+      return null;
+    }
   };
 
   const [enviandoSolicitud, setEnviandoSolicitud] = useState(false); // Nuevo estado para el estado de envío de la solicitud
@@ -131,8 +146,8 @@ const Form = () => {
     const fechaSolicitudFormateada = moment(fechaSolicitud, "DD-MM-YYYY").format("YYYY-MM-DD");
     const fechaInicioFormateada = formatearFecha(fechaInicio);
     const fechaFinFormateada = formatearFecha(fechaFin);
-    const horaInicioFormateada = null; // Agrega segundos si son necesarios
-    const horaFinFormateada = null; // Agrega segundos
+    const horaInicioFormateada = formatearHora(horaInicio); // Agrega segundos si son necesarios
+    const horaFinFormateada = formatearHora(horaFin); // Agrega segundos
     const goceSalarialFormat = parseInt(goceSalarial); // Parsea la cadena "1" a un número
     setEnviandoSolicitud(true); // Establecer el estado de envío a true
     const nuevaSolicitud = {
@@ -230,13 +245,13 @@ const Form = () => {
                     placeholder="Hora de inicio"
                     value={horaInicio}
                     onChange={handleHoraInicioChange}
-                    format="HH:mm:ss"
+                    format="HH:mm"
                     style={{ marginRight: '5px' }} />
                   <TimePicker
                     placeholder="Hora de fin"
                     value={horaFin}
                     onChange={handleHoraFinChange}
-                    format="HH:mm:ss"
+                    format="HH:mm"
                   />
                 </div>
               </div>
