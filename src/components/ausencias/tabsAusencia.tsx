@@ -113,7 +113,7 @@ export default function TabsSolicitudAdmin() {
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        <DataTable isLoading={loading} rows={solicitudes} /*deleteRows={deleteRows} onSolicitudUpdate={changeStatus}*/ load={loadRequests} />
+        <DataTable isLoading={loading} rows={approved} /*deleteRows={deleteRows} onSolicitudUpdate={changeStatus}*/ load={loadRequests} />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         <DataTable isLoading={loading}  
