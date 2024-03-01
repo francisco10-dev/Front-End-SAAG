@@ -133,7 +133,8 @@ const Form = () => {
     console.log('estas sobn',horas);
     const hora = horas.$H.toString().padStart(2, '0');;
     const min = horas.$m.toString().padStart(2, '0');
-    return `${hora}-${min}`;
+    const mili = horas.$ms.toString().padStart(2, '0');
+    return `${hora}:${min}:${mili}`;
     }else{
       return null;
     }

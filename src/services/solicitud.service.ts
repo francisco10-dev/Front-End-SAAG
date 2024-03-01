@@ -11,8 +11,8 @@ export interface Solicitud {
     fechaSolicitud: string;
     fechaInicio?: string;
     fechaFin?: string;
-    horaInicio?: any;
-    horaFin?: any;
+    horaInicio?: string;
+    horaFin?: string;
     sustitucion: string;
     nombreSustituto: string;
     estado: string;
