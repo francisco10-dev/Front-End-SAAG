@@ -1,6 +1,6 @@
-import { useState, ChangeEvent} from 'react';
-import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
-import { SelectProps, Button, Col, DatePicker, Spin, Drawer, Popconfirm, message, Form, Select, Input, Row, Space, Modal } from 'antd';
+import { useState, ChangeEvent, useEffect} from 'react';
+import { PlusOutlined, MinusCircleOutlined, PlusCircleFilled } from '@ant-design/icons';
+import { Button, Col, DatePicker, Spin, Drawer, Popconfirm, message, Form, Select, Input, Row, Space, Modal } from 'antd';
 import UploadFiles from './file/uploadFile';
 import { Box, IconButton } from '@mui/material';
 import type { UploadFile } from 'antd/lib/upload/interface';
@@ -17,24 +17,10 @@ import { useMediaQuery } from 'react-responsive';
 import ExpedienteService from '../../services/expediente.service';
 import ColaboradorService from '../../services/colaborador.service';
 import '../../App.css'
+import AddPuesto from './addpuesto';
+import PuestoService from '../../services/puesto.service';
 
-//@ts-ignore
-const licenseOptions: SelectProps['options'] = [
-  { label: 'Licencia A1', value: 'A1' },
-  { label: 'Licencia A2', value: 'A2' },
-  { label: 'Licencia A3', value: 'A3' },
-  { label: 'Licencia B1', value: 'B1' },
-  { label: 'Licencia B2', value: 'B2' },
-  { label: 'Licencia B3', value: 'B3' },
-  { label: 'Licencia B4', value: 'B4' },
-  { label: 'Licencia C1', value: 'C1' },
-  { label: 'Licencia C2', value: 'C2' },
-  { label: 'Licencia D1', value: 'D1' },
-  { label: 'Licencia D2', value: 'D2' },
-  { label: 'Licencia D3', value: 'D3' },
-  { label: 'Licencia E1', value: 'E1' },
-  { label: 'Licencia E2', value: 'E2' },
-];
+
 
 interface EmployeeData {
   nombre: string;
@@ -42,13 +28,14 @@ interface EmployeeData {
   edad: string;
   correoElectronico: string;
   unidad: string;
- puesto: string;
+  puesto: string;
   fechaNacimiento: string;
   fechaIngreso: string;
   fechaSalida: string;
   domicilio: string;
   estado: string;
   equipo: string;
+  tipoJornada: string;
 }
 
 const initialEmployeeData: EmployeeData = {
@@ -57,19 +44,25 @@ const initialEmployeeData: EmployeeData = {
   edad: '',
   correoElectronico: '',
   unidad: '',
-  puesto: '1',
+  puesto: 'Jefe de TI',
   fechaNacimiento: '',
   fechaIngreso: '',
   fechaSalida: '',
   domicilio: '',
   estado: 'Activo',
-  equipo: ''
+  equipo: '',
+  tipoJornada:'Diurna'
 };
 
 interface Props{
   openForm: boolean;
   setOpenForm: (value: boolean) => void;
   reload: ()=> void;
+}
+
+export interface Puesto{
+  value: string;
+  label: string;
 }
 
 const Formulario = ({openForm, setOpenForm, reload}:Props) => {
@@ -86,8 +79,10 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
   const isLargeScreen = useMediaQuery({ query: '(min-width:750px)' }); 
   const service = new ExpedienteService();
   const [isLoading, setLoading] = useState(false);
+  const [openP, setOpenP] = useState(false);
+  const [puestos, setPuestos] = useState<Puesto[]>([]);
   
-  //@ts-ignore
+  
   const [status, setStatus] = useState('Activo');
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -123,10 +118,6 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
     setVisible(false);
   };
 
-  //@ts-ignore
-  const showDrawer = () => {
-    setOpen(true);
-  };
 
   const onClose = () => {
     setOpen(false);
@@ -174,6 +165,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
         console.log(key, value);
       }
     }
+    console.log(employeeData.tipoJornada);
 
     selectedFiles.forEach((file) => {
       if (file.originFileObj) {
@@ -185,6 +177,25 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
 
     return formData;
   }
+
+  const loadPuestos = async () => {
+    try {
+      const service = new PuestoService();
+      const response = await service.getPuestos();
+
+      const opciones= response.map(puesto => ({
+        value: puesto.idPuesto.toString(),
+        label: puesto.nombrePuesto
+      }));
+      setPuestos(opciones);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  useEffect(() => {
+    loadPuestos();
+  }, []);
 
   const handleSubmit = async () => {
     try {
@@ -231,7 +242,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
     console.log(phoneNumbers)
   };
 
-  //@ts-ignore
+  
   const handleChangeItem = (value: string) => {
     setStatus(value);
     handleChange('estado', value);
@@ -260,6 +271,10 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
     setSelectedFiles(files);
     message.success(filename + ' se ha quitado de la lista');
   };
+
+  const openAddPuesto = () => {
+    setOpenP(true);
+  }
 
   return (
     <>
@@ -405,22 +420,22 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
               </Form.Item>
             </Col>
             <Col span={isLargeScreen ? 12 : 24}>
-              <Form.Item
-                name="puesto"
-                label="Puesto"
-                
-              >
-                 <Select
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <Form.Item
+                  name="puesto"
+                  label="Puesto"
+                  style={{ marginRight: '8px', width: 320 }}
+                >
+                  <Select
                     style={{ width: '100%' }}
-                    defaultValue='Asistente'
+                    placeholder = 'Seleccione'
                     onChange={handleChangePuesto}
-                    options={[
-                      { value: '1', label: 'Asistente' },
-                      { value: '2', label: 'Programador' },
-                    ]}
-                    disabled
+                    options={puestos}
                   />
-              </Form.Item>
+                </Form.Item>
+                  <Button onClick={openAddPuesto} type='primary' icon={<PlusCircleFilled />} style={{marginTop: 5}} />
+                   <AddPuesto open={openP} setOpen={setOpenP} reload = {loadPuestos} existentes={puestos} /> 
+              </div>
             </Col>
           </Row>
           <Row gutter={16}>
@@ -443,7 +458,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
             </Col>            
           </Row>
           <Row gutter={16}>
-            <Col span={24}>
+            <Col span={isLargeScreen ? 12 : 24}>
               <Form.Item
                 name="domicilio"
                 label="Domicilio"
@@ -457,6 +472,22 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
                 <Input.TextArea rows={2} placeholder="Ingrese domicilio" onChange={(e) => handleChange('domicilio', e.target.value)} />
               </Form.Item>
             </Col>
+            <Col span={isLargeScreen ? 12 : 24}>
+                <Form.Item
+                  name="tipoJornada"
+                  label="Jornada"
+                >
+                  <Select
+                    style={{ width: '100%' }}
+                    defaultValue='Diurna'
+                    onChange={(value) => handleChange('tipoJornada', value)}
+                    options={[
+                      { value: 'Diurna', label: 'Diurna' },
+                      { value: 'Nocturna', label: 'Nocturna' },
+                    ]}
+                  />
+                </Form.Item>
+              </Col>
           </Row>
           <Row gutter={16}>
             <Col span={isLargeScreen? 12 : 24}>
@@ -485,22 +516,6 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
                 </Button>
               </Form.Item>
             </Col>
-            {/*
-            <Col span={ isLargeScreen? 12 : 24}>
-              <Form.Item
-                name="licencias"
-                label="Licencias"
-              >
-                <Select
-                  mode="multiple"
-                  allowClear
-                  style={{ width: '100%' }}
-                  placeholder="Seleccione"
-                  onChange={handleChangeItem}
-                  options = {licenseOptions}
-                />
-              </Form.Item>
-              </Col>*/}
           </Row>
           <Box mb={5}>
             <Box width={550}>
