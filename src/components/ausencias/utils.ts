@@ -1,8 +1,8 @@
-import AusenciaService from "../../services/ausencia.service";
+import SolicitudService from "../../services/solicitud.service";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
 
-const service = new AusenciaService();
+const service = new SolicitudService();
 
 export async function showConfirmation(): Promise<boolean> {
     const result = await Swal.fire({
@@ -54,10 +54,10 @@ export function closeLoad(){
 }
 
 //elimina una o  varias
-export async function dropRequests(idAusencias: number[]): Promise<void> {
+export async function dropRequests(idSolicitudes: number[]): Promise<void> {
     try {
       loading();
-      const statuses = await service.eliminarAusencias(idAusencias);
+      const statuses = await service.eliminarSolicitudes(idSolicitudes);
       if (statuses.every(status => status === 200)) {
         closeLoad();
         statuses.length === 1 ? showSuccess('Registro eliminado exitosamente!') : 
@@ -72,17 +72,17 @@ export async function dropRequests(idAusencias: number[]): Promise<void> {
     }
 }
 
-export async function updateAusencia(idAusencia: number, Ausencia: any) {
+export async function updateSolicitud(idSolicitud: number, solicitud: any) {
   try {
     loading();
-    const response = await service.actualizarAusencia(idAusencia, Ausencia);
+    const response = await service.actualizarSolicitud(idSolicitud, solicitud);
     if (response) {
       closeLoad();
       showSuccess('Operación realizada exitosamente!');
       return response;
     } else {
       closeLoad();
-      showError('Ocurrió un error al actualizar la Ausencia');
+      showError('Ocurrió un error al actualizar la solicitud');
     }
   } catch (error: any) {
     closeLoad();

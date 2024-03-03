@@ -3,7 +3,7 @@ import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
 import { Button } from '@mui/material';
 
-export function CustomToolbar({onEditClick, onDeleteClick, selectedIds }: { onRefresh : () => void ,onEditClick: () => void, onDeleteClick: () => void; selectedIds: string[] }) {
+export function CustomToolbar({ /*onEditClick, onDeleteClick,*/ onRefresh, selectedIds }: { onRefresh: () => void, /*onEditClick: () => void, onDeleteClick: () => void;*/ selectedIds: string[] }) {
     const DeleteButtonDisabled = selectedIds.length === 0;
     const EditButtonDisabled = selectedIds.length !== 1;
   
@@ -13,7 +13,7 @@ export function CustomToolbar({onEditClick, onDeleteClick, selectedIds }: { onRe
         <GridToolbarFilterButton />
         <GridToolbarDensitySelector />
         <GridToolbarExport />
-        <Button
+        {/* <Button
             variant="text"
             onClick={onEditClick}
             disabled={EditButtonDisabled}
@@ -29,7 +29,7 @@ export function CustomToolbar({onEditClick, onDeleteClick, selectedIds }: { onRe
           color='error'
         >
           ELIMINAR
-        </Button>
+        </Button> */}
       </GridToolbarContainer>
     );
 }

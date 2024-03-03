@@ -60,7 +60,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const token = localStorage.getItem('refreshToken');
           if (token) {
 
-            console.log('enra aqui')
             const response = await usuarioService.logout(token);
             
             if (response.status === 200) {

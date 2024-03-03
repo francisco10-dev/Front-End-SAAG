@@ -1,0 +1,49 @@
+/* warningModal.css */
+
+
+  .warning-title {
+    background-color: rgb(189, 201, 18); /* Color del título */
+    font-family: 'GOTHAM Bold' !important;
+    font-size: 24px !important;
+    border-bottom: 2px  solid black;
+}
+
+
+.warning-content {
+    display: flex;
+    align-items: center;
+    margin-top: 40px;
+    font-family: 'GOTHAM Bold' !important;
+    font-size: 20px !important;
+  }
+  
+  .icon-circle {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    background-color: rgb(189, 201, 18);
+    border-radius: 50%;
+    margin-right: 20px;
+  }
+  
+  .warning-icon {
+    color: #100f0f;
+    font-size: 24px;
+    animation: pulse 2s infinite; 
+  }
+  
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  
