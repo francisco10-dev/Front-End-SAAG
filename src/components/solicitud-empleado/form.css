@@ -29,6 +29,12 @@
     margin: 5px 0;
   }
 }
+
+.campo{
+  margin-top: 0.2rem;
+}
+
+
 @media (max-width: 768px) {
   .contenedor-campos {
     display: grid;

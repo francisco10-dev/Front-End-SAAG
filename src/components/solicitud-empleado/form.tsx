@@ -17,7 +17,9 @@ const Form = () => {
   const [tipoSolicitud, setTipoSolicitud] = useState('');
   const [asunto, setAsunto] = useState('');
   const [goceSalarial, setGoce] = useState('');
+  const [goceDisabled, setGoceDisabled] = useState<any>(null);
   const [nombreColaborador, setNombreColaborador] = useState('');
+  const [unidadColaborador, setUnidadColaborador] = useState('');
   const [nombreEncargado, setNombreEncargado] = useState('');
   const [fechaSolicitud, setFechaSolicitud] = useState(null);
   const [fechaInicio, setFechaInicio] = useState<any>(null);
@@ -53,11 +55,11 @@ const Form = () => {
   const handleFechaInicioChange = (date: any) => {
     setFechaInicio(date);
   };
-  
-  const handleFechaFinChange = (date: any) => {;
+
+  const handleFechaFinChange = (date: any) => {
     setFechaFin(date);
   };
-  
+
   const handleHoraInicioChange = (time: any) => {
     setHoraInicio(time);
   };
@@ -83,6 +85,16 @@ const Form = () => {
     }
   };
 
+  const handleGoceChangeDisabled = (value: any) => {
+    if (value === "Vacaciones" || value === "Licencias") {
+      setGoce("1");
+      setGoceDisabled(true);
+    } else {
+      setGoceDisabled(false);
+    }
+  }
+
+
   const handleGoceChange = (value: any) => {
     setGoce(value);
   };
@@ -97,6 +109,7 @@ const Form = () => {
       const employeeParse = JSON.parse(employee);
       setId(employeeParse.idColaborador);
       setNombreColaborador(employeeParse.nombre);
+      setUnidadColaborador(employeeParse.unidad);
     }
   }
   const limpiarFormulario = () => {
@@ -117,25 +130,25 @@ const Form = () => {
     setMostrarProgress(false);
   };
 
-  const formatearFecha = (fecha:any) => {
-    if(fecha){
-    const anio = fecha.$y;
-    const mes = (fecha.$M + 1).toString().padStart(2, '0');
-    const dia = fecha.$D.toString().padStart(2, '0');
-    return `${anio}-${mes}-${dia}`;
-    }else{
+  const formatearFecha = (fecha: any) => {
+    if (fecha) {
+      const anio = fecha.$y;
+      const mes = (fecha.$M + 1).toString().padStart(2, '0');
+      const dia = fecha.$D.toString().padStart(2, '0');
+      return `${anio}-${mes}-${dia}`;
+    } else {
       return null
     }
   };
 
-  const formatearHora= (horas:any) => {
-    if(horas){
-    console.log('estas sobn',horas);
-    const hora = horas.$H.toString().padStart(2, '0');;
-    const min = horas.$m.toString().padStart(2, '0');
-    const mili = horas.$ms.toString().padStart(2, '0');
-    return `${hora}:${min}:${mili}`;
-    }else{
+  const formatearHora = (horas: any) => {
+    if (horas) {
+      console.log('estas son', horas);
+      const hora = horas.$H.toString().padStart(2, '0');;
+      const min = horas.$m.toString().padStart(2, '0');
+      const mili = horas.$ms.toString().padStart(2, '0');
+      return `${hora}:${min}:${mili}`;
+    } else {
       return null;
     }
   };
@@ -196,30 +209,37 @@ const Form = () => {
       <div className="contenedor-campos">
         <div className="columna-1">
           <div className="campo">
-            <Text type='secondary'>Nombre colaborador</Text>
-            <Input placeholder="Nombre colaborador" value={nombreColaborador} onChange={(e) => setNombreColaborador(e.target.value)} className="inputWidth" style={{ width: 290 }} disabled />
+            <Text>Nombre colaborador</Text>
+            <Input placeholder="Nombre colaborador" value={nombreColaborador} className="inputWidth" style={{ width: 290 }} disabled />
+          </div>
+          <div className="campo">
+            <Text>Unidad a la que pertenece</Text>
+            <Input placeholder="Unidad colaborador" value={unidadColaborador} className="inputWidth" style={{ width: 290 }} disabled />
+          </div>
+          <div className='campo campo-tipo'>
+            <Text>Tipo</Text>
+            <Select showSearch placeholder="Tipo de solicitud" value={tipoSolicitud} onChange={(value) => {
+              handleTipoSolicitudChange(value);
+              handleGoceChangeDisabled(value);
+            }} style={{ width: 150 }}>
+              <Option value="Permisos">Permisos</Option>
+              <Option value="Licencias">Licencias</Option>
+              <Option value="Vacaciones">Vacaciones</Option>
+            </Select>
           </div>
           <div className="campo campo-goce">
-            <Text type='secondary'>Goce salarial</Text>
-            <Select placeholder="Con goce salarial" value={goceSalarial} onChange={handleGoceChange} style={{ width: 100 }}>
+            <Text>Goce salarial</Text>
+            <Select placeholder="Con goce salarial" value={goceSalarial} onChange={handleGoceChange} disabled={goceDisabled} style={{ width: 100 }}>
               <Option value="1">SI</Option>
               <Option value="0">NO</Option>
             </Select>
           </div>
-          <div className='campo campo-tipo'>
-            <Text type='secondary'>Tipo</Text>
-            <Select showSearch placeholder="Tipo de solicitud" value={tipoSolicitud} onChange={handleTipoSolicitudChange} style={{ width: 150 }}>
-              <Option value="Incapacidad">Incapacidad</Option>
-              <Option value="CGS">CGS</Option>
-              <Option value="SGS">SGS</Option>
-              <Option value="Licencias">Licencias</Option>
-              <Option value="Injustificada">Injustificada</Option>
-            </Select>
-          </div>
           <div>
-            <Checkbox checked={esRangoDias} onChange={handleCheckboxChange}>
-              Rango de horas
-            </Checkbox>
+            <div className="campo">
+              <Checkbox checked={esRangoDias} onChange={handleCheckboxChange}>
+                Rango de horas
+              </Checkbox>
+            </div>
             {!esRangoDias ? (
               <div>
                 <RangePicker
@@ -259,18 +279,18 @@ const Form = () => {
             )}
           </div>
           <div className="campo campo-asunto">
-            <Text type='secondary'>Asunto</Text>
+            <Text>Asunto</Text>
             <TextArea placeholder="Asunto" value={asunto} onChange={(e) => setAsunto(e.target.value)} allowClear />
           </div>
         </div>
         <div className="columna-2">
           <div className="campo campo-encargado">
-            <Text type='secondary'>Nombre encargado</Text>
+            <Text>Nombre encargado</Text>
             <Input placeholder="Nombre encargado" value={nombreEncargado} onChange={(e) => setNombreEncargado(e.target.value)} style={{ width: 290 }} />
           </div>
           <div className="box-sustituto">
             <div className="campo campo-nombre-sustituto">
-              <Text type='secondary'>Requiere sustituto</Text>
+              <Text>Requiere sustituto</Text>
               <Select
                 placeholder="Sustitución"
                 value={sustitucion}
@@ -286,7 +306,7 @@ const Form = () => {
             </div>
             {sustitucion === 'SI' && !mostrarProgress && (
               <div className="campo">
-                <Text type='secondary'>Nombre del sustituto</Text>
+                <Text>Nombre del sustituto</Text>
                 <Input
                   placeholder="Nombre del sustituto"
                   value={nombreSustituto}
@@ -297,7 +317,7 @@ const Form = () => {
             )}
           </div>
           <div className="campo campo-estado">
-            <Text type='secondary'>Estado</Text>
+            <Text>Estado</Text>
             <Select placeholder="Estado" value={estado} onChange={handleEstadoChange} style={{ width: 110 }}>
               <Option value="Aprobado">Aprobado</Option> {/*el admin es el unico que puede aprobar solicitudes */}
               {/*<Option value="Pendiente">Aprobar</Option> */}  {/*el supervisor aprueba una solicud para enviarla a admin */}
@@ -305,7 +325,7 @@ const Form = () => {
             </Select>
           </div>
           <div className="campo campo-comentario">
-            <Text type='secondary'>Comentario</Text>
+            <Text>Comentario</Text>
             <TextArea placeholder="Comentario de Talento Humano" value={comentarioTalentoHumano} onChange={(e) => setComentarioTalentoHumano(e.target.value)} allowClear />
           </div>
         </div>
