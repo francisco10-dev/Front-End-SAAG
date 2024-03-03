@@ -3,6 +3,7 @@
   padding: 30px;
   border-radius: 10px;
   margin: 0 auto;
+  display: inline-block; /* Ajustar al contenido */
 }
 
 @media (min-width: 768px) {
