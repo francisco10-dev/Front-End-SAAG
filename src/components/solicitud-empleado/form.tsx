@@ -333,6 +333,7 @@ const Form = () => {
           className='button-submit'
           variant="contained"
           color="success"
+          style={{marginTop:8}}
           onClick={enviarSolicitud} // Llama a la función enviarSolicitud cuando se hace clic en el botón
           disabled={enviandoSolicitud} // Deshabilita el botón mientras se está enviando la solicitud
         >
