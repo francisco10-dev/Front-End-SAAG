@@ -2,6 +2,7 @@ import './form.css';
 import React, { useState, useEffect } from 'react';
 import { Input, Select, DatePicker, Typography, Progress, Checkbox, TimePicker } from 'antd';
 import Button from '@mui/material/Button';
+import { useAuth } from '../../authProvider';
 import { toast } from 'react-toastify';
 import moment from 'moment';
 import SolicitudService from '../../services/solicitud.service';
@@ -11,8 +12,7 @@ const { Text } = Typography;
 const { RangePicker } = DatePicker;
 
 const Form = () => {
-
-
+  const { userRole, colaborador } = useAuth();
   const [idUsuario, setId] = useState('');
   const [tipoSolicitud, setTipoSolicitud] = useState('');
   const [asunto, setAsunto] = useState('');
@@ -104,14 +104,13 @@ const Form = () => {
   };
 
   const recuperarDatos = () => {
-    const employee = localStorage.getItem('employee');
-    if (employee) {
-      const employeeParse = JSON.parse(employee);
-      setId(employeeParse.idColaborador);
-      setNombreColaborador(employeeParse.nombre);
-      setUnidadColaborador(employeeParse.unidad);
+    if (colaborador) {
+      setId(colaborador?.idColaborador.toString());
+      setNombreColaborador(colaborador.nombre);
+      setUnidadColaborador(colaborador?.unidad ?? "");
     }
   }
+
   const limpiarFormulario = () => {
     setTipoSolicitud('');
     setAsunto('');
@@ -324,16 +323,28 @@ const Form = () => {
               <Option value="Rechazado">Rechazada</Option> {/* Rezachazada se muestra para seleccionar a admin y supervisor */}
             </Select>
           </div>
-          <div className="campo campo-comentario">
-            <Text>Comentario</Text>
-            <TextArea placeholder="Comentario de Talento Humano" value={comentarioTalentoHumano} onChange={(e) => setComentarioTalentoHumano(e.target.value)} allowClear />
-          </div>
+          {userRole === 'admin' && (
+            <>
+              <div className="campo campo-tramitado">
+                <Text>Tramitado por</Text>
+                <Input placeholder="Tramitado por" value={unidadColaborador} style={{ width: 290 }} disabled />
+              </div>
+              <div className="campo campo-fecha-recibido">
+                <Text>Fecha recibido</Text>
+                <Input placeholder="Fecha recibido" value={unidadColaborador} style={{ width: 290 }} disabled />
+              </div>
+              <div className="campo campo-comentario">
+                <Text>Comentario</Text>
+                <TextArea placeholder="Comentario de Talento Humano" value={comentarioTalentoHumano} onChange={(e) => setComentarioTalentoHumano(e.target.value)} allowClear />
+              </div>
+            </>
+          )}
         </div>
         <Button
           className='button-submit'
           variant="contained"
           color="success"
-          style={{marginTop:8}}
+          style={{ marginTop: 8 }}
           onClick={enviarSolicitud} // Llama a la función enviarSolicitud cuando se hace clic en el botón
           disabled={enviandoSolicitud} // Deshabilita el botón mientras se está enviando la solicitud
         >
