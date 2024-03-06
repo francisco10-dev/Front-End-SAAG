@@ -3,8 +3,9 @@ import { useState, useEffect } from "react";
 import { Typography } from "@mui/material";
 import '../expedientes.css'
 import PersonalInfo from "./personalInfo";
-import ExpedienteService, { Expediente } from "../../../services/expediente.service";
+import ExpedienteService from "../../../services/expediente.service";
 import {CircularProgress} from "@mui/material";
+import ColaboradorService, { Colaborador } from "../../../services/colaborador.service";
 
 interface Props {
     selected: number | null;
@@ -16,14 +17,14 @@ const Preview = ({ selected }: Props) => {
 
     const [isLoading, setLoading] = useState(false);
     const [isLoadingImage, setLoadingImage] = useState(false);
-    const [expediente, setExpediente] = useState<Expediente | null>();
+    const [expediente, setExpediente] = useState<Colaborador | null>();
     const [imageUrl, setImageUrl] = useState<string | null>(null);
-    const service = new ExpedienteService();
+    const service = new ColaboradorService();
 
     const fetchExpediente = async (id: number) => {
         try {
             setLoading(true);
-            const data = await service.getExpediente(id);
+            const data = await service.obtenerColaboradorPorId(id);
             setExpediente(data);
         } catch (error) {
             console.log(error);
@@ -59,7 +60,7 @@ const Preview = ({ selected }: Props) => {
 
     useEffect(() => {
         // Cargar la imagen solo si existe un expediente y el campo fotoCarnet no es null
-        if (expediente && expediente.colaborador.fotoCarnet !== null) {
+        if (expediente && expediente.fotoCarnet !== null) {
             loadImage();
         }else{
             setImageUrl(null);
@@ -81,7 +82,7 @@ const Preview = ({ selected }: Props) => {
         <Box className= 'preview-box'>
             {expediente ? 
                 <Box>
-                    <PersonalInfo isLoadingImage= {isLoadingImage} imageUrl={imageUrl} expediente={expediente}/>
+                    <PersonalInfo isLoadingImage= {isLoadingImage} imageUrl={imageUrl} colaborador={expediente}/>
                 </Box>
                 : <Box>            
                     <Box className='no-info'>

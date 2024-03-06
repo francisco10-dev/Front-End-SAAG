@@ -1,11 +1,8 @@
-    import axios from 'axios';
+    import axios, {  AxiosResponse } from 'axios';
     import axiosApi from '../services/api.service';
-import { Solicitud } from './solicitud.service';
+    import { Solicitud } from './solicitud.service';
+    import { Puesto } from './puesto.service';
 
-    export interface Puesto {
-        idPuesto: number
-        nombrePuesto: string
-    }
       
     export interface Colaborador {
         idColaborador: number;
@@ -22,6 +19,8 @@ import { Solicitud } from './solicitud.service';
         equipo: string;
         estado: string;
         tipoJornada: string | null;
+        fechaIngreso: string;
+        fechaSalida: string | null;
     }
 
     class ColaboradorService {
@@ -31,13 +30,13 @@ import { Solicitud } from './solicitud.service';
         this.axiosInstance = axiosApi;
     }
 
-    async agregarColaborador(data: any): Promise<Colaborador> {
+    async agregarColaborador(data: any): Promise<AxiosResponse> {
         try {
         const response = await this.axiosInstance.post('/agregar-colaborador/', data);
-        return response.data;
+        return response;
         } catch (error) {
         if (axios.isAxiosError(error)) {
-            if (error.response) {
+          if (error.response) {
             throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
             } else {
             throw new Error('Error en la solicitud de red');
@@ -80,10 +79,10 @@ import { Solicitud } from './solicitud.service';
         }
     }
 
-    async actualizarColaborador(id: string, data: any): Promise<Colaborador> {
+    async actualizarColaborador(id: number, data: any): Promise<AxiosResponse> {
         try {
         const response = await this.axiosInstance.put(`/actualizar-colaborador/${id}`, data);
-        return response.data;
+        return response;
         } catch (error) {
         if (axios.isAxiosError(error)) {
             if (error.response) {
@@ -205,6 +204,15 @@ import { Solicitud } from './solicitud.service';
         throw error;
         }
      }
+
+     async getPhoto(id: number): Promise<AxiosResponse<any, any>> {
+      try {
+        const response = await this.axiosInstance.get(`/documentos/obtener-foto/${id}`);
+        return response;
+      } catch (error) {
+        throw error; 
+      }
+    }
       
 
 }

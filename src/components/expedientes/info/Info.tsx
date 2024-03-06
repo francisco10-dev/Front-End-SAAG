@@ -1,24 +1,23 @@
 import React from 'react';
 import { Box, Grid, Typography } from '@mui/material';
-import { Expediente } from '../../../services/expediente.service';
 import { calcularAntiguedad, calcularEdad } from './period';
 import { formatDate } from '../../solicitudes/utils';
+import { Colaborador } from '../../../services/colaborador.service';
 
 interface Props {
-  expediente: Expediente | null;
+  colaborador: Colaborador | null;
   size: number;
   marginBottom: number;
 }
 
-const Info: React.FC<Props> = ({ expediente, size, marginBottom }: Props) => {
+const Info: React.FC<Props> = ({ colaborador, size, marginBottom }: Props) => {
 
-  if (!expediente) {
+  if (!colaborador) {
     return <div>Expediente no disponible</div>;
   }
 
-  const { colaborador, fechaIngreso, fechaSalida } = expediente;
-  const { puesto } = colaborador || {};
-  const excludedProperties = ['fotoCarnet', 'idColaborador', 'idPuesto', 'nombre', 'unidad', 'puesto', ];
+  const { puesto, fechaIngreso, fechaSalida } = colaborador || {};
+  const excludedProperties = ['fotoCarnet', 'idColaborador', 'idPuesto', 'nombre', 'unidad', 'puesto','fechaIngreso', 'fechaSalida' ];
   const periodoEnEmpresa = calcularAntiguedad(new Date(fechaIngreso), new Date());
 
   const visualNames: { [key: string]: string } = {

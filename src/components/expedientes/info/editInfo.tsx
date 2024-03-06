@@ -2,9 +2,10 @@ import { Button, Form, Input, DatePicker, message, Select } from 'antd';
 import { useEffect, useState } from 'react';
 import moment from 'moment';
 import { Box, Grid, Typography } from '@mui/material';
-import ExpedienteService, { Expediente } from '../../../services/expediente.service';
+import ExpedienteService from '../../../services/expediente.service';
 import 'moment/locale/es'
 import UploadImage from '../uploadFoto';
+import ColaboradorService, { Colaborador } from '../../../services/colaborador.service';
 
 
 type FieldType = {
@@ -25,19 +26,18 @@ type FieldType = {
 };
 
 interface Props{
-  expediente: Expediente | null;
+  colaborador: Colaborador | null;
   setIsEdit: (value:boolean) => void;
   imageUrl: string | null;
   loadData: ()=> void;
 }
 
-const EditInfo = ({expediente, setIsEdit, imageUrl, loadData}: Props) => {
+const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData}: Props) => {
 
-  if(!expediente){
+  if(!colaborador){
     return <div>No se encontró el expediente</div>
   }
 
-  const {colaborador} = expediente;
   const [nombre, setNombre] = useState(colaborador.nombre);
   const [identificacion, setIdentificacion] = useState(colaborador.identificacion);
   const [correo, setCorreo] = useState(colaborador.correoElectronico);
@@ -50,8 +50,8 @@ const EditInfo = ({expediente, setIsEdit, imageUrl, loadData}: Props) => {
   const [estadoRazon, setRazon] = useState<string | null>(null);
   //@ts-ignore
   const [puesto, setPuesto] = useState(colaborador.puesto?.nombrePuesto);
-  const [fechaIngreso, setFechaIngreso] = useState(expediente.fechaIngreso);
-  const [fechaSalida, setFechaSalida] = useState<string | null>(expediente.fechaSalida);
+  const [fechaIngreso, setFechaIngreso] = useState(colaborador.fechaIngreso);
+  const [fechaSalida, setFechaSalida] = useState<string | null>(colaborador.fechaSalida);
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
@@ -59,13 +59,10 @@ const EditInfo = ({expediente, setIsEdit, imageUrl, loadData}: Props) => {
   const onFinish = async () => {
     try {
       setLoading(true);
-      const data = {
-        expediente: dataExpediente(),
-        colaborador: dataColaborador(),
-      };
+      const data = dataColaborador();
 
-      const service = new ExpedienteService();
-      const response = await service.actualizarExpedienteColaborador(expediente.idExpediente, data);
+      const service = new ColaboradorService();
+      const response = await service.actualizarColaborador(colaborador.idColaborador, data);
       handleUploadPhoto();
       if(response.status === 200){
         setIsEdit(false);
@@ -89,15 +86,6 @@ const EditInfo = ({expediente, setIsEdit, imageUrl, loadData}: Props) => {
       const fechaValida = moment(newDate).format("YYYY-MM-DD");
       setFechaSalida(fechaValida);
     }
-  }
-
-  const dataExpediente = () => {
-    console.log(fechaSalida);
-    const data = {
-      fechaIngreso: fechaIngreso,
-      fechaSalida: fechaSalida
-    }
-    return data;
   }
 
   const handleUploadPhoto = async () => {
@@ -125,7 +113,9 @@ const EditInfo = ({expediente, setIsEdit, imageUrl, loadData}: Props) => {
         unidad: unidad,
         equipo: equipo,
         tipoJornada: tipoJornada,
-        estado: estadoFinal
+        estado: estadoFinal,
+        fechaIngreso: fechaIngreso,
+        fechaSalida: fechaSalida
         //idPuesto: null,
       }
       return data;
@@ -136,15 +126,13 @@ const EditInfo = ({expediente, setIsEdit, imageUrl, loadData}: Props) => {
   };
 
 
-
-
   useEffect(() => {
     form.setFieldsValue({
       fechaNacimiento: colaborador.fechaNacimiento ? moment(colaborador.fechaNacimiento) : null,
-      fechaSalida: expediente.fechaSalida ? moment(expediente.fechaSalida) : null,
-      fechaIngreso: expediente.fechaIngreso ? moment(expediente.fechaIngreso) : null,
+      fechaSalida: colaborador.fechaSalida ? moment(colaborador.fechaSalida) : null,
+      fechaIngreso: colaborador.fechaIngreso ? moment(colaborador.fechaIngreso) : null,
     });
-  }, [colaborador.fechaNacimiento, expediente.fechaSalida, expediente.fechaIngreso, form]);
+  }, [colaborador.fechaNacimiento, colaborador.fechaSalida, colaborador.fechaIngreso, form]);
 
   //@ts-ignore
   const setNacimiento = (date: any, dateString: any) => {

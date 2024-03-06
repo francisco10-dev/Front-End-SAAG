@@ -16,6 +16,7 @@ export interface Documento {
   nombreArchivo: string;
   tamaño: string;
   fechaSubida: string;
+  fechaVencimiento: string;
 }
 
 
@@ -174,7 +175,7 @@ class ExpedienteService {
 
   async agregarExpedienteColaborador(data : FormData) {
     try {
-      const response = await this.axiosInstance.post('/expedientes/registrar-nuevo', data);
+      const response = await this.axiosInstance.post('/expedientes/nuevo-colaborador-expediente', data);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {

@@ -2,25 +2,25 @@ import { useEffect, useState } from "react";
 import { Box, Button } from "@mui/material";
 import List from "./list/list";
 import Preview from "./info/preview";
-import ExpedienteService, { Expediente } from "../../services/expediente.service";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ExpedienteInfo from "./expediente";
 import AutoCompleteExpediente from "./autocomplete";
+import ColaboradorService, { Colaborador } from "../../services/colaborador.service";
 
 const Panel = () => {
 
     const [selectedId, setSelectedId] = useState<number | null>(null);
-    const [selectedExpediente, setSelectedExpediente] = useState<Expediente | null>(null);
-    const [expedientes, setExpedientes] = useState<Expediente[]>([]);
+    const [selectedExpediente, setSelectedExpediente] = useState<Colaborador | null>(null);
+    const [expedientes, setExpedientes] = useState<Colaborador[]>([]);
     //@ts-ignore
     const [isLoading, setLoading] = useState(false);
-    const service = new ExpedienteService();
+    const service = new ColaboradorService();
 
     const handleSelected = (nuevoValor: number | null) => {
         setSelectedId(nuevoValor);
     };
 
-    const handleExpediente = (nuevo: Expediente | null) => {
+    const handleExpediente = (nuevo: Colaborador| null) => {
         console.log('Nuevo expediente:', nuevo);
         setSelectedExpediente(nuevo);
         localStorage.setItem('selectedExp', JSON.stringify(nuevo));
@@ -34,7 +34,7 @@ const Panel = () => {
     const fetchExpedientes =  async () => {
         try {
             setLoading(true);
-            const data = await service.getExpedientes();
+            const data = await service.obtenerColaboradores();
             setExpedientes(data);
         } catch (error) {
             console.log(error);
@@ -47,7 +47,7 @@ const Panel = () => {
     const getExpediente = async (id: number) => {
         try {
             if(selectedExpediente){
-            const response = await service.getExpediente(id);
+            const response = await service.obtenerColaboradorPorId(id);
             setSelectedExpediente(response);
             console.log(response);
             }
