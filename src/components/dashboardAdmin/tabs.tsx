@@ -7,7 +7,7 @@ import { GridColDef } from '@mui/x-data-grid';
 import CustomTabPanel from './CustomTabPanel';
 import { toast } from 'react-toastify';  
 
-export interface ColabUsuario{
+export interface ColabUsuario{  // cambiar datos aqui para que se actualice con respecto a lo que se necesita y con los que deberiamos poner en pa tabla de los usuarios 
   idUsuario: number,
   nombreUsuario: string;
   rol: string,
@@ -59,7 +59,6 @@ export default function TabsUsuarioAdmin() {
   const obtenerYActualizarUsuarios = async () => {
     try {
       const usuariosActualizados = await service.obtenerUsuarios();
-  
       const consultasColaboradores = await Promise.all(
         usuariosActualizados.map(async (usuario) => {
           const colaboradores = await colaborador.obtenerColaboradores();
@@ -76,15 +75,11 @@ export default function TabsUsuarioAdmin() {
           }
         })
       );
-  
       setUsuarios(consultasColaboradores);
     } catch (error) {
       toast.error('Error al obtener usuarios: ' + error);
     }
   };
-  
-  
-
   useEffect(() => {
     obtenerYActualizarUsuarios();
   }, []);

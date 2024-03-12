@@ -51,7 +51,7 @@ const Administrador = () => {
     cargarColaboradores();
   }, []);
 
-  const crearUsuario = async () => {
+  const crearUsuario = async () => {   // se debe cambiar por lo que llegara desde el active directory 
     console.log(idColaborador);
     if (!nombreUsuario || !contrasena || !idColaborador || isNaN(idColaborador)) {
       toast.error('Todos los campos son obligatorios y el ID de Colaborador debe ser un número válido');
@@ -86,19 +86,19 @@ const Administrador = () => {
     }
   };
   
-  const limpiarFormulario = () => {
+  const limpiarFormulario = () => {   // depurar el codigo 
     setNombreUsuario('');
     setContrasena('');
     setRol('empleado');
     setSelectedColaborador(null);
   };
-
+      //recordar el cambio de crear a actualizar el estado del usuario
   return (
     <div>
       <h1>Administrador SAAG</h1>
       <div className="container">
         <div className="usuarios-container">
-          <h2>Crear Usuario:</h2>
+          <h2>Crear Usuario:</h2>  
           <form>
             <label htmlFor="nombreUsuario">Nombre de Usuario:</label>
             <br />
@@ -158,7 +158,7 @@ const Administrador = () => {
           />
           </form>
           <br />
-          <button className='boton' type="button" onClick={crearUsuario}>
+          <button className='boton' type="button" onClick={crearUsuario}>  
             Crear Usuario
           </button>
         </div>
