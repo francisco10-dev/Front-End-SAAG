@@ -1,21 +1,20 @@
 import  Box  from "@mui/material/Box"
 import TextField from '@mui/material/TextField';
 import { useEffect, useState } from "react";
-import ExpedienteService from "../../../services/expediente.service";
-import { Expediente } from "../../../services/expediente.service";
 import { formatDate } from "../../solicitudes/utils";
 import { DataGrid, GridColDef, esES, GridRowSelectionModel } from '@mui/x-data-grid';
 import Formulario from "../createExpediente";
 import { CustomToolbar } from "./gridToolBar";
+import ColaboradorService, { Colaborador } from "../../../services/colaborador.service";
 
 const columns: GridColDef[] = [
-    { field: 'idExpediente', headerName: 'N# Registro', width: 110 },
+    { field: 'idColaborador', headerName: 'N# Registro', width: 110 },
     { field: 'colaborador', headerName: 'Colaborador', sortable: false, width: 200,
       renderCell: (params) => (
         <div>
-          <strong>{params.row.colaborador.nombre}</strong>
+          <strong>{params.row.nombre}</strong>
           <br />
-          Identificación: {params.row.colaborador.identificacion}
+          Identificación: {params.row.identificacion}
         </div>
       ),
     }, { field: 'fechaIngreso', headerName: 'Ingreso', width: 110,
@@ -29,24 +28,24 @@ const columns: GridColDef[] = [
 
 interface Props{
     selected: (nuevoValor : number | null) => void;
-    selectedExpediente: (nuevo : Expediente | null) => void;
+    selectedExpediente: (nuevo : Colaborador | null) => void;
 }
 
 const List = ({selected, selectedExpediente}: Props) => {
 
     const [filterText, setFilterText] = useState('');
-    const [expedientes, setExpedientes] = useState<Expediente[]>([]);
+    const [expedientes, setExpedientes] = useState<Colaborador[]>([]);
     const [filteredRows, setFilteredRows] = useState(expedientes);
     const [isLoading, setLoading] = useState(false);
-    const service = new ExpedienteService();
-    const getRowId = (row: Expediente) => row.idExpediente;
+    const service = new ColaboradorService();
+    const getRowId = (row: Colaborador) => row.idColaborador;
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [openForm, setOpenForm] = useState(false);
 
     const fetchExpedientes =  async () => {
         try {
             setLoading(true);
-            const data = await service.getExpedientes();
+            const data = await service.obtenerColaboradores();
             setExpedientes(data);
         } catch (error) {
             console.log(error);
@@ -58,17 +57,17 @@ const List = ({selected, selectedExpediente}: Props) => {
     const applyFilters = () => {
         const filteredData = expedientes.filter((row) => {
           return (
-            (row.idExpediente && row.idExpediente.toString().includes(filterText.toLowerCase())) ||
-            (row.colaborador.identificacion && row.colaborador.identificacion.toString().includes(filterText)) ||
-            (row.colaborador.idColaborador && row.colaborador.idColaborador.toString().includes(filterText)) ||
-            (row.colaborador.nombre && row.colaborador.nombre.toLowerCase().includes(filterText.toLowerCase()))
+            (row.idColaborador && row.idColaborador.toString().includes(filterText.toLowerCase())) ||
+            (row.identificacion && row.identificacion.toString().includes(filterText)) ||
+            (row.nombre && row.nombre.toLowerCase().includes(filterText.toLowerCase())) ||
+            (row.fechaIngreso && row.fechaIngreso.toLocaleLowerCase().includes(filterText.toLowerCase()))
           );
         });
         setFilteredRows(filteredData);
     };
 
-    const handleRowClick = (params: { row: Expediente }) => {
-        selected(params.row.colaborador.idColaborador);
+    const handleRowClick = (params: { row: Colaborador}) => {
+        selected(params.row.idColaborador);
     };
 
     const handleSelectionChange = (selection: GridRowSelectionModel) => {
@@ -76,7 +75,7 @@ const List = ({selected, selectedExpediente}: Props) => {
     };
 
     const onEditClick = () => {
-        const data = expedientes.find((expediente) => expediente.idExpediente === selectedIds[0]);
+        const data = expedientes.find((expediente) => expediente.idColaborador === selectedIds[0]);
         if (data) {
             selectedExpediente(data);
         }

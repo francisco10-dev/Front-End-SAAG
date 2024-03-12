@@ -1,5 +1,4 @@
 import { Button, Paper, Typography } from '@mui/material';
-import ExpedienteService, {Expediente } from '../../services/expediente.service';
 import { useState, useEffect } from 'react';
 import Loader from './skeleton';
 import Info from './info/Info';
@@ -8,9 +7,10 @@ import './expedientes.css';
 import Box from '@mui/material/Box';
 import Accordions from './accordion/acordion';
 import EditInfo from './info/editInfo';
+import ColaboradorService, { Colaborador } from '../../services/colaborador.service';
 
 interface Props{
-    data: Expediente | null,
+    data: Colaborador | null,
 }
 
 const ExpedienteInfo = ({data}: Props) => {
@@ -21,8 +21,8 @@ const ExpedienteInfo = ({data}: Props) => {
 
     const [isLoading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
-    const service = new ExpedienteService();
-    const [expediente, setExpediente] = useState<Expediente>(data);
+    const service = new ColaboradorService();
+    const [expediente, setExpediente] = useState<Colaborador>(data);
     const [isEdit, setIsEdit] = useState(false);
 
     const loadImage = async () => {
@@ -45,7 +45,7 @@ const ExpedienteInfo = ({data}: Props) => {
         try {
             if(expediente){
                 const idColaborador = expediente.idColaborador;
-                const response = await service.getExpediente(idColaborador);
+                const response = await service.obtenerColaboradorPorId(idColaborador);
                 if(response){
                  setExpediente(response);
                  loadImage();
@@ -57,7 +57,7 @@ const ExpedienteInfo = ({data}: Props) => {
     }
 
     useEffect(() => {
-        if (expediente && expediente.colaborador.fotoCarnet !== null) {
+        if (expediente && expediente.fotoCarnet !== null) {
             loadImage();
         }else{
             setImageUrl(null);
@@ -89,12 +89,9 @@ const ExpedienteInfo = ({data}: Props) => {
 
     return (
         <Box className='container-expediente' component={Paper}>
-            <Typography className='idExpe' variant="body2">
-                N#{expediente?.idExpediente}
-            </Typography>
             {isEdit ? (
                     <Box sx={{width: '100%'}}>
-                        <EditInfo expediente={expediente} setIsEdit={setIsEdit} imageUrl={imageUrl} loadData={loadExpediente}/>
+                        <EditInfo colaborador={expediente} setIsEdit={setIsEdit} imageUrl={imageUrl} loadData={loadExpediente}/>
                     </Box>
             ): (
                 <Box>
@@ -105,10 +102,10 @@ const ExpedienteInfo = ({data}: Props) => {
                         <Box>
                             <Box display='flex'>
                                 <Box mr={0}>
-                                    <Typography variant='h5'>{expediente?.colaborador.nombre}</Typography> 
-                                    <Typography variant='body2'>{expediente?.colaborador.identificacion}</Typography> 
-                                    <Typography variant='body2'>Unidad de gestión: {expediente?.colaborador.unidad?? 'No indica'}</Typography>
-                                    <Typography variant='body2'>Puesto: {expediente?.colaborador.puesto?.nombrePuesto?? 'No indica'}</Typography>
+                                    <Typography variant='h5'>{expediente?.nombre}</Typography> 
+                                    <Typography variant='body2'>{expediente?.identificacion}</Typography> 
+                                    <Typography variant='body2'>Unidad de gestión: {expediente?.unidad?? 'No indica'}</Typography>
+                                    <Typography variant='body2'>Puesto: {expediente?.puesto?.nombrePuesto?? 'No indica'}</Typography>
                                 </Box>
                                 <Box ml={3}>
                                     <Button startIcon ={<EditIcon/>} onClick={()=> setIsEdit(true)}>Editar</Button>
@@ -117,12 +114,12 @@ const ExpedienteInfo = ({data}: Props) => {
                         </Box>  
                     </Box>
                     <Box mb={10}>
-                        <Info expediente={expediente} size={3} marginBottom={2.5}/>
+                        <Info colaborador={expediente} size={3} marginBottom={2.5}/>
                     </Box>       
                 </Box>         
             )}
            <Box>
-            <Accordions data={expediente.colaborador}/>
+            <Accordions data={expediente}/>
            </Box>
         </Box>
     );

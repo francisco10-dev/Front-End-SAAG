@@ -81,6 +81,8 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
   const [isLoading, setLoading] = useState(false);
   const [openP, setOpenP] = useState(false);
   const [puestos, setPuestos] = useState<Puesto[]>([]);
+  const colaboradorService = new ColaboradorService();
+
   
   
   const [status, setStatus] = useState('Activo');
@@ -146,38 +148,39 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
   
       if (validPhoneNumbers.length > 0) {
         const service = new ColaboradorService();
-        const response = await service.agregarTelefonos(id, validPhoneNumbers);
-        console.log(response);
-        console.log(validPhoneNumbers)
+        await service.agregarTelefonos(id, validPhoneNumbers);
       } else {
         console.log('No hay números de teléfono válidos para enviar.');
       }
     }
   };
-  
-  const createForm = () => {
 
+  const createForm = (id: string) => {
     const formData = new FormData();
-
-    for (const [key, value] of Object.entries(employeeData)) {
-      if (value !== '') {
-        formData.append(key, value);
-        console.log(key, value);
-      }
-    }
-    console.log(employeeData.tipoJornada);
-
+    formData.append('idColaborador', id);
     selectedFiles.forEach((file) => {
       if (file.originFileObj) {
-        formData.append('files', file.originFileObj);
+        formData.append('file', file.originFileObj);
       } else if (file instanceof File) {
-        formData.append('files', file);
+        formData.append('file', file);
       }
     });
-
     return formData;
   }
 
+  const uploadFiles = async (id : string) => {
+    try {
+        const response = await service.registrarDocumento(createForm(id));
+        if(response.status === 200){
+            setSelectedFiles([]);
+        }else{
+            message.error('Ocurrió un error al registrar los documentos.');
+        }
+    } catch (error) {
+        message.error('Ocurrió un error al registrar documentos, intente de nuevo más tarde.');
+      }
+  }
+  
   const loadPuestos = async () => {
     try {
       const service = new PuestoService();
@@ -197,32 +200,65 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
     loadPuestos();
   }, []);
 
+  async function checkExistingEmployee(): Promise<{ emailExists: boolean, idExists: boolean }> {
+    try {
+      const { correoElectronico, identificacion } = employeeData;
+      const response = await colaboradorService.obtenerColaboradores();
+  
+      const emailExists = response.some(c => c.correoElectronico === correoElectronico);
+      const idExists = response.some(c => c.identificacion === identificacion);
+  
+      return { emailExists, idExists };
+    } catch (error) {
+      console.error(error);
+      return { emailExists: false, idExists: false };
+    }
+  }
+  
+  const handleSuccessfulRegistration = (idColaborador: any) => {
+    handleUploadPhoto(idColaborador);
+    handleAddPhoneNumbers(idColaborador);
+    uploadFiles(idColaborador);
+    message.success('Registro exitoso!');
+    onClose();
+    reload();
+  };
+  
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      //console.log(form.getFieldsValue());
-      const formData = createForm();
-      const { colaborador } = await service.agregarExpedienteColaborador(formData);
-      handleUploadPhoto(colaborador.idColaborador);
-      handleAddPhoneNumbers(colaborador.idColaborador);
-      message.success('Registro exitoso!');
-      onClose();
-      reload();
-
+  
+      const data: EmployeeData = Object.fromEntries(
+        Object.entries(employeeData).filter(([_, value]) => value !== '')
+      ) as EmployeeData;
+  
+      const { emailExists, idExists } = await checkExistingEmployee();
+  
+      if (emailExists) {
+        message.warning('El correo electrónico ingresado ya existe.');
+      } else if (idExists) {
+        message.warning('La identificación ingresada ya existe.');
+      } else {
+        const response = await colaboradorService.agregarColaborador(data);
+  
+        if (response.status === 200) {
+          handleSuccessfulRegistration(response.data.data.idColaborador);
+        }
+      }
     } catch (error) {
-      setLoading(false);
-      message.error('Error en el registro.')
-    }finally{
+      message.error('Ocurrió un error al registrar la informaación, por favor intente más tarde. ');
+    } finally {
       setLoading(false);
     }
-  }; 
+  };
+
+
   //@ts-ignore
   const onChange = (date : any, dateString : any, fieldName : string ) => {
     setEmployeeData({
       ...employeeData,
       [fieldName]: dateString,
     });
-    console.log(dateString)
   };
 
   const handleAddPhoneNumber = () => {
@@ -239,7 +275,6 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
     const newPhoneNumbers = [...phoneNumbers];
     newPhoneNumbers[index] = value;
     setPhoneNumbers(newPhoneNumbers);
-    console.log(phoneNumbers)
   };
 
   
