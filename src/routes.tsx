@@ -5,8 +5,10 @@ import TabsAusenciaAdmin from './components/ausencias/tabsAusencia';
 import TabsAuditoriaLogin from './components/auditorias-login/tabsAuditoriaLogin';
 import TabsAuditoria from './components/auditorias/tabsAuditoria';
 import ProtectedRoute from './protectedRoute';
+import Form from './components/solicitud-empleado/form';
 import { useAuth } from './authProvider'; 
 import Administrador from './components/dashboardAdmin/admin';
+import Panel from './components/expedientes/panel';
 
 const Rutas = () => {
     const { loggedIn, userRole } = useAuth();
@@ -15,10 +17,12 @@ const Rutas = () => {
         <Routes>
             <Route path="/" element={<ProtectedRoute element={<Dashboard />} isAuthenticated={loggedIn }/>} />
             <Route path="/solicitudes" element={<ProtectedRoute element={<TabsSolicitudAdmin />} isAuthenticated={loggedIn && userRole === 'admin'}  />} />
+            <Route path="/solicitud-form" element={<ProtectedRoute element={<Form />} isAuthenticated={loggedIn && userRole === 'admin'}  />} />
             <Route path="/ausencias" element={<ProtectedRoute element={<TabsAusenciaAdmin />} isAuthenticated={loggedIn  && userRole === 'admin'} />} />
             <Route path="/administrador" element={<ProtectedRoute element={<Administrador/>} isAuthenticated={loggedIn  && userRole === 'admin'} />}/>
             <Route path="/auditorias" element={<ProtectedRoute element={<TabsAuditoria/>} isAuthenticated={loggedIn  && userRole === 'admin'} />}/>
             <Route path="/auditorias-login" element={<ProtectedRoute element={<TabsAuditoriaLogin/>} isAuthenticated={loggedIn  && userRole === 'admin'} />}/>
+            <Route path="/panel-expedientes" element={<ProtectedRoute element={<Panel/>} isAuthenticated={loggedIn  && userRole === 'admin'} />}/>
         </Routes>
     );
 };

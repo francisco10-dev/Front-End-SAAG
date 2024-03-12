@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState, useEffect }from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
@@ -43,11 +43,11 @@ function a11yProps(index: number) {
 
 export default function TabsSolicitudAdmin() {
   const Service = new SolicitudService();
-  const [value, setValue] = React.useState(0);
-  const [solicitudes, setSolicitudes] = React.useState<Solicitud[]>([]);
-  const [ approved, setApproved ] = React.useState<Solicitud[]>([]);
-  const [pendings, setPendings] = React.useState<Solicitud[]>([]);
-  const [loading, setLoading] = React.useState(false); 
+  const [value, setValue] = useState(0);
+  const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
+  const [ approved, setApproved ] = useState<Solicitud[]>([]);
+  const [pendings, setPendings] = useState<Solicitud[]>([]);
+  const [loading, setLoading] = useState(false); 
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -59,11 +59,7 @@ export default function TabsSolicitudAdmin() {
     const fetchData = async () => {
       try {
         const solicitudesData = await Service.getSolicitudes();
-        setSolicitudes(solicitudesData);
-        const aprobadas = solicitudesData.filter((solicitud) => solicitud.estado === 'procesada');
-        setApproved(aprobadas);
-        const pendientes = solicitudesData.filter((solicitud) => solicitud.estado === 'pendiente');
-        setPendings(pendientes);
+        updateRows(solicitudesData);
       } catch (error) {
         console.error('Error al obtener solicitudes:', error);
       }finally {
@@ -73,16 +69,38 @@ export default function TabsSolicitudAdmin() {
     fetchData();
   }
 
-React.useEffect(() => {
-  loadRequests();
-}, [value]);
+  useEffect(() => {
+    loadRequests();
+  }, []);
 
-const renderContent = (data: Solicitud[]) =>
-  loading ? (
-    <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%' }} />
-  ) : (
-    <DataTable rows={data} updateSolicitudes={loadRequests} />
-  );
+  const setData = (data: Solicitud[]) => {
+    const aprobadas = data.filter((solicitud) => solicitud.estado === 'procesada');
+    setApproved(aprobadas);
+    const pendientes = data.filter((solicitud) => solicitud.estado === 'pendiente');
+    setPendings(pendientes);
+  }
+
+  const updateRows = (nuevoArray: Solicitud[]) => {
+    setSolicitudes(nuevoArray);
+    setData(nuevoArray);
+  };
+  
+  const deleteRows = (ids: number[]) => {
+    const nuevoArray = solicitudes.filter((elemento) => !ids.includes(elemento.idSolicitud));
+    updateRows(nuevoArray);
+  };
+  
+  const changeStatus = (id: number, status: string) => {
+    const nuevoArray = solicitudes.map((solicitud) =>
+      solicitud.idSolicitud === id ? { ...solicitud, estado: status } : solicitud
+    );
+    updateRows(nuevoArray);
+  };
+  
+
+  if (loading) {
+    return <div><CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%' }}/></div>;
+  }
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -94,13 +112,13 @@ const renderContent = (data: Solicitud[]) =>
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-      {renderContent(solicitudes)}
+        <DataTable isLoading={loading} rows={solicitudes} deleteRows={deleteRows} onSolicitudUpdate={changeStatus} load={loadRequests}/>
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-      {renderContent(approved)}
+        <DataTable isLoading={loading} rows={approved} deleteRows={deleteRows} onSolicitudUpdate={changeStatus} load={loadRequests}/>
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
-      {renderContent(pendings)}
+        <DataTable isLoading={loading} rows={pendings} deleteRows={deleteRows} onSolicitudUpdate={changeStatus} load={loadRequests}/>
       </CustomTabPanel>
     </Box>
   );

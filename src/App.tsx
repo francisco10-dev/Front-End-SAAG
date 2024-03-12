@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import Login from './components/login/login';
 import { useAuth } from './authProvider'; 
-import MenuPanel from './components/tools/menu';
 import Welcome from './components/welcome/welcome';
+import Main from './components/tools/panel';
+import WarningModal from './components/warning-modal/warningModal';
 
 
 const App: React.FC = () => {
   const { loggedIn, logout} = useAuth();
   const [showWelcome, setShowWelcome] = useState(false);
-
+  const [showWarning, setShowWarning] = useState(false);
  
   useEffect(() => {
     const hasShownWelcome = sessionStorage.getItem('Welcome');
@@ -25,14 +26,22 @@ const App: React.FC = () => {
   // Funcionalidad para controlar la inactividad del usuario
   useEffect(() => {
       let inactivityTimer: NodeJS.Timeout;
+      let warningTimer: NodeJS.Timeout;
 
+      if(loggedIn){
       const handleUserActivity = () => {
         clearTimeout(inactivityTimer);
+        clearTimeout(warningTimer);
 
         inactivityTimer = setTimeout(() => {
         logout();
-        },10 * 60 *1000);  //Tiempo de inactividad establecido de 10 minutos
+        }, 10 * 60 *1000);  //Tiempo de inactividad establecido de 10 minutos
+     
+        warningTimer = setTimeout(() => {
+          setShowWarning(true);
+        }, 9.833 * 60 * 1000); // Mostrar advertencia cuando queden 15 segundos menos (9.75 minutos)
       };
+     
 
       window.addEventListener('mousemove', handleUserActivity);
       window.addEventListener('keydown', handleUserActivity);
@@ -43,14 +52,20 @@ const App: React.FC = () => {
         window.removeEventListener('mousemove', handleUserActivity);
         window.removeEventListener('keydown', handleUserActivity);
         clearTimeout(inactivityTimer);
+        clearTimeout(warningTimer);
       };
-      
-  }, [logout]);
+    }
+  }, [loggedIn, logout]);
 
+  const handleWarningClose = () => {
+    setShowWarning(false);
+    // Puedes agregar acciones adicionales aquí, si es necesario
+  };
 
   return (
     <div>
-      {showWelcome ? <Welcome /> : (loggedIn? <MenuPanel /> : <Login />)}
+      {showWelcome ? <Welcome /> : (loggedIn? <Main/> : <Login />)}
+      {showWarning && <WarningModal onClose={handleWarningClose} />}
     </div>
   );
 };

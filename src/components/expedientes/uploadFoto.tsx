@@ -1,0 +1,88 @@
+import {useState, ChangeEvent} from 'react';
+import { Box, Typography, Button } from "@mui/material";
+
+interface Props{
+    Image: (file: File | null) => void;
+    imageUrl: string | null;
+}
+
+const UploadImage = ({imageUrl, Image}: Props) => {
+
+    const [selectedImage, setSelectedImage] = useState<string | null>(imageUrl);
+    //@ts-ignore
+    const [selectedImage2, setSelectedImage2] = useState<File | null>(null);
+
+    const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target?.files?.[0];
+    
+        if (file && file.type.startsWith('image/')) {
+          const reader = new FileReader();
+    
+          reader.onload = (e) => {
+            const result = e.target?.result;
+            if (typeof result === 'string') {
+              setSelectedImage(result);
+              setSelectedImage2(file);
+              Image(file);
+            }
+          };
+    
+          reader.readAsDataURL(file);
+        } else {
+          console.error('error');
+        }
+    };
+
+    const restartImages = () => {
+      setSelectedImage(imageUrl);
+      setSelectedImage2(null);
+      Image(null);
+    }
+
+    return (
+
+        <Box sx={{display: ''}}>
+          <label htmlFor="file-input">
+            <Box
+              component="div"
+              className='container-input-foto'
+              sx={{
+                border: selectedImage? 'solid 1px' :  'dashed 1px',
+                opacity: selectedImage? 1 : 0.7,
+                width: selectedImage ? 'auto' : 100, // Establecer el ancho automático si hay una imagen
+                height: selectedImage ? 'auto' : 100, // Establecer la altura automática si hay una imagen
+              }}
+            >
+              <input
+                id="file-input"
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className='input-Foto'
+              />
+                {selectedImage ? (
+                  <img
+                    src={selectedImage}
+                    alt="Selected"
+                    className='image-'
+                  />
+                ) : (
+                  <Typography variant="body1" color="text.primary">
+                    Foto carné
+                  </Typography>
+                )}
+              </Box>
+            </label>
+          <Box>
+            {selectedImage !== imageUrl? 
+              <Button onClick={()=> restartImages()} sx={{color: 'red'}}>
+                <Typography variant='caption'>Restablecer</Typography>
+              </Button> : ''
+            }
+          </Box>
+        </Box>
+    );
+
+}
+
+export default UploadImage;

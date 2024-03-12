@@ -74,7 +74,7 @@ a {
 .sidebar ul li a {
   display: flex;
   width: 240px;
-  padding: 10px 10px;
+  padding: 10px 0px;
   margin: 0 0 10px;
   font-size: 14px;
   position: relative;
@@ -102,6 +102,7 @@ a{
   display: inline-block;
   vertical-align: text-bottom;
   transition: all 0.5s 0.3s ease;
+  margin-top: 2.3%;
 }
 
 .sidebar ul li a .count {
@@ -184,7 +185,7 @@ ul{
 }
   
 .sidebar::-webkit-scrollbar-thumb {
-  background-color:rgb(128, 180, 133); 
+  background-color:rgb(219, 233, 241); 
   border-radius: 10px; 
 }
   
@@ -193,7 +194,7 @@ ul{
 }
   
 .sidebar::-webkit-scrollbar-thumb:hover {
-  background-color:rgb(27, 61, 81); 
+  background-color:rgb(219, 233, 241); 
 }
 
 a{
@@ -202,7 +203,6 @@ a{
 
 .active{
   color: #015dfc;
-  text-decoration: underline;
 }
 
 .ul{

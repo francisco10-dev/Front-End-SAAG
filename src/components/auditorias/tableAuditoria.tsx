@@ -57,8 +57,8 @@ export default function DataTable(props: DataTableProps) {
       const formattedDate = utils.formatDate(row.fechaAsetSelectedAuditoriaLogin); 
       return (
         (row.nombreUsuario && row.nombreUsuario.toLowerCase().includes(filterText.toLowerCase())) ||
-        (row.estado && row.estado.toLowerCase().includes(filterText.toLowerCase())) ||
-        (row.idColaborador && row.idColaborador.toString().includes(filterText)) ||
+        (row.metodo && row.metodo.toLowerCase().includes(filterText.toLowerCase())) ||
+        (row.url && row.url.toLowerCase().includes(filterText.toLowerCase())) ||
         (row.idAuditoria && row.idAuditoria.toString().includes(filterText)) ||
         (formattedDate.toLowerCase().includes(filterText.toLowerCase()))
       );
@@ -80,7 +80,7 @@ export default function DataTable(props: DataTableProps) {
 
 
   return (
-    <div style={{ height: 400, width: '85%' }}>
+    <div style={{ height: '60vh', width: '100%' }}>
      <TextField 
         label="Buscar..."
         variant="standard"

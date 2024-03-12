@@ -19,7 +19,7 @@ class UsuarioService {
   async login(data: any): Promise<any> {
     try { 
       const response = await this.axiosInstance.post('/login/', data);
-      return response.data;
+      return response;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {

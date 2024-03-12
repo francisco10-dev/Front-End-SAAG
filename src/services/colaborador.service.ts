@@ -1,15 +1,26 @@
-    import axios from 'axios';
+    import axios, {  AxiosResponse } from 'axios';
     import axiosApi from '../services/api.service';
+    import { Solicitud } from './solicitud.service';
+    import { Puesto } from './puesto.service';
 
+      
     export interface Colaborador {
         idColaborador: number;
         nombre: string;
+        identificacion: string;
         correoElectronico: string;
         edad: number;
         domicilio: string;
-        fechaNacimiento: Date;
+        fechaNacimiento: Date | any;
         unidad?: string | null;
         idPuesto?: number | null;
+        puesto?: Puesto | null;
+        fotoCarnet: Blob | null;
+        equipo: string;
+        estado: string;
+        tipoJornada: string | null;
+        fechaIngreso: string;
+        fechaSalida: string | null;
     }
 
     class ColaboradorService {
@@ -19,13 +30,13 @@
         this.axiosInstance = axiosApi;
     }
 
-    async agregarColaborador(data: any): Promise<Colaborador> {
+    async agregarColaborador(data: any): Promise<AxiosResponse> {
         try {
         const response = await this.axiosInstance.post('/agregar-colaborador/', data);
-        return response.data;
+        return response;
         } catch (error) {
         if (axios.isAxiosError(error)) {
-            if (error.response) {
+          if (error.response) {
             throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
             } else {
             throw new Error('Error en la solicitud de red');
@@ -68,10 +79,10 @@
         }
     }
 
-    async actualizarColaborador(id: string, data: any): Promise<Colaborador> {
+    async actualizarColaborador(id: number, data: any): Promise<AxiosResponse> {
         try {
         const response = await this.axiosInstance.put(`/actualizar-colaborador/${id}`, data);
-        return response.data;
+        return response;
         } catch (error) {
         if (axios.isAxiosError(error)) {
             if (error.response) {
@@ -115,7 +126,95 @@
         throw error;
         }
     }
-    // Agrega métodos adicionales según las necesidades específicas de los colaboradores
-    }
 
-    export default ColaboradorService;
+    async agregarTelefono(id: number, phoneNumber: string): Promise<number> {
+        try {
+            const data = {
+                numeroTelefono: phoneNumber,
+                idColaborador: id
+            };
+            
+           const response = await this.axiosInstance.post(`telefonos/agregar-telefono`, data);
+           return response.status;
+        } catch (error) {
+          if (axios.isAxiosError(error)) {
+            if (error.response) {
+              throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
+            } else {
+              throw new Error('Error en la solicitud de red');
+            }
+          }
+          throw error;
+        }
+      }
+
+      async agregarTelefonos(id: number, phoneNumbers: string[]): Promise<number[]> {
+        const statuses: number[] = [];
+      
+        for (const number of phoneNumbers) {
+          try {
+            const data = {
+              numeroTelefono: number,
+              idColaborador: id
+            };
+            const response = await this.axiosInstance.post(`telefonos/agregar-telefono`, data);
+            statuses.push(response.status);
+          } catch (error) {
+            statuses.push(0);
+            console.error(error);
+          }
+        }
+      
+        return statuses;
+      }
+
+      async actualizarTelefono(id: number, newNumber: string): Promise<number> {
+        try {
+            const data = {
+              numeroTelefono : newNumber
+            };
+            const response = await this.axiosInstance.put(`telefonos/actualizar-telefono/${id}`,data);
+            return response.status;
+        } catch (error) {
+          if (axios.isAxiosError(error)) {
+              if (error.response) {
+                throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
+              } else {
+                throw new Error('Error en la solicitud de red');
+              }
+          }
+          throw error;
+        }
+      } 
+
+      async obtenerSolicitudesPorColaborador(id: number): Promise<Solicitud[]> {
+        try {
+        const response = await this.axiosInstance.get('/solicitudes-por-colaborador/'+id);
+        console.log(response);
+        const colaboradores = response.data; 
+        return colaboradores;
+        } catch (error) {
+        if (axios.isAxiosError(error)) {
+            if (error.response) {
+            throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
+            } else {
+            throw new Error('Error en la solicitud de red');
+            }
+        }
+        throw error;
+        }
+     }
+
+     async getPhoto(id: number): Promise<AxiosResponse<any, any>> {
+      try {
+        const response = await this.axiosInstance.get(`/documentos/obtener-foto/${id}`);
+        return response;
+      } catch (error) {
+        throw error; 
+      }
+    }
+      
+
+}
+
+export default ColaboradorService;
