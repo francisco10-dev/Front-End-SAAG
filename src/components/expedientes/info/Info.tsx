@@ -60,9 +60,9 @@ const Info: React.FC<Props> = ({ colaborador, size, marginBottom }: Props) => {
             </Grid>
           )
         ))}
-        <Grid item xs={12} sm={6} md={size} key="fechaIngreso" >
+        <Grid item xs={12} sm={6} md={size} key="edad" >
           <Typography variant="body2">
-            Edad:
+            Edad
           </Typography>
           <Typography variant="body2" color="textSecondary">
             {calcularEdad(colaborador.fechaNacimiento) + ' años'}
@@ -70,7 +70,7 @@ const Info: React.FC<Props> = ({ colaborador, size, marginBottom }: Props) => {
         </Grid>
         <Grid item xs={12} sm={6} md={size} key="fechaIngreso" >
           <Typography variant="body2">
-            Fecha de ingreso:
+            Fecha de ingreso
           </Typography>
           <Typography variant="body2" color="textSecondary">
             {formatDate(fechaIngreso)}
@@ -78,7 +78,7 @@ const Info: React.FC<Props> = ({ colaborador, size, marginBottom }: Props) => {
         </Grid>
         <Grid item xs={12} sm={6} md={size} key="periodoEnEmpresa" >
           <Typography variant="body2">
-            Periodo en la organización:
+            Periodo en la organización
           </Typography>
           <Typography variant="body2" color="textSecondary">
             {periodoEnEmpresa}
@@ -87,7 +87,7 @@ const Info: React.FC<Props> = ({ colaborador, size, marginBottom }: Props) => {
         {fechaSalida && (
           <Grid item xs={12} sm={6} md={size} key="fechaSalida" >
             <Typography variant="body2">
-              Fecha de salida:
+              Fecha de salida
             </Typography>
             <Typography variant="body2" color="textSecondary">
               { fechaSalida? formatDate(fechaSalida) : 'No indica'}

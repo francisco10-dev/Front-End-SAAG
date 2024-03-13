@@ -9,9 +9,7 @@ interface Props{
 const UploadImage = ({imageUrl, Image}: Props) => {
 
     const [selectedImage, setSelectedImage] = useState<string | null>(imageUrl);
-    //@ts-ignore
-    const [selectedImage2, setSelectedImage2] = useState<File | null>(null);
-
+    
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target?.files?.[0];
     
@@ -22,7 +20,6 @@ const UploadImage = ({imageUrl, Image}: Props) => {
             const result = e.target?.result;
             if (typeof result === 'string') {
               setSelectedImage(result);
-              setSelectedImage2(file);
               Image(file);
             }
           };
@@ -35,7 +32,6 @@ const UploadImage = ({imageUrl, Image}: Props) => {
 
     const restartImages = () => {
       setSelectedImage(imageUrl);
-      setSelectedImage2(null);
       Image(null);
     }
 

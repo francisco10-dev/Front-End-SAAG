@@ -21,6 +21,7 @@ const Login = () => {
   const { setLoggedIn, setUserRole, setColaborador } = useAuth();
   const [isLoading, setLoading] =useState(false);
 
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -33,8 +34,6 @@ const Login = () => {
       const response = await usuarioService.login(data);
       if (response.status === 200) {
         handleSuccessfulLogin(response.data);
-      }else{
-        console.log('NO')
       }
     } catch (error) {
       if(error instanceof Error && error.message.includes('401')){
@@ -141,5 +140,6 @@ const Login = () => {
 };
 
 export default Login;
+
 
 

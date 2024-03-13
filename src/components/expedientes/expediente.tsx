@@ -57,11 +57,14 @@ const ExpedienteInfo = ({data}: Props) => {
     }
 
     useEffect(() => {
-        if (expediente && expediente.fotoCarnet !== null) {
-            loadImage();
-        }else{
-            setImageUrl(null);
-        }
+        const loadImages = async () => {
+            if (expediente && expediente.fotoCarnet !== null) {
+                await loadImage();
+            } else {
+                setImageUrl(null);
+            }
+        };
+        loadImages();
     }, [expediente]);
 
     useEffect(() => {

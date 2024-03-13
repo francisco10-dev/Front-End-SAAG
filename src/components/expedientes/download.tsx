@@ -14,6 +14,7 @@ const FileDownloader = ({ fileId }: { fileId: number }) => {
       // Utiliza file-saver para guardar el archivo
       saveAs(fileBlob, `archivo.${fileBlob.type.split('/')[1]}`);
     } catch (error) {
+      //@ts-ignore
       setError(error.message);
     }
   };

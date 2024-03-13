@@ -125,5 +125,6 @@
 
 .tableContainerDocs {
     max-height: 400px;
+    min-height: 250px;
     overflow: auto;
 }

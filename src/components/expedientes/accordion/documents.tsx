@@ -278,7 +278,7 @@ export default function Files(props: {idColaborador: number}) {
             footer={null}
             centered
         >
-            {selectedFiles.length === 0 && <UploadFiles onFilesChange={handleFilesChange}/>}
+            {selectedFiles.length === 0 && <UploadFiles onFilesChange={handleFilesChange} isMultiple={true} message='Haz click o arrastra para seleccionar archivos'/>}
             {uploadingFiles && (
                 <Box className = 'spinDocs'>
                     <Spin size="large" />
@@ -352,7 +352,7 @@ export default function Files(props: {idColaborador: number}) {
             </TableContainer>
         ) : (
             <Box>
-                <Typography variant='body2' sx={{textAlign: 'center', padding: 3}}>No hay documentos registrados</Typography>
+                <Typography variant='body2' sx={{textAlign: 'center', padding: 3}}>No hay archivos registrados</Typography>
            </Box>
         )}
     </Box>

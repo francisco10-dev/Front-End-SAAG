@@ -16,6 +16,7 @@ import ColaboradorService from '../../../services/colaborador.service';
 import { Solicitud } from '../../../services/solicitud.service';
 import { formatDate } from '../../solicitudes/utils';
 import Badge from '../../solicitudes/badge';
+import { TextField } from '@mui/material';
 
 function Row(props: { row: Solicitud }) {
   
@@ -97,6 +98,8 @@ export default function Requests({id}: Props) {
 
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
   const [idColaborador, setIdColaborador] = useState(id);
+  const [filterText, setFilterText] = useState('');
+  const [filteredRows, setFilteredRows] = useState(solicitudes); 
 
   const loadData = async ()=> {
     try {
@@ -108,6 +111,32 @@ export default function Requests({id}: Props) {
     }
   }
 
+  
+  const handleInputChange = (value: string) => {
+    setFilterText(value);
+  }
+
+  const applyFilters = () => {
+    const filteredData = solicitudes.filter((row) => filterRow(row));
+    setFilteredRows(filteredData);
+  };
+
+  const filterRow = (row: Solicitud) => {
+    const formattedDate = formatDate(row.fechaSolicitud);
+    return (
+      (row.nombreColaborador && row.nombreColaborador.toLowerCase().includes(filterText.toLowerCase())) ||
+      (row.estado && row.estado.toLowerCase().includes(filterText.toLowerCase())) ||
+      (row.tipoSolicitud && row.tipoSolicitud.toLowerCase().includes(filterText.toLowerCase())) ||
+      (row.idColaborador && row.idColaborador.toString().includes(filterText)) ||
+      (row.idSolicitud && row.idSolicitud.toString().includes(filterText)) ||
+      (formattedDate.toLowerCase().includes(filterText.toLowerCase()))
+    );
+  };
+
+  useEffect(() => {
+    applyFilters();
+  },[filterText, solicitudes]);
+
   useEffect(()=> {
     setIdColaborador(id);
   },[id]);
@@ -118,31 +147,45 @@ export default function Requests({id}: Props) {
 
   return (
     <Box>
-        {solicitudes.length > 0 ? 
-            <TableContainer component={Paper} sx={{maxHeight: 400}} >
-                <Table aria-label="collapsible table">
-                <TableHead>
-                    <TableRow>
-                    <TableCell />
-                    <TableCell>N# Solicitud</TableCell>
-                    <TableCell>Asunto</TableCell>
-                    <TableCell>Fecha Solicitud</TableCell>
-                    <TableCell>Encargado</TableCell>
-                    <TableCell align='center'>Estado</TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
-                    {solicitudes.map((row) => (
-                    <Row key={row.idSolicitud} row={row} />
-                    ))}
-                </TableBody>
-                </Table>
-            </TableContainer>
-         : 
-         <Box>
-          <Typography variant='body2' sx={{textAlign: 'center', padding: 3}}>No hay solicitudes registradas</Typography>
-         </Box>
-        }
-     </Box>
+      <Box ml={2}>
+          <TextField
+              id="outlined-basic" 
+              label="Buscar" 
+              variant="standard" 
+              sx={{marginBottom: 5,  marginRight: 2}}
+              value={filterText}
+              onChange={(e) => handleInputChange(e.target.value)}
+          />
+      </Box>
+
+      <Box>
+          {filteredRows.length > 0 ? 
+              <TableContainer component={Paper} sx={{maxHeight: 400}} >
+                  <Table aria-label="collapsible table">
+                  <TableHead>
+                      <TableRow>
+                      <TableCell />
+                      <TableCell>N# Solicitud</TableCell>
+                      <TableCell>Asunto</TableCell>
+                      <TableCell>Fecha Solicitud</TableCell>
+                      <TableCell>Encargado</TableCell>
+                      <TableCell align='center'>Estado</TableCell>
+                      </TableRow>
+                  </TableHead>
+                  <TableBody>
+                      {filteredRows.map((row) => (
+                      <Row key={row.idSolicitud} row={row} />
+                      ))}
+                  </TableBody>
+                  </Table>
+              </TableContainer>
+          : 
+          <Box>
+            <Typography variant='body2' sx={{textAlign: 'center', padding: 3}}>No hay solicitudes registradas</Typography>
+          </Box>
+          }
+      </Box>
+    </Box>
+  
   );
 }

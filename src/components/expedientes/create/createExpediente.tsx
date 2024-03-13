@@ -1,25 +1,17 @@
-import { useState, ChangeEvent, useEffect} from 'react';
+import { useState, useEffect} from 'react';
 import { PlusOutlined, MinusCircleOutlined, PlusCircleFilled } from '@ant-design/icons';
-import { Button, Col, DatePicker, Spin, Drawer, Popconfirm, message, Form, Select, Input, Row, Space, Modal } from 'antd';
-import UploadFiles from './file/uploadFile';
-import { Box, IconButton } from '@mui/material';
+import { Button, Col, DatePicker, Spin, Drawer, message, Form, Select, Input, Row, Space, Modal } from 'antd';
+import UploadFiles from '../file/uploadFile';
+import { Box } from '@mui/material';
 import type { UploadFile } from 'antd/lib/upload/interface';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
-import DeleteOutlineOutlinedIcon from '@mui/icons-material/DeleteOutlineOutlined';
 import { useMediaQuery } from 'react-responsive';
-import ExpedienteService from '../../services/expediente.service';
-import ColaboradorService from '../../services/colaborador.service';
-import '../../App.css'
-import AddPuesto from './addpuesto';
-import PuestoService from '../../services/puesto.service';
-
+import ExpedienteService from '../../../services/expediente.service';
+import ColaboradorService from '../../../services/colaborador.service';
+import '../../../App.css';
+import AddPuesto from '../addpuesto';
+import PuestoService from '../../../services/puesto.service';
+import UploadImage from '../uploadFoto';
+import SelectedFiles from './selectedFiles';
 
 
 interface EmployeeData {
@@ -28,7 +20,7 @@ interface EmployeeData {
   edad: string;
   correoElectronico: string;
   unidad: string;
-  puesto: string;
+  idPuesto: number | null;
   fechaNacimiento: string;
   fechaIngreso: string;
   fechaSalida: string;
@@ -36,7 +28,7 @@ interface EmployeeData {
   estado: string;
   equipo: string;
   tipoJornada: string;
-}
+};
 
 const initialEmployeeData: EmployeeData = {
   nombre: '',
@@ -44,7 +36,7 @@ const initialEmployeeData: EmployeeData = {
   edad: '',
   correoElectronico: '',
   unidad: '',
-  puesto: 'Jefe de TI',
+  idPuesto: null,
   fechaNacimiento: '',
   fechaIngreso: '',
   fechaSalida: '',
@@ -58,12 +50,12 @@ interface Props{
   openForm: boolean;
   setOpenForm: (value: boolean) => void;
   reload: ()=> void;
-}
+};
 
 export interface Puesto{
-  value: string;
+  value: number;
   label: string;
-}
+};
 
 const Formulario = ({openForm, setOpenForm, reload}:Props) => {
 
@@ -84,27 +76,6 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
   const colaboradorService = new ColaboradorService();
 
   
-
-  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target?.files?.[0];
-
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-
-      reader.onload = (e) => {
-        const result = e.target?.result;
-        if (typeof result === 'string') {
-          setSelectedImage(result);
-          setSelectedImage2(file);
-        }
-      };
-
-      reader.readAsDataURL(file);
-    } else {
-      console.error('error');
-    }
-  };
-
   const deleteImages = () => {
     setSelectedImage(null);
     setSelectedImage2(null);
@@ -164,7 +135,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
       }
     });
     return formData;
-  }
+  };
 
   const uploadFiles = async (id : string) => {
     try {
@@ -174,10 +145,10 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
         }else{
             message.error('Ocurrió un error al registrar los documentos.');
         }
-    } catch (error) {
+    }catch (error) {
         message.error('Ocurrió un error al registrar documentos, intente de nuevo más tarde.');
-      }
-  }
+    }
+  };
   
   const loadPuestos = async () => {
     try {
@@ -185,14 +156,14 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
       const response = await service.getPuestos();
 
       const opciones= response.map(puesto => ({
-        value: puesto.idPuesto.toString(),
+        value: puesto.idPuesto,
         label: puesto.nombrePuesto
       }));
       setPuestos(opciones);
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
     loadPuestos();
@@ -211,12 +182,12 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
       console.error(error);
       return { emailExists: false, idExists: false };
     }
-  }
+  };
   
   const handleSuccessfulRegistration = (idColaborador: any) => {
     handleUploadPhoto(idColaborador);
     handleAddPhoneNumbers(idColaborador);
-    uploadFiles(idColaborador);
+    selectedFiles.length > 0 && uploadFiles(idColaborador);
     message.success('Registro exitoso!');
     onClose();
     reload();
@@ -237,6 +208,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
       } else if (idExists) {
         message.warning('La identificación ingresada ya existe.');
       } else {
+        console.log(data);
         const response = await colaboradorService.agregarColaborador(data);
 
         console.log(response.data);
@@ -246,7 +218,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
         }
       }
     } catch (error) {
-      message.error('Ocurrió un error al registrar la informaación, por favor intente más tarde. ');
+      message.error('Ocurrió un error al registrar la información, por favor intente más tarde. ');
     } finally {
       setLoading(false);
     }
@@ -282,8 +254,8 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
   };
 
   const handleChangePuesto = (value: string) => {
-    handleChange('puesto', value);
-  }
+    handleChange('idPuesto', value);
+  };
 
   const handleChange = (fieldName : any, value : any) => {
     setEmployeeData({
@@ -307,7 +279,11 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
 
   const openAddPuesto = () => {
     setOpenP(true);
-  }
+  };
+
+  const handleImage = (file: File | null) => {
+    setSelectedImage2(file);
+  };
 
   return (
     <>
@@ -336,45 +312,8 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
           <Spin size="large" />
         </Box> : 
         <Form form={form} layout="vertical" initialValues={initialEmployeeData} requiredMark  onFinish={handleSubmit}>
-        <Box display='flex'>
-          <label htmlFor="file-input">
-           <Box
-              component="div"
-              className='container-input-foto'
-              sx={{
-                border: selectedImage? 'none' :  'dashed 1px',
-                opacity: selectedImage? 1 : 0.7,
-                width: selectedImage ? 'auto' : 100, // Establecer el ancho automático si hay una imagen
-                height: selectedImage ? 'auto' : 100, // Establecer la altura automática si hay una imagen
-              }}
-            >
-              <input
-                id="file-input"
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-                className='input-Foto'
-              />
-                {selectedImage ? (
-                  <img
-                    src={selectedImage}
-                    alt="Selected"
-                    className='image-'
-                  />
-                ) : (
-                  <Typography variant="body1" color="text.primary">
-                    Foto carné
-                  </Typography>
-                )}
-              </Box>
-            </label>
-            <Box>
-              {selectedImage? 
-                <IconButton onClick={()=> deleteImages()} sx={{color: 'red'}}>
-                  <DeleteOutlineOutlinedIcon/>
-                </IconButton> : ''
-              }
-            </Box>
+          <Box>
+            <UploadImage imageUrl={selectedImage} Image={handleImage}/>
           </Box>
           <Row gutter={16}>
             <Col span={isLargeScreen ? 12 : 24}>
@@ -563,55 +502,9 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
                 footer={null}
                 centered
               >
-                <UploadFiles onFilesChange={handleFilesChange}/>
+                <UploadFiles onFilesChange={handleFilesChange} isMultiple={true} message='Haz click o arrastra para seleccionar archivos' />
               </Modal>
-              {selectedFiles.length > 0? 
-                <Box sx={{width: 725}}>
-                  <TableContainer component={Paper} sx={{width: isLargeScreen? 700 : 350}}>
-                    <Table sx={{ minWidth: 250 }} aria-label="simple table">
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Archivo</TableCell>
-                          <TableCell align='center'>
-                            <Popconfirm
-                                title="Quitar archivos"
-                                description="Limpiar?"
-                                onConfirm={() => setSelectedFiles([])}
-                                okText="Sí"
-                                cancelText="No"
-                              >
-                                <MinusCircleOutlined style={{color: 'red', fontSize: 18}}/>
-                            </Popconfirm>
-                          </TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {selectedFiles.map((row, index) => (
-                          <TableRow
-                            key={row.name}
-                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                          >
-                            <TableCell component="th" scope="row">
-                              {row.name}
-                            </TableCell>
-                            <TableCell align='center'>
-                              <Popconfirm
-                                title="Quitar archivo"
-                                description="Quitar archivo de la lista?"
-                                onConfirm={() => handleRemoveFile(index)}
-                                okText="Sí"
-                                cancelText="No"
-                              >
-                                <MinusCircleOutlined style={{color: 'red', fontSize: 18}}/>
-                              </Popconfirm>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
-                </Box> : <Box></Box> 
-              }
+             <SelectedFiles selectedFiles={selectedFiles} handleRemoveFile={handleRemoveFile} setSelectedFiles={setSelectedFiles}/>
             </Box>
           </Box>
         </Form> }

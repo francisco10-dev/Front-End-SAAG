@@ -2,7 +2,7 @@ import { Box } from '@mui/material';
 import { useState } from 'react';
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { message, Button, Space, Input } from 'antd';
-import ColaboradorService from '../../../services/colaborador.service';
+import ColaboradorService from '../../../../services/colaborador.service';
 
 interface Props{
     idColaborador: number;

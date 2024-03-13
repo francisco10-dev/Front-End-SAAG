@@ -6,7 +6,13 @@ import { useMediaQuery } from 'react-responsive';
 
 const { Dragger } = Upload;
 
-const UploadFiles: React.FC<{ onFilesChange: (files: UploadFile[]) => void }> = ({ onFilesChange }) => {
+interface UploadFilesProps {
+  onFilesChange: (files: UploadFile[]) => void;
+  isMultiple: boolean;
+  message: string
+}
+
+const UploadFiles: React.FC<UploadFilesProps> = ({ onFilesChange, isMultiple, message }) => {
   const isLargeScreen = useMediaQuery({ query: '(min-width: 992px)' }); 
 
   const beforeUpload = (file: UploadFile) => {
@@ -16,7 +22,7 @@ const UploadFiles: React.FC<{ onFilesChange: (files: UploadFile[]) => void }> = 
 
   const props = {
     name: 'file',
-    multiple: true,
+    multiple: isMultiple,
     beforeUpload,
     showUploadList: false,
   };
@@ -26,8 +32,8 @@ const UploadFiles: React.FC<{ onFilesChange: (files: UploadFile[]) => void }> = 
       <p className="ant-upload-drag-icon">
         <InboxOutlined />
       </p>
-      {isLargeScreen? <p className="ant-upload-text">Haz clic o arrastra para subir archivos</p> 
-        : <p>Subir archivos</p>}
+      {isLargeScreen? <p className="ant-upload-text">{message}</p> 
+        : <p>Subir</p>}
       
     </Dragger>
   );

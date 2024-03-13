@@ -2,6 +2,7 @@ import {Box, Typography} from '@mui/material'
 import Info from './Info';
 import Loader from '../skeleton';
 import { Colaborador } from '../../../services/colaborador.service';
+import { useEffect } from 'react';
 
 interface Props{
     isLoadingImage: boolean;
@@ -32,7 +33,7 @@ const PersonalInfo = ({isLoadingImage, imageUrl, colaborador}: Props) => {
                 <Box>
                 <Typography variant='h5'>{colaborador?.nombre}</Typography> 
                 <Typography variant='body2'><span style={{ fontWeight: 'bold', fontSize: 13 }}>Unidad de gestión: </span>  {colaborador?.unidad ?? 'No indica'}</Typography>
-                <Typography variant='body2'><span style={{ fontWeight: 'bold', fontSize: 13 }}>Puesto: </span> {colaborador?.puesto?.nombrePuesto?? 'No indica'}</Typography>
+                <Typography variant='body2'><span style={{ fontWeight: 'bold', fontSize: 13 }}>Puesto: </span> {colaborador?.puesto ? colaborador.puesto.nombrePuesto : 'No indica'}</Typography>
                 </Box>
             </Box> 
             <Box m={2} mt={5}>

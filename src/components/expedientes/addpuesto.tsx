@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Select, Modal, message, } from 'antd';
 import PuestoService from '../../services/puesto.service';
 import { CircularProgress } from '@mui/material';
-import { Puesto } from './createExpediente';
+import { Puesto } from './create/createExpediente';
 
 const { Option } = Select;
 

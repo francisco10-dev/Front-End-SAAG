@@ -12,7 +12,10 @@ export interface Expediente {
 }
 
 export interface Documento {
+  idColaborador: number;
   idDocumento: number;
+  licencia: string | null;
+  curso: string | null;
   nombreArchivo: string;
   tamaño: string;
   fechaSubida: string;

@@ -6,6 +6,10 @@ import ExpedienteService from '../../../services/expediente.service';
 import 'moment/locale/es'
 import UploadImage from '../uploadFoto';
 import ColaboradorService, { Colaborador } from '../../../services/colaborador.service';
+import { Puesto } from '../create/createExpediente';
+import PuestoService from '../../../services/puesto.service';
+import { PlusCircleFilled } from '@ant-design/icons';
+import AddPuesto from '../addpuesto';
 
 
 type FieldType = {
@@ -49,12 +53,15 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData}: Props) => {
   const [estado, setEstado ] = useState(colaborador.estado); 
   const [estadoRazon, setRazon] = useState<string | null>(null);
   //@ts-ignore
-  const [puesto, setPuesto] = useState(colaborador.puesto?.nombrePuesto);
+  const [puesto, setPuesto] = useState(colaborador.puesto);
+  const [idPuesto, setIdPuesto] = useState(colaborador.puesto?.idPuesto);
   const [fechaIngreso, setFechaIngreso] = useState(colaborador.fechaIngreso);
   const [fechaSalida, setFechaSalida] = useState<string | null>(colaborador.fechaSalida);
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
+  const [puestos, setPuestos] = useState<Puesto[]>([]);
+  const [openP, setOpenP] = useState(false);
 
   const onFinish = async () => {
     try {
@@ -63,7 +70,7 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData}: Props) => {
 
       const service = new ColaboradorService();
       const response = await service.actualizarColaborador(colaborador.idColaborador, data);
-      handleUploadPhoto();
+      await handleUploadPhoto();
       if(response.status === 200){
         setIsEdit(false);
         loadData();
@@ -115,8 +122,8 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData}: Props) => {
         tipoJornada: tipoJornada,
         estado: estadoFinal,
         fechaIngreso: fechaIngreso,
-        fechaSalida: fechaSalida
-        //idPuesto: null,
+        fechaSalida: fechaSalida,
+        idPuesto: idPuesto,
       }
       return data;
   }
@@ -164,6 +171,34 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData}: Props) => {
     setImage(file);
   }
 
+  
+  const openAddPuesto = () => {
+    setOpenP(true);
+  };
+
+  const loadPuestos = async () => {
+    try {
+      const service = new PuestoService();
+      const response = await service.getPuestos();
+
+      const opciones= response.map(puesto => ({
+        value: puesto.idPuesto,
+        label: puesto.nombrePuesto
+      }));
+      setPuestos(opciones);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    loadPuestos();
+  }, []);
+  
+  const handleChangePuesto = (id: number) => {
+    setIdPuesto(id);
+  }
+
   return (
 
     <Box>
@@ -203,16 +238,25 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData}: Props) => {
               </Form.Item>              
             </Box>
             <Box display='flex'>
-              <Box sx={{width: 100, marginTop: -2}}>
+              <Box sx={{width: 100, marginTop: -1}}>
                 <Typography variant='body2'>Puesto:</Typography>
               </Box>
-              <Form.Item<FieldType>
-                name="puesto"
-                initialValue={colaborador.puesto?.nombrePuesto}
-                style={{ width: '150%', marginTop: -22 }}
-              >
-                <Input style={{border: 'none'}} onChange={(e)=> setPuesto(e.target.value)}/>
-              </Form.Item>              
+              <Box display='flex' width='100%'>
+                <Form.Item<FieldType>
+                  name="puesto"
+                  initialValue={colaborador.puesto?.nombrePuesto}
+                  style={{ width: '100%', marginTop: -15, marginLeft: -20 }}
+                >
+                  <Select
+                      style={{ width: '100%' }}
+                      placeholder = 'Seleccione'
+                      onChange={handleChangePuesto}
+                      options={puestos}
+                  />
+                </Form.Item>     
+                <Button onClick={openAddPuesto} type='primary' icon={<PlusCircleFilled />} style={{marginTop: -15.5, marginLeft: -115 }} />
+                <AddPuesto open={openP} setOpen={setOpenP} reload = {loadPuestos} existentes={puestos} /> 
+              </Box>
             </Box>
           </Box>
         </Box>

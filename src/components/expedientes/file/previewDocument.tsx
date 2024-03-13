@@ -31,7 +31,7 @@ const PreviewPdf = ({ open, setOpen, id, fileType }: Props) => {
       }
     };
 
-    fetchData();
+    id != 0 && fetchData();
   }, [id]);
 
   const handleCancel = () => {

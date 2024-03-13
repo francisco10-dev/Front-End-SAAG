@@ -81,7 +81,7 @@ const Main: React.FC = () => {
                 </div>
               </div>
             </div>
-            <Box style={{ padding: 24, paddingLeft: 40 }}>
+            <Box pl={4} pr={4} pb={0}>
                 <Rutas/>
             </Box>
           </Content>

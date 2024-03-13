@@ -21,7 +21,6 @@ const Panel = () => {
     };
 
     const handleExpediente = (nuevo: Colaborador| null) => {
-        console.log('Nuevo expediente:', nuevo);
         setSelectedExpediente(nuevo);
         localStorage.setItem('selectedExp', JSON.stringify(nuevo));
     };
@@ -49,7 +48,6 @@ const Panel = () => {
             if(selectedExpediente){
             const response = await service.obtenerColaboradorPorId(id);
             setSelectedExpediente(response);
-            console.log(response);
             }
         } catch (error) {
             console.log(error);
@@ -68,7 +66,13 @@ const Panel = () => {
     if(selectedExpediente){
         return (
             <Box>
-                <Box display='flex'>
+                <Box display='flex'
+                    position='sticky'  
+                    top={50}          
+                    bgcolor='white'    
+                    zIndex={1000} 
+                    padding={2}
+                >
                     <Box width={500}>
                         <Button onClick={() => handleBack()}><ArrowBackIcon sx={{marginRight: 1}}/>Volver</Button>
                     </Box>      

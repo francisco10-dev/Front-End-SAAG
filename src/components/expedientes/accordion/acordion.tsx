@@ -5,11 +5,14 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Box from '@mui/material/Box';
 import { Colaborador } from '../../../services/colaborador.service';
 import { Typography } from '@mui/material';
-import PhoneNumbers from './phoneNumbersList';
+import PhoneNumbers from './phoneNumbers/phoneNumbersList';
 import Requests from './requests';
 import Absences from './absences';
 import Files from './documents';
 import { useEffect, useState } from 'react';
+import Licenses from './licenses/tableLicenses';
+import TabsLicencias from './licenses/tabsLicencias';
+import TabsCourses from './courses/tabsCourses';
 
 interface Props{
     data: Colaborador | null
@@ -29,6 +32,34 @@ const Accordions = ({data}: Props) =>{
 
     return (
         <Box>
+            <Box className='acordion'>
+                <Accordion>
+                    <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="panel1-content"
+                        id="panel1-header"
+                        >
+                        <Typography variant='body1'>Licencias</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <TabsLicencias idColaborador = {colaborador.idColaborador}/>
+                    </AccordionDetails>
+                </Accordion>
+           </Box>
+           <Box className='acordion'>
+                <Accordion>
+                    <AccordionSummary
+                        expandIcon={<ExpandMoreIcon />}
+                        aria-controls="panel1-content"
+                        id="panel1-header"
+                        >
+                        <Typography variant='body1'>Cursos</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <TabsCourses idColaborador = {colaborador.idColaborador}/> 
+                    </AccordionDetails>
+                </Accordion>
+           </Box>
             <Box className='acordion'>
             <Accordion>
                 <AccordionSummary
@@ -50,7 +81,7 @@ const Accordions = ({data}: Props) =>{
                     aria-controls="panel1-content"
                     id="panel1-header"
                     >
-                    <Typography variant='body1'>Documentos</Typography>
+                    <Typography variant='body1'>Archivos</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                     <Files idColaborador={colaborador.idColaborador}/>

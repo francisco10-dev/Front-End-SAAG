@@ -5,12 +5,12 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { Box, IconButton, Typography } from '@mui/material';
-import ExpedienteService from '../../../services/expediente.service';
+import ExpedienteService from '../../../../services/expediente.service';
 import { useEffect, useState } from 'react';
 import { MinusCircleOutlined, EditOutlined, CloseCircleFilled, CheckCircleFilled } from '@ant-design/icons';
 import { Input, Popconfirm, message } from 'antd';
 import AddNumbers from './addNumbers';
-import ColaboradorService from '../../../services/colaborador.service';
+import ColaboradorService from '../../../../services/colaborador.service';
 
 interface Prop{
     idColaborador: number;

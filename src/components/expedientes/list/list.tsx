@@ -3,7 +3,7 @@ import TextField from '@mui/material/TextField';
 import { useEffect, useState } from "react";
 import { formatDate } from "../../solicitudes/utils";
 import { DataGrid, GridColDef, esES, GridRowSelectionModel } from '@mui/x-data-grid';
-import Formulario from "../createExpediente";
+import Formulario from "../create/createExpediente";
 import { CustomToolbar } from "./gridToolBar";
 import ColaboradorService, { Colaborador } from "../../../services/colaborador.service";
 
@@ -82,7 +82,6 @@ const List = ({selected, selectedExpediente}: Props) => {
     };
 
     const onViewClick = () => {
-        console.log(selectedIds);
         setOpenForm(true);
     }
     
