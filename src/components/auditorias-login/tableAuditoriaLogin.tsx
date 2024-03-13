@@ -24,12 +24,12 @@ export default function DataTable(props: DataTableProps) {
 
   const columns: (GridColDef & { renderCell?: any })[] = [
     { field: 'idAuditoria', headerName: 'ID', width: 60, disableColumnMenu: true },
-    { field: 'nombreUsuario', headerName: 'Usuario', width: 100 },
+    { field: 'nombreUsuario', headerName: 'Usuario', width: 120 },
     { field: 'exito', headerName: 'Éxito', width: 60, type: 'boolean' },
     { field: 'fechaLogin', headerName: 'Fecha Login', width: 200, valueGetter: (params) => utils.formatDate(params.value) },
     { field: 'fechaLogout', headerName: 'Fecha Logout', width: 200, valueGetter: (params) => utils.formatDate(params.value) },
-    { field: 'direccionIp', headerName: 'Dirección IP', width: 100 },
-    { field: 'agenteUsuario', headerName: 'Agente', width: 300 },
+    { field: 'direccionIp', headerName: 'Dirección IP', width: 200 },
+    { field: 'agenteUsuario', headerName: 'Agente', width: 600 },
   ];
 
   
@@ -47,8 +47,8 @@ export default function DataTable(props: DataTableProps) {
       const formattedDate = utils.formatDate(row.fechaAsetSelectedAuditoriaLogin); 
       return (
         (row.nombreUsuario && row.nombreUsuario.toLowerCase().includes(filterText.toLowerCase())) ||
-        (row.estado && row.estado.toLowerCase().includes(filterText.toLowerCase())) ||
-        (row.idColaborador && row.idColaborador.toString().includes(filterText)) ||
+        (row.fechaLogin && row.fechaLogin.toLowerCase().includes(filterText.toLowerCase())) ||
+        (row.fechaLogout && row.fechaLogout.toString().includes(filterText)) ||
         (row.idAuditoria && row.idAuditoria.toString().includes(filterText)) ||
         (formattedDate.toLowerCase().includes(filterText.toLowerCase()))
       );

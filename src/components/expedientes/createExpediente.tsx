@@ -23,6 +23,7 @@ import PuestoService from '../../services/puesto.service';
 
 
 interface EmployeeData {
+  idColaborador: int;
   nombre: string;
   identificacion: string;
   edad: string;
@@ -39,6 +40,7 @@ interface EmployeeData {
 }
 
 const initialEmployeeData: EmployeeData = {
+  idColaborador: null,
   nombre: '',
   identificacion: '',
   edad: '',
@@ -240,6 +242,8 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
         message.warning('La identificación ingresada ya existe.');
       } else {
         const response = await colaboradorService.agregarColaborador(data);
+
+        console.log(response.data);
   
         if (response.status === 200) {
           handleSuccessfulRegistration(response.data.data.idColaborador);
@@ -251,7 +255,6 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
       setLoading(false);
     }
   };
-
 
   //@ts-ignore
   const onChange = (date : any, dateString : any, fieldName : string ) => {

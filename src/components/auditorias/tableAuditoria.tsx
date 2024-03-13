@@ -27,13 +27,13 @@ export default function DataTable(props: DataTableProps) {
 
   const columns: (GridColDef & { renderCell?: any })[] = [
     { field: 'idAuditoria', headerName: 'ID', width: 60, disableColumnMenu: true },
-    { field: 'nombreUsuario', headerName: 'Usuario', width: 100 },
+    { field: 'nombreUsuario', headerName: 'Usuario', width: 120 },
     { field: 'rol', headerName: 'Rol', width: 100 },
-    { field: 'metodo', headerName: 'Método', width: 100 },
-    { field: 'url', headerName: 'URL', width: 250 },
+    { field: 'accion', headerName: 'Acción', width: 150 },
+    { field: 'nombre', headerName: 'Nombre', width: 170 },
     { field: 'fecha', headerName: 'Fecha', width: 200, valueGetter: (params) => utils.formatDate(params.value) },
     { field: 'direccionIp', headerName: 'Direccion IP', width: 100 },
-    { field: 'agenteUsuario', headerName: 'Agente', width: 300 },
+    { field: 'agenteUsuario', headerName: 'Agente', width: 600 },
   ];
 
   const onShowDetailClick = () => {
@@ -57,8 +57,8 @@ export default function DataTable(props: DataTableProps) {
       const formattedDate = utils.formatDate(row.fechaAsetSelectedAuditoriaLogin); 
       return (
         (row.nombreUsuario && row.nombreUsuario.toLowerCase().includes(filterText.toLowerCase())) ||
-        (row.metodo && row.metodo.toLowerCase().includes(filterText.toLowerCase())) ||
-        (row.url && row.url.toLowerCase().includes(filterText.toLowerCase())) ||
+        (row.accion && row.accion.toLowerCase().includes(filterText.toLowerCase())) ||
+        (row.nombre && row.nombre.toLowerCase().includes(filterText.toLowerCase())) ||
         (row.idAuditoria && row.idAuditoria.toString().includes(filterText)) ||
         (formattedDate.toLowerCase().includes(filterText.toLowerCase()))
       );
