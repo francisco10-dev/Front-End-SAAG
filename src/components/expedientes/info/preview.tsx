@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { Typography } from "@mui/material";
 import '../expedientes.css'
 import PersonalInfo from "./personalInfo";
-import ExpedienteService from "../../../services/expediente.service";
 import {CircularProgress} from "@mui/material";
 import ColaboradorService, { Colaborador } from "../../../services/colaborador.service";
 

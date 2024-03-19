@@ -21,7 +21,6 @@ import AddPuesto from './addpuesto';
 import PuestoService from '../../services/puesto.service';
 
 
-
 interface EmployeeData {
   nombre: string;
   identificacion: string;
@@ -61,7 +60,7 @@ interface Props{
 }
 
 export interface Puesto{
-  value: string;
+  value: number;
   label: string;
 }
 
@@ -185,7 +184,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
       const response = await service.getPuestos();
 
       const opciones= response.map(puesto => ({
-        value: puesto.idPuesto.toString(),
+        value: puesto.idPuesto,
         label: puesto.nombrePuesto
       }));
       setPuestos(opciones);
@@ -467,7 +466,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
                   />
                 </Form.Item>
                   <Button onClick={openAddPuesto} type='primary' icon={<PlusCircleFilled />} style={{marginTop: 5}} />
-                   <AddPuesto open={openP} setOpen={setOpenP} reload = {loadPuestos} existentes={puestos} /> 
+                   <AddPuesto open={openP} setOpen={setOpenP} reload = {loadPuestos} existentes={puestos}  /> 
               </div>
             </Col>
           </Row>
@@ -563,7 +562,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
                 footer={null}
                 centered
               >
-                <UploadFiles onFilesChange={handleFilesChange}/>
+                <UploadFiles onFilesChange={handleFilesChange} isMultiple= {true} message='Seleccione archivos'/>
               </Modal>
               {selectedFiles.length > 0? 
                 <Box sx={{width: 725}}>

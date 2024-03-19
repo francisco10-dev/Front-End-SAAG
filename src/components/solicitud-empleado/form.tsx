@@ -1,5 +1,5 @@
 import './form.css';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Input, Select, DatePicker, Typography, Progress, Checkbox, TimePicker } from 'antd';
 import Button from '@mui/material/Button';
 import { useAuth } from '../../authProvider';
@@ -21,6 +21,7 @@ const Form = () => {
   const [nombreColaborador, setNombreColaborador] = useState('');
   const [unidadColaborador, setUnidadColaborador] = useState('');
   const [nombreEncargado, setNombreEncargado] = useState('');
+  //@ts-ignore
   const [fechaSolicitud, setFechaSolicitud] = useState(null);
   const [fechaInicio, setFechaInicio] = useState<any>(null);
   const [fechaFin, setFechaFin] = useState<any>(null);
@@ -38,7 +39,7 @@ const Form = () => {
     recuperarDatos();
   }, []); // El segundo argumento del useEffect es un array vacío para que se ejecute solo una vez al montar el componente
 
-
+ //@ts-ignore
   const handleChange = (event: any) => {
     // Lógica para manejar cambios en el input si es necesario
     setNombreColaborador(event.target.value);
@@ -47,7 +48,7 @@ const Form = () => {
   const handleTipoSolicitudChange = (value: any) => {
     setTipoSolicitud(value);
   };
-
+  //@ts-ignore
   const handleFechaSolicitudChange = (date: any) => {
     setFechaSolicitud(date);
   };

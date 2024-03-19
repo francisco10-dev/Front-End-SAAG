@@ -45,6 +45,7 @@ function a11yProps(index: number) {
 export default function TabsSolicitudAdmin() {
   const Service = new SolicitudService();
   const [value, setValue] = useState(0);
+  //@ts-ignore
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
   const [approved, setApproved] = useState<Solicitud[]>([]);
   const [loading, setLoading] = useState(false);

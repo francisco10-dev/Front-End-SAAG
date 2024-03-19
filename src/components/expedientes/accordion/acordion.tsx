@@ -10,7 +10,6 @@ import Requests from './requests';
 import Absences from './absences';
 import Files from './documents';
 import { useEffect, useState } from 'react';
-import Licenses from './licenses/tableLicenses';
 import TabsLicencias from './licenses/tabsLicencias';
 import TabsCourses from './courses/tabsCourses';
 

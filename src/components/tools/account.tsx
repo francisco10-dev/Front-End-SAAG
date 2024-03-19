@@ -3,7 +3,6 @@ import Divider from '@mui/material/Divider';
 import Popover from '@mui/material/Popover';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
-import AccountCircle from '@mui/icons-material/AccountCircle';
 import { showConfirmation } from '../solicitudes/utils';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../authProvider';

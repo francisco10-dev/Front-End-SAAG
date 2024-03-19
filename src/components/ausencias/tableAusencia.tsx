@@ -16,7 +16,7 @@ export interface DataTableProps {
   // onSolicitudUpdate: (id: number, status: string) => void; // Método que no vas a usar
   load: () => void;
 }
-
+//@ts-ignore
 export default function DataTable({rows, /*deleteRows,*/ isLoading, /*onSolicitudUpdate,*/ load}: DataTableProps) {
 
   const [filterText, setFilterText] = useState('');
@@ -25,7 +25,7 @@ export default function DataTable({rows, /*deleteRows,*/ isLoading, /*onSolicitu
   const getRowId = (row: Solicitud) => row.idSolicitud;
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedSolicitud, setSelectedSolicitud] = useState<Solicitud | null>(null);
+  const [selectedSolicitud] = useState<Solicitud | null>(null);
   selectedRow
 
   const columns: GridColDef[] = [
