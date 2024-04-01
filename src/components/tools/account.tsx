@@ -44,13 +44,13 @@ export default function AccountPopover() {
 
   return (
     <>
-      <IconButton
+      <IconButton 
         onClick={handleOpen}
         sx={{
           color: 'white',
         }}
       >
-        <Avatar />
+        <Avatar  sx={{ width: 30, height: 30 }}/>
       </IconButton>
       <Popover
         open={!!open}

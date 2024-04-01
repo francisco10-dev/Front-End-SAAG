@@ -1,13 +1,17 @@
 import { Layout, Menu, Avatar } from 'antd';
-import React, { useEffect } from 'react';
-import '../../index.css';
+import React, { useEffect, useState } from 'react';
+import '../../index.css';9
 import Rutas from '../../routes';
 import { useNavigate } from 'react-router-dom';
+import CurrentNavigation from './navigation';
+import SettingPopover from './settings';
 import AccountPopover from './account';
+import AlertPopover from './alert';
 import { useAuth } from '../../authProvider';
 import { Box } from '@mui/material';
 import { items as options} from './options';
 import { UserOutlined } from '@ant-design/icons';
+
 
 const { Content, Sider } = Layout;
 
@@ -16,11 +20,13 @@ const Main: React.FC = () => {
   const {colaborador, userRole} = useAuth();
   const nombre = colaborador?.nombre.split(" ")[0];
   const navigate = useNavigate();
-  
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [backgroundColor, setBackgroundColor] = useState<string>('white');
+
   const handleMenuClick = (key: string) => {
     // Define las rutas correspondientes para cada elemento del menú
     const routeMap: Record<string, string> = {
-      '1': '/',
+      '1': '/dashboard',
       '2': '/panel-expedientes',
       '3': '/ausencias',
       '4': '/solicitudes',
@@ -38,8 +44,34 @@ const Main: React.FC = () => {
 
   useEffect(()=> {
     console.log(colaborador);
+    navigate('/dashboard');
   },[]);
 
+
+    
+  useEffect(() => {
+      const handleScroll = () => {
+      const scrollTop = window.scrollY;
+        // Cambia el estado dependiendo de si se ha hecho scroll o no
+        setIsScrolled(scrollTop > 0);
+      };
+  
+      // Agrega el evento de scroll al cargar el componente
+      window.addEventListener('scroll', handleScroll);
+  
+      // Limpia el evento de scroll al desmontar el componente
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+      };
+    }, []);
+
+    useEffect(() => {
+    // Set background color based on the current location
+    const isDashboard = location.pathname === '/dashboard';
+    setBackgroundColor(isDashboard ? '#f0f0f0' : 'white');
+  }, [location.pathname]);
+
+  
   return  (
       <Layout hasSider>
         <Sider
@@ -51,7 +83,7 @@ const Main: React.FC = () => {
             top: 0,
             bottom: 0,
           }}
-          width={220}
+          width={250}
         >
           
           <div style={{ display: 'flex', alignItems: 'center', padding: '15px', marginTop: 20 }}>
@@ -72,16 +104,38 @@ const Main: React.FC = () => {
           />
 
         </Sider>
-        <Layout  style={{ marginLeft: 210, backgroundColor: 'white' }}>
+        <Layout  style={{ marginLeft: 210,  backgroundColor }}>
           <Content style={{margin: '0px 16px 0', overflow: 'initial' }}>
-            <div style={{ position: 'sticky', top: 0, zIndex: 1, padding: '0px' }}>
-              <div style={{ width: '100%', display: 'flex', backgroundColor: 'white', justifyContent: 'flex-end', alignItems: 'flex-end', padding: '0px' }}>
-                <div style={{ display: 'flex', gap: '10px' }}>
+            <div style={{ 
+                backgroundColor: 'transparent',
+                position: 'sticky',
+                top: 0,
+                zIndex: 1,
+                padding: '30px',
+                transition: 'background-color 0.3s ease-in-out', // Transición suave para el cambio de color
+             }}>
+              <div style={{ 
+               height: '70px', 
+               width: '100%',
+               marginLeft: '10px',
+               backgroundColor: isScrolled ? 'rgba(255, 255, 255, 0.8)' : 'white', 
+               padding: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+               borderRadius: isScrolled ? '10px' : 'none', // Cambiar el borderRadius cuando está scroll
+               boxShadow: isScrolled ? '2px 2px 5px black' : 'none', 
+               backdropFilter: 'saturate(200%) blur(1.875rem)',
+               
+                }}>
+              <div style={{ display: 'flex', gap: '1px', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+                  <CurrentNavigation />
+                </div>
+                <div style={{ display: 'flex', gap: '1px', justifyContent: 'flex-end', alignItems: 'flex-end',  }}>
+                  <SettingPopover/>
+                  <AlertPopover/>
                   <AccountPopover/>
                 </div>
               </div>
             </div>
-            <Box pl={4} pr={4} pb={0}>
+            <Box style={{ padding: 24, paddingLeft: 40, paddingTop: 0}}>
                 <Rutas/>
             </Box>
           </Content>
@@ -91,3 +145,4 @@ const Main: React.FC = () => {
 }
 
 export default Main;
+
