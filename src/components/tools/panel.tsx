@@ -11,6 +11,9 @@ import { useAuth } from '../../authProvider';
 import { Box } from '@mui/material';
 import { items as options} from './options';
 import { UserOutlined } from '@ant-design/icons';
+import MenuIcon from '@mui/icons-material/Menu';
+import MenuOpenIcon from '@mui/icons-material/MenuOpen';
+import { useMediaQuery } from '@mui/material';
 
 
 const { Content, Sider } = Layout;
@@ -22,6 +25,8 @@ const Main: React.FC = () => {
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState<string>('white');
+  const isSmallScreen = useMediaQuery('(max-width:1000px)');
+  const [open, setOpen] = useState(true);
 
   const handleMenuClick = (key: string) => {
     // Define las rutas correspondientes para cada elemento del menú
@@ -39,6 +44,7 @@ const Main: React.FC = () => {
 
     if (route) {
       navigate(route);
+      isSmallScreen && setOpen(false);
     }
   };
 
@@ -47,8 +53,13 @@ const Main: React.FC = () => {
     navigate('/dashboard');
   },[]);
 
+  useEffect(() => {
 
-    
+    setOpen(!isSmallScreen);
+    return () => setOpen(!isSmallScreen);
+  }, [isSmallScreen]);
+  
+
   useEffect(() => {
       const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -79,13 +90,18 @@ const Main: React.FC = () => {
             overflow: 'auto',
             height: '100vh',
             position: 'fixed',
-            left: 0,
+            left: open? 0 : -250,
             top: 0,
             bottom: 0,
+            zIndex: 2
           }}
           width={250}
         >
-          
+          {isSmallScreen ? (
+                <Box color='white' p={2} >
+                    <MenuOpenIcon onClick={() => setOpen(false)} />
+                </Box>
+               ): null}          
           <div style={{ display: 'flex', alignItems: 'center', padding: '15px', marginTop: 20 }}>
             <Avatar size={50} icon={<UserOutlined />} style={{ marginBottom: '8px', marginRight: 15 }}  />
           <div>
@@ -104,8 +120,8 @@ const Main: React.FC = () => {
           />
 
         </Sider>
-        <Layout  style={{ marginLeft: 210,  backgroundColor }}>
-          <Content style={{margin: '0px 16px 0', overflow: 'initial' }}>
+        <Layout  style={{ marginLeft: isSmallScreen ? 0 : 210,  backgroundColor }}>
+          <Content style={{margin: '0px 16px ', overflow: 'initial' }}>
             <div style={{ 
                 backgroundColor: 'transparent',
                 position: 'sticky',
@@ -126,6 +142,7 @@ const Main: React.FC = () => {
                
                 }}>
               <div style={{ display: 'flex', gap: '1px', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+                  {isSmallScreen && <MenuIcon sx={{margin: 2, cursor: 'pointer'}} onClick={()=> setOpen(true)} />} 
                   <CurrentNavigation />
                 </div>
                 <div style={{ display: 'flex', gap: '1px', justifyContent: 'flex-end', alignItems: 'flex-end',  }}>
