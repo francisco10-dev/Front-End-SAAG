@@ -10,6 +10,7 @@ import { jwtDecode } from 'jwt-decode';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import CircularProgress from '@mui/material/CircularProgress';
+import { useNavigate } from 'react-router';
 
 const usuarioService = new UsuarioService();
 
@@ -20,6 +21,7 @@ const Login = () => {
   const [band, setBand] = useState(false);
   const { setLoggedIn, setUserRole, setColaborador } = useAuth();
   const [isLoading, setLoading] =useState(false);
+  const navigate = useNavigate();
 
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -49,6 +51,7 @@ const Login = () => {
   
   const handleSuccessfulLogin = (response: any) => {
     setLoggedIn(true);
+    navigate('/dashboard');
     saveTokens(response);
     saveUserData(response);
     document.body.style.backgroundImage = 'none';

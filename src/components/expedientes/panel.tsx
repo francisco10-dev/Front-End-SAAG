@@ -68,10 +68,11 @@ const Panel = () => {
             <Box>
                 <Box display='flex'
                     position='sticky'  
-                    top={50}          
+                    top={80}          
                     bgcolor='white'    
                     zIndex={1000} 
                     padding={2}
+                    borderRadius='10px'
                 >
                     <Box width={500}>
                         <Button onClick={() => handleBack()}><ArrowBackIcon sx={{marginRight: 1}}/>Volver</Button>

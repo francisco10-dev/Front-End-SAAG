@@ -27,31 +27,44 @@ const Main: React.FC = () => {
   const [backgroundColor, setBackgroundColor] = useState<string>('white');
   const isSmallScreen = useMediaQuery('(max-width:1000px)');
   const [open, setOpen] = useState(true);
+  const [selectedKey, setSelectedKey] = useState<string>(() => {
+    return localStorage.getItem('selectedKey') || '1';
+  });
+
+  const routeMap: Record<string, string> = {
+    '1': '/dashboard',
+    '2': '/panel-expedientes',
+    '3': '/ausencias',
+    '4': '/solicitudes',
+    '5': '/solicitud-form',
+    '6': '/auditorias',
+    '7': '/auditorias-login',
+  };
 
   const handleMenuClick = (key: string) => {
-    // Define las rutas correspondientes para cada elemento del menú
-    const routeMap: Record<string, string> = {
-      '1': '/dashboard',
-      '2': '/panel-expedientes',
-      '3': '/ausencias',
-      '4': '/solicitudes',
-      '5': '/solicitud-form',
-      '6': '/auditorias',
-      '7': '/auditorias-login',
-    };
 
     const route = routeMap[key];
 
     if (route) {
       navigate(route);
       isSmallScreen && setOpen(false);
+      setSelectedKey(key);
+      localStorage.setItem('selectedKey', key);
     }
   };
 
-  useEffect(()=> {
-    console.log(colaborador);
-    navigate('/dashboard');
-  },[]);
+  useEffect(() => {
+    
+    const routeKeys = Object.keys(routeMap);
+    const currentKey = routeKeys.find(key => routeMap[key] === location.pathname);
+
+    if (currentKey && currentKey !== selectedKey) {
+      setSelectedKey(currentKey);
+      localStorage.setItem('selectedKey', currentKey); 
+    }
+
+  }, [location.pathname]);
+
 
   useEffect(() => {
 
@@ -114,20 +127,20 @@ const Main: React.FC = () => {
           <Menu 
             style={{marginTop: '3%'}} 
             theme='dark' mode="inline" 
-            defaultSelectedKeys={['1']}
+            defaultSelectedKeys={[selectedKey]}
             onClick={({ key }) => handleMenuClick(key as string)}
             items={options}
           />
 
         </Sider>
-        <Layout  style={{ marginLeft: isSmallScreen ? 0 : 210,  backgroundColor }}>
+        <Layout  style={{ marginLeft: isSmallScreen ? 0 : 230,  backgroundColor }}>
           <Content style={{margin: '0px 16px ', overflow: 'initial' }}>
             <div style={{ 
                 backgroundColor: 'transparent',
                 position: 'sticky',
                 top: 0,
                 zIndex: 1,
-                padding: '30px',
+                padding: '10px',
                 transition: 'background-color 0.3s ease-in-out', // Transición suave para el cambio de color
              }}>
               <div style={{ 
