@@ -1,6 +1,10 @@
 import axios from 'axios';
 import axiosApi from '../services/api.service'
 
+export interface Colaborador {
+  unidad: string;
+}
+
 export interface Solicitud {
     idSolicitud: number;
     conGoceSalarial: boolean;
@@ -18,6 +22,7 @@ export interface Solicitud {
     estado: string;
     comentarioTalentoHumano: string;
     idColaborador: number;
+    colaborador?: Colaborador;
 }
 
 class SolicitudService {
