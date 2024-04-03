@@ -4,7 +4,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import DataTable from './tableAusencia';
-import Bars from './graphicAusencia';
+import Bars from './graphic/graphicAusencia';
 import SolicitudService from '../../services/solicitud.service';
 import { Solicitud } from '../../services/solicitud.service';
 import { CircularProgress } from '@mui/material';
