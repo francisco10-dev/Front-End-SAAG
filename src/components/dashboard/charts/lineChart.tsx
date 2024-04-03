@@ -24,7 +24,7 @@ function LineCard({ color, title, description, chart }: LineCardProps) {
             <Box padding="1rem">
                 {useMemo(
                     () => (
-                        <Box
+                        <Box display = "flex"
                             bgcolor={color}
                             py={2}
                             pr={0.5}

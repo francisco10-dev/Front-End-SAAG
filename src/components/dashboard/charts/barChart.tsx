@@ -31,7 +31,7 @@ function BarCard({color, title, description, chart }: BarCardProps) {
             <Box padding="1rem" > 
                 {useMemo(
                     () => (
-                        <Box
+                        <Box display = "flex"
                             bgcolor= {color}
                             py={2}
                             pr={0.5}
