@@ -5,13 +5,13 @@ export default function Badge(props: {estado: string}){
 
     const getStatusColor = (status: string) => {
         switch (status) {
-          case 'pendiente':
+          case 'Pendiente':
             return { backgroundColor: '#FFC107', color: 'black' };
-          case 'aprobado':
+          case 'Aprobado':
             return { backgroundColor: '#4CAF50', color: 'white' };
-          case 'procesada':
+          case 'Procesada':
             return { backgroundColor: '#2196F3', color: 'white' };
-          case 'rechazado':
+          case 'Rechazado':
             return { backgroundColor: '#BF3131', color: 'white' };
           default:
             return { backgroundColor: '#E7F0FF', color: 'black' };

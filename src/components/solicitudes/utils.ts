@@ -1,8 +1,5 @@
-import SolicitudService from "../../services/solicitud.service";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
-
-const service = new SolicitudService();
 
 export async function showConfirmation(): Promise<boolean> {
     const result = await Swal.fire({
@@ -51,43 +48,6 @@ export function loading(){
 //cierra el msj
 export function closeLoad(){
   toast.dismiss();
-}
-
-//elimina una o  varias
-export async function dropRequests(idSolicitudes: number[]): Promise<void> {
-    try {
-      loading();
-      const statuses = await service.eliminarSolicitudes(idSolicitudes);
-      if (statuses.every(status => status === 200)) {
-        closeLoad();
-        statuses.length === 1 ? showSuccess('Registro eliminado exitosamente!') : 
-          showSuccess('Registros eliminados exitosamente!');
-      } else {
-        closeLoad();
-        showError('Ocurrió un error');
-      }
-    } catch (error: any) {
-      closeLoad();
-      showError(error.message);
-    }
-}
-
-export async function updateSolicitud(idSolicitud: number, solicitud: any) {
-  try {
-    loading();
-    const response = await service.actualizarSolicitud(idSolicitud, solicitud);
-    if (response) {
-      closeLoad();
-      showSuccess('Operación realizada exitosamente!');
-      return response;
-    } else {
-      closeLoad();
-      showError('Ocurrió un error al actualizar la solicitud');
-    }
-  } catch (error: any) {
-    closeLoad();
-    showError(error.message);
-  }
 }
 
 //DÍA-MES-AÑO

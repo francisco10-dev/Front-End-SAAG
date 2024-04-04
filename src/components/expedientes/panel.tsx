@@ -74,13 +74,13 @@ const Panel = () => {
                     padding={2}
                     borderRadius='10px'
                 >
-                    <Box width={500}>
-                        <Button onClick={() => handleBack()}><ArrowBackIcon sx={{marginRight: 1}}/>Volver</Button>
+                    <Box width={500} >
+                        <Button sx={{color: 'black'}}  onClick={() => handleBack()}><ArrowBackIcon sx={{marginRight: 1}}/>Volver</Button>
                     </Box>      
                     <Box width={500}>
                         <AutoCompleteExpediente expedientes={expedientes} setSelected={handleExpediente}/>
                     </Box>              
-                </Box>
+                </Box> 
                 <Box>
                     <ExpedienteInfo data={selectedExpediente}/>
                 </Box>
