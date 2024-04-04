@@ -114,7 +114,7 @@ const Main: React.FC = () => {
             </Box>
             ): null
           }          
-          <UserInfo setOpenInfo={() => setOpenInfo(true)} top={0} />
+          <UserInfo setOpenInfo={() => setOpenInfo(true)} />
           <AccountInfo open={openInfo} onClose={()=> setOpenInfo(false)} />
           <hr style={{ width: 200}} />
 

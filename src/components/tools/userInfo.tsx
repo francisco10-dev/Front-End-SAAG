@@ -5,10 +5,9 @@ import { useAuth } from "../../authProvider"
 
 interface Props{
     setOpenInfo: () => void;
-    top: number;
 }
 
-const UserInfo = ({setOpenInfo, top}: Props) => {
+const UserInfo = ({setOpenInfo}: Props) => {
 
     const {colaborador, userRole} = useAuth();
     const nombre = colaborador?.nombre.split(" ")[0];
