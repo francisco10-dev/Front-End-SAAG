@@ -168,8 +168,8 @@ const Add = ({open, setOpen, reload, idColaborador}: Props) => {
                 <Box>
                 <Grid item xs={12} md={6}>
                     <List dense={true}>
-                    {selectedFile.map((file) => 
-                        <ListItem
+                    {selectedFile.map((file, index) => 
+                        <ListItem key={index}
                         secondaryAction={
                             <IconButton edge="end" aria-label="delete" onClick={reset} color='error'>
                             <DeleteIcon />

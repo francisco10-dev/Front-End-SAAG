@@ -1,16 +1,12 @@
-import { Box } from "@mui/material";
 import { useState, useEffect } from "react";
-import { Typography } from "@mui/material";
+import { Typography, CircularProgress, Box } from "@mui/material";
 import '../expedientes.css'
 import PersonalInfo from "./personalInfo";
-import {CircularProgress} from "@mui/material";
 import ColaboradorService, { Colaborador } from "../../../services/colaborador.service";
 
 interface Props {
     selected: number | null;
 }
-
-//const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const Preview = ({ selected }: Props) => {
 

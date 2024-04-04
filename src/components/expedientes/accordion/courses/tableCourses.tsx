@@ -17,9 +17,13 @@ import PreviewPdf from '../../file/previewDocument';
 import { formatDate } from '../../../solicitudes/utils';
 import TextField from '@mui/material/TextField';
 
-export default function Courses(props: {courses: Documento[], loadData: ()=> void}) {
+interface Props{
+    readonly courses: Documento[],
+    readonly loadData: () => void;
+}
 
-    const {courses, loadData} = props;
+export default function Courses({courses, loadData}: Props) {
+
     const [loading, setLoading] = useState(false);
     const service = new ExpedienteService();
     const [openPdf, setOpenPdf] = useState(false);
@@ -139,7 +143,7 @@ export default function Courses(props: {courses: Documento[], loadData: ()=> voi
         const formattedDate = formatDate(row.fechaVencimiento);
         const formattedDate2 = formatDate(row.fechaSubida);
         return (
-            (row.licencia && row.licencia.toLowerCase().includes(filterText.toLowerCase())) ||
+            (row.curso?.toLowerCase().includes(filterText.toLowerCase())) ||
             (formattedDate.toLowerCase().includes(filterText.toLowerCase())) ||
             (formattedDate2.toLowerCase().includes(filterText.toLowerCase()))
         );
@@ -207,7 +211,7 @@ export default function Courses(props: {courses: Documento[], loadData: ()=> voi
                                 }} 
                                 onClick={() => handleClick(row)}
                             >
-                                <img src={handleImageDoc(row.nombreArchivo).src} style={{ width: handleImageDoc(row.nombreArchivo).size, marginRight: 10, marginLeft: handleImageDoc(row.nombreArchivo).left }} />
+                                <img src={handleImageDoc(row.nombreArchivo).src} alt='doc' style={{ width: handleImageDoc(row.nombreArchivo).size, marginRight: 10, marginLeft: handleImageDoc(row.nombreArchivo).left }} />
                                 {row.nombreArchivo}
                             </Typography>
                         </TableCell>
