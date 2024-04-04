@@ -19,12 +19,19 @@ const Preview = ({ selected }: Props) => {
     const [expediente, setExpediente] = useState<Colaborador | null>();
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const service = new ColaboradorService();
+    const cachedData = localStorage.getItem('expedientesData');
 
     const fetchExpediente = async (id: number) => {
         try {
             setLoading(true);
-            const data = await service.obtenerColaboradorPorId(id);
-            setExpediente(data);
+            if (cachedData) {
+                let storedData = JSON.parse(cachedData);
+                const data = storedData.find((colaborador : Colaborador) => colaborador.idColaborador === id);
+                setExpediente(data);
+            }else{
+                const data = await service.obtenerColaboradorPorId(id);
+                setExpediente(data);                
+            }
         } catch (error) {
             console.log(error);
         } finally {
@@ -36,8 +43,16 @@ const Preview = ({ selected }: Props) => {
         if(expediente){
             try {
                 setLoadingImage(true);
-                const response = await service.getPhoto(expediente?.idColaborador);
-                setImageUrl(response.data.imageUrl);
+                const storedImg = localStorage.getItem(`imgUrl${expediente.idColaborador}`)
+                if(storedImg){
+                    setImageUrl(storedImg);
+                    setLoadingImage(false);
+                    return;
+                }
+                const response = await service.getPhoto(expediente.idColaborador);
+                const imgUrl = response.data.imageUrl;
+                localStorage.setItem(`imgUrl${expediente.idColaborador}`, imgUrl);
+                setImageUrl(imgUrl);
             } catch (error) {
                 console.log(error);
             } finally {

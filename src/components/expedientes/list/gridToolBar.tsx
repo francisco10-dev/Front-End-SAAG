@@ -4,17 +4,17 @@ import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import AddIcon from '@mui/icons-material/Add';
 import { Button } from '@mui/material';
+import ReplayIcon from '@mui/icons-material/Replay'
 
 
 
-export function CustomToolbar({onEditClick, onViewClick, selectedIds }: { onRefresh : () => void ,onEditClick: () => void, onViewClick: () => void; selectedIds: string[] }) {
+export function CustomToolbar({onEditClick, onViewClick, selectedIds, onRefresh }: { onRefresh : () => void ,onEditClick: () => void, onViewClick: () => void; selectedIds: string[] }) {
     //@ts-ignore
   const DeleteButtonDisabled = selectedIds.length === 0;
     const EditButtonDisabled = selectedIds.length !== 1;
   
     return (
       <GridToolbarContainer>
-        <GridToolbarColumnsButton />
         <GridToolbarFilterButton />
         <GridToolbarDensitySelector />
         <Button
@@ -31,6 +31,12 @@ export function CustomToolbar({onEditClick, onViewClick, selectedIds }: { onRefr
             startIcon={<AddIcon />}
         >
             Nuevo
+        </Button>
+        <Button
+          variant="text"
+          onClick={onRefresh}
+          startIcon={<ReplayIcon />}
+        >
         </Button>
         {/** 
         <Button

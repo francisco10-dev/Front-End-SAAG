@@ -41,26 +41,50 @@ const List = ({selected, selectedExpediente}: Props) => {
     const getRowId = (row: Colaborador) => row.idColaborador;
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [openForm, setOpenForm] = useState(false);
+    
 
-    const fetchExpedientes =  async () => {
+    const fetchExpedientes = async () => {
         try {
             setLoading(true);
-            const data = await service.obtenerColaboradores();
-            setExpedientes(data);
+            
+            const cachedData = localStorage.getItem('expedientesData');
+            if (cachedData) {
+                setExpedientes(JSON.parse(cachedData));
+            } else {
+                const data = await service.obtenerColaboradores();
+                setExpedientes(data);
+                localStorage.setItem('expedientesData', JSON.stringify(data));
+            }
         } catch (error) {
             console.log(error);
-        }finally{
+        } finally {
             setLoading(false);
         }
     }
 
+    const clearLocalStorageByPrefix = () => {
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key && key.startsWith('imgUrl')) {
+                localStorage.removeItem(key);
+            }
+        }
+    };
+
+    const onRefresh = () => {
+        localStorage.removeItem('expedientesData');
+        clearLocalStorageByPrefix();
+        fetchExpedientes();
+    }
+
     const applyFilters = () => {
         const filteredData = expedientes.filter((row) => {
+            const formattedDate = formatDate(row.fechaIngreso);
           return (
             (row.idColaborador && row.idColaborador.toString().includes(filterText.toLowerCase())) ||
             (row.identificacion && row.identificacion.toString().includes(filterText)) ||
             (row.nombre && row.nombre.toLowerCase().includes(filterText.toLowerCase())) ||
-            (row.fechaIngreso && row.fechaIngreso.toLocaleLowerCase().includes(filterText.toLowerCase()))
+            (formattedDate && formattedDate.toLocaleLowerCase().includes(filterText.toLowerCase()))
           );
         });
         setFilteredRows(filteredData);
@@ -109,7 +133,7 @@ const List = ({selected, selectedExpediente}: Props) => {
                     onChange={(e) => setFilterText(e.target.value)}
                 />
                 <Box>
-                   <Formulario openForm={openForm} setOpenForm={closeForm} reload={fetchExpedientes}/> 
+                   <Formulario openForm={openForm} setOpenForm={closeForm} reload={onRefresh}/> 
                 </Box>
             </Box>
           <DataGrid
@@ -124,7 +148,7 @@ const List = ({selected, selectedExpediente}: Props) => {
                 toolbar: CustomToolbar
             }}
             slotProps={{
-                toolbar: { onEditClick,onViewClick, selectedIds }
+                toolbar: { onEditClick,onViewClick, selectedIds, onRefresh }
             }}
             sx={{ border: 'none', height: '81%'}}
             onRowSelectionModelChange={handleSelectionChange}

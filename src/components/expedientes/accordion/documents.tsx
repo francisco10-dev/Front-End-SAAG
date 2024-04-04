@@ -226,7 +226,6 @@ export default function Files(props: {idColaborador: number}) {
         position: 'sticky',
         top: 0,
         background: 'white',
-        zIndex: 1
     };
 
     const Files = () => {
@@ -299,7 +298,6 @@ export default function Files(props: {idColaborador: number}) {
             <Table sx={{ minWidth: 65 }} aria-label="simple table">
                 <TableHead>
                 <TableRow>
-                   {/**<TableCell align='center' sx={styles}>N# Documento</TableCell> */} 
                     <TableCell sx={styles}>Archivo</TableCell>
                     <TableCell align='center' sx={styles}>Tamaño</TableCell>
                     <TableCell align='center' sx={styles}>Fecha de registro</TableCell>
