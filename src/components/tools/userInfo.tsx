@@ -9,14 +9,18 @@ interface Props{
 
 const UserInfo = ({setOpenInfo}: Props) => {
 
-    const {colaborador, userRole} = useAuth();
+    const {colaborador, userRole, photo} = useAuth();
     const nombre = colaborador?.nombre.split(" ")[0];
 
     return (
 
         <Box style={{ display: 'flex', alignItems: 'center', padding: '15px', marginTop: 20 }}>
             <Box sx={{cursor: 'pointer'}} onClick={()=> setOpenInfo()} >
-                <Avatar size={50} icon={<UserOutlined />} style={{ marginBottom: '8px', marginRight: 15 }}/>
+                {photo ? 
+                 <Avatar size={60} src={photo} style={{ marginBottom: '8px', marginRight: 15 }}/> :
+                 <Avatar size={50} icon={<UserOutlined />} style={{ marginBottom: '8px', marginRight: 15 }}/>                
+                }
+                
             </Box>
             <Box>
                 <h4 style={{ margin: 0, color: '#fff' }}>{nombre}</h4>

@@ -13,7 +13,7 @@ interface Props{
 
 export default function AccountInfo({open, onClose}: Props) {
 
-    const {logout, colaborador, userRole} = useAuth();
+    const {logout, colaborador, userRole, photo} = useAuth();
     const nombre = colaborador?.nombre.split(" ")[0];
 
     const handleClose = () => {
@@ -28,7 +28,10 @@ export default function AccountInfo({open, onClose}: Props) {
             <DialogContent>
                 <div style={{  padding: '5px'}}>
                     <div style={{textAlign: 'center'}}>
-                        <Avatar size={80} icon={<UserOutlined />} style={{ marginBottom: '8px', marginRight: 15 }}  />
+                        {  photo ?
+                            <Avatar size={80} src={photo} style={{ marginBottom: '8px', marginRight: 15 }}  /> :
+                            <Avatar size={80} icon={<UserOutlined />} style={{ marginBottom: '8px', marginRight: 15 }}  />
+                        }
                     </div>
                     <div style={{textAlign: 'center'}} >
                         <h4 style={{ margin: 0, }}>{nombre}</h4>
@@ -50,7 +53,7 @@ export default function AccountInfo({open, onClose}: Props) {
                                    Puesto
                                 </Typography>
                                 <Typography variant="body2" color="textSecondary">
-                                    { colaborador?.puesto?.nombrePuesto ? colaborador?.puesto?.nombrePuesto : 'No indica'}
+                                    { colaborador?.puesto ? colaborador.puesto.nombrePuesto : 'No indica'}
                                 </Typography>
                             </Grid>
                     </Grid>

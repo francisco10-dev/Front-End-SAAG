@@ -19,7 +19,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [band, setBand] = useState(false);
-  const { setLoggedIn, setUserRole, setColaborador } = useAuth();
+  const { setLoggedIn, setUserRole, setColaborador, loadPhoto } = useAuth();
   const [isLoading, setLoading] =useState(false);
   const navigate = useNavigate();
 
@@ -53,6 +53,7 @@ const Login = () => {
     setLoggedIn(true);
     navigate('/dashboard');
     saveTokens(response);
+    loadPhoto(response.colaborador.idColaborador);
     saveUserData(response);
     document.body.style.backgroundImage = 'none';
   };
