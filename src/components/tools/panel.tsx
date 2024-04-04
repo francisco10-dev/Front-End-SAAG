@@ -1,4 +1,4 @@
-import { Layout, Menu, Avatar } from 'antd';
+import { Layout, Menu } from 'antd';
 import React, { useEffect, useState } from 'react';
 import '../../index.css';9
 import Rutas from '../../routes';
@@ -7,25 +7,23 @@ import CurrentNavigation from './navigation';
 import SettingPopover from './settings';
 import AccountPopover from './account';
 import AlertPopover from './alert';
-import { useAuth } from '../../authProvider';
 import { Box } from '@mui/material';
 import { items as options} from './options';
-import { UserOutlined } from '@ant-design/icons';
 import MenuIcon from '@mui/icons-material/Menu';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import { useMediaQuery } from '@mui/material';
-
+import UserInfo from './userInfo';
+import AccountInfo from './accountInfo';
 
 const { Content, Sider } = Layout;
 
 const Main: React.FC = () => { 
 
-  const {colaborador, userRole} = useAuth();
-  const nombre = colaborador?.nombre.split(" ")[0];
   const navigate = useNavigate();
   const [isScrolled, setIsScrolled] = useState(false);
   const [backgroundColor, setBackgroundColor] = useState<string>('white');
   const isSmallScreen = useMediaQuery('(max-width:1000px)');
+  const [openInfo, setOpenInfo] = useState(false);
   const [open, setOpen] = useState(true);
   const [selectedKey, setSelectedKey] = useState<string>(() => {
     return localStorage.getItem('selectedKey') || '1';
@@ -111,17 +109,13 @@ const Main: React.FC = () => {
           width={250}
         >
           {isSmallScreen ? (
-                <Box color='white' p={2} >
-                    <MenuOpenIcon onClick={() => setOpen(false)} />
-                </Box>
-               ): null}          
-          <div style={{ display: 'flex', alignItems: 'center', padding: '15px', marginTop: 20 }}>
-            <Avatar size={50} icon={<UserOutlined />} style={{ marginBottom: '8px', marginRight: 15 }}  />
-          <div>
-            <h4 style={{ margin: 0, color: '#fff' }}>{nombre}</h4>
-            <p style={{ margin: 0, color: 'rgba(255, 255, 255, 0.7)', fontSize: '12px' }}>{userRole}</p>
-          </div>
-        </div>
+            <Box color='white' p={2} >
+                <MenuOpenIcon onClick={() => setOpen(false)} />
+            </Box>
+            ): null
+          }          
+          <UserInfo setOpenInfo={() => setOpenInfo(true)} top={0} />
+          <AccountInfo open={openInfo} onClose={()=> setOpenInfo(false)} />
           <hr style={{ width: 200}} />
 
           <Menu 
