@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useMemo } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import UsuarioService from './services/usuario.service';
@@ -21,7 +21,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 const decodeToken = () => {
@@ -90,9 +90,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
+  const contextValue = useMemo(() => ({
+    loadPhoto,
+    photo,
+    loggedIn,
+    setLoggedIn,
+    userRole,
+    setUserRole,
+    logout,
+    colaborador,
+    setColaborador
+  }), [loadPhoto, photo, loggedIn, userRole, colaborador]);
+
 
   return (
-    <AuthContext.Provider value={{ loadPhoto, photo, loggedIn, setLoggedIn, userRole, setUserRole, logout, colaborador, setColaborador }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );

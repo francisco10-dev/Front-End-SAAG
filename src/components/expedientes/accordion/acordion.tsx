@@ -19,15 +19,17 @@ interface Props{
 
 const Accordions = ({data}: Props) =>{
 
-    if(!data){
-        return <div>No se encontró el colaborador</div>
-    }
+    const [colaborador, setColaborador] = useState<Colaborador | null>(null);
 
-    const [colaborador, setColaborador] = useState<Colaborador>(data);
- 
-    useEffect(()=> {
-        setColaborador(data);
+    useEffect(() => {
+        if (data) {
+            setColaborador(data);
+        }
     }, [data]);
+
+    if (!colaborador) {
+        return <div>No se encontró el colaborador</div>;
+    }
 
     return (
         <Box>
