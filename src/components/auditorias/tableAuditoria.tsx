@@ -44,14 +44,6 @@ export default function DataTable(props: DataTableProps) {
     }
   };
 
-  const onDeleteClick = async () => {
-    const confirmation= await utils.showConfirmation();
-    if(confirmation) {
-        await utils.dropRequests(selectedIds);
-        props.updateAuditorias(props.rows.filter(Auditoria=> !selectedIds.includes(Auditoria.idAuditoria)));
-    }
-  };
-
   const applyFilters = () => {
     const filteredData = rows.filter((row) => {
       const formattedDate = utils.formatDate(row.fechaAsetSelectedAuditoriaLogin); 
@@ -107,7 +99,7 @@ export default function DataTable(props: DataTableProps) {
           toolbar: tools.CustomToolbar
         }}
         slotProps={{
-          toolbar: { onShowDetailClick, onDeleteClick, selectedIds }
+          toolbar: { onShowDetailClick, selectedIds }
         }}
         style={{
             marginBottom: '16px',

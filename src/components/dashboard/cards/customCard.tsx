@@ -74,17 +74,7 @@ CustomCard.defaultProps = {
 };
 
 CustomCard.propTypes = {
-  color: PropTypes.oneOf([
-    "red",
-    "primary",
-    "secondary",
-    "info",
-    "success",
-    "warning",
-    "error",
-    "light",
-    "dark",
-  ]).isRequired,
+  color: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
   count: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
   percentage: PropTypes.shape({
