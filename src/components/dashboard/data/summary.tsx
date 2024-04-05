@@ -57,7 +57,6 @@ export async function getEmployeeData() {
         icon : <WatchLaterIcon />
       }
   
-      console.log(data);
       return data;
     } catch (error) {
       console.error('Error fetching absence data:', error);
