@@ -4,7 +4,6 @@ import dayjs, { Dayjs } from 'dayjs'; // Importar Dayjs
 import React from 'react';
 import { RadioChangeEvent } from 'antd/lib/radio'; // Importar RadioChangeEvent
 //Prueba dev/Grafico 
-/
 interface Props {
   selectedYear: number;
   setSelectedYear: (year: number) => void;
