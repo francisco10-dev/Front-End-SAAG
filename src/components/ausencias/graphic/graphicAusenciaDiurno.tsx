@@ -18,7 +18,7 @@ Chart.register(CategoryScale, LinearScale, PointElement, BarElement, Title, Tool
 const solicitudService = new SolicitudService();
 const colaboradorService = new ColaboradorService();
 
-const Bars = () => {
+const BarsDiurno = () => {
   const [selectedYear, setSelectedYear] = React.useState(moment().year());
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
   const [colaboradores, setColaboradores] = useState<Colaborador[]>([]);
@@ -58,7 +58,7 @@ const Bars = () => {
         const colaboradoresDiurnosActivos = colaboradoresActivosOConSalidaEnAnioSeleccionado.filter(colaborador =>
           colaborador.tipoJornada === 'Diurna'
         );
-        console.log("colaboradores con jornada diurna", colaboradoresDiurnosActivos);
+        console.log("colaboradores con jornada Diurna", colaboradoresDiurnosActivos);
         setColaboradores(colaboradoresDiurnosActivos);
 
         setLoading(false);
@@ -561,4 +561,4 @@ const Bars = () => {
   );
 };
 
-export default Bars;
+export default BarsDiurno;
