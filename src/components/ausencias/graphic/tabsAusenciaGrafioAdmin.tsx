@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import BarsDiurno from './graphicAusenciaDiurno';
 import BarsNocturno from './graphicAusenciaNocturno';
 import { Solicitud } from '../../../services/solicitud.service';
-
+//Prueba de feature-grafico
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
