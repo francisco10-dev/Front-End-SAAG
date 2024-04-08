@@ -11,7 +11,7 @@ import { Table, DatePicker, Drawer, } from 'antd';
 import moment, { Moment } from 'moment';
 import './graphicStyle.css'
 import DatePickerRadioGroup from './datePickerRadioGroup';
-//Prueba de feature-grafico
+
 Chart.register(CategoryScale, LinearScale, PointElement, BarElement, Title, Tooltip, Legend, Filler);
 
 const solicitudService = new SolicitudService();
