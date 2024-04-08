@@ -36,7 +36,7 @@ const BarsDiurno = () => {
     [tipo: string]: number;
   };
   type TiposSolicitudesConIndicadoresPorUnidad = Record<string, Record<string, number>>;
-  //Prueba de feature-grafico
+  
   useEffect(() => {
     const fetchColaboradores = async () => {
       try {
