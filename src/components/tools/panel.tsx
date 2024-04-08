@@ -33,10 +33,11 @@ const Main: React.FC = () => {
     '1': '/dashboard',
     '2': '/panel-expedientes',
     '3': '/ausencias',
-    '4': '/solicitudes',
-    '5': '/solicitud-form',
-    '6': '/auditorias',
-    '7': '/auditorias-login',
+    '4': '/graficos',
+    '5': '/solicitudes',
+    '6': '/solicitud-form',
+    '7': '/auditorias',
+    '8': '/auditorias-login',
   };
 
   const handleMenuClick = (key: string) => {
