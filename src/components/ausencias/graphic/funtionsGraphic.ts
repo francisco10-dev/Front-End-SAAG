@@ -36,7 +36,7 @@
     const indicador = (horasNoTrabajadas / totalHorasTrabajadas) * 100;
     return indicador;
   };
-
+//Prueba de feature-grafico
   const IndicadorNocturnoPorHora = (horaInicio: string, horaFin: string, cantidadActivos: number) => {
     const [horaInicioHora, horaInicioMinuto, horaInicioSegundo] = horaInicio.split(':').map(Number);
     const [horaFinHora, horaFinMinuto, horaFinSegundo] = horaFin.split(':').map(Number);
