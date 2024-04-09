@@ -73,6 +73,7 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData}: Props) => {
       await handleUploadPhoto();
       if(response.status === 200){
         setIsEdit(false);
+        localStorage.removeItem("expedientesData");
         loadData();
         message.success('Información actualizada');
       }else{
