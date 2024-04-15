@@ -19,7 +19,7 @@ const Login = () => {
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [band, setBand] = useState(false);
-  const { setLoggedIn, setUserRole, setColaborador, loadPhoto } = useAuth();
+  const { setLoggedIn, setUserRole, setColaborador, loadPhoto,setNameSupervisor } = useAuth();
   const [isLoading, setLoading] =useState(false);
   const navigate = useNavigate();
 
@@ -35,6 +35,7 @@ const Login = () => {
       };
       const response = await usuarioService.login(data);
       if (response.status === 200) {
+        console.log(response.data)
         handleSuccessfulLogin(response.data);
       }
     } catch (error) {
@@ -66,6 +67,7 @@ const Login = () => {
   const saveUserData = (response: any) => {
     localStorage.setItem('employee', JSON.stringify(response.colaborador));
     setColaborador(response.colaborador);
+    setNameSupervisor(response.supervisor);
     const decodedToken: any = jwtDecode(response.accessToken);
     setUserRole(decodedToken.rol);
   };

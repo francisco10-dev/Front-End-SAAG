@@ -10,6 +10,8 @@ interface AuthContextType {
   loggedIn: boolean;
   setLoggedIn: (loggedIn: boolean) => void;
   userRole: string | null;
+  nameSupervisor: string | null;
+  setNameSupervisor: (nameSupervisor: string) => void;
   setUserRole: (userRole: string) => void;
   logout: () => void;
   colaborador: Colaborador | null;
@@ -55,6 +57,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('accessToken'));
   const [userRole, setUserRole] = useState<string | null>(decodeToken());
   const [colaborador, setColaborador] = useState<Colaborador | null>(StoredData());
+  const [nameSupervisor, setNameSupervisor] = useState<string | null>(() => {
+    const storedColaborador = StoredData();
+    return storedColaborador ? storedColaborador.supervisor.nombre : null;
+  });  
   const [photo, setPhoto] = useState<string | null>(localStorage.getItem('photo'));
   const navigate = useNavigate();
   const usuarioService = new UsuarioService();
@@ -99,8 +105,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUserRole,
     logout,
     colaborador,
-    setColaborador
-  }), [loadPhoto, photo, loggedIn, userRole, colaborador]);
+    setColaborador,
+    nameSupervisor,
+    setNameSupervisor
+  }), [loadPhoto, photo, loggedIn, userRole, colaborador,nameSupervisor]);
 
 
   return (

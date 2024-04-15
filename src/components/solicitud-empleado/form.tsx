@@ -12,7 +12,7 @@ const { Text } = Typography;
 const { RangePicker } = DatePicker;
 
 const Form = () => {
-  const { userRole, colaborador } = useAuth();
+  const { userRole, colaborador,nameSupervisor } = useAuth();
   const [idUsuario, setId] = useState('');
   const [tipoSolicitud, setTipoSolicitud] = useState('');
   const [asunto, setAsunto] = useState('');
@@ -39,7 +39,7 @@ const Form = () => {
     recuperarDatos();
   }, []); // El segundo argumento del useEffect es un array vacío para que se ejecute solo una vez al montar el componente
 
- //@ts-ignore
+  //@ts-ignore
   const handleChange = (event: any) => {
     // Lógica para manejar cambios en el input si es necesario
     setNombreColaborador(event.target.value);
@@ -109,6 +109,7 @@ const Form = () => {
       setId(colaborador?.idColaborador.toString());
       setNombreColaborador(colaborador.nombre);
       setUnidadColaborador(colaborador?.unidad ?? "");
+      setNombreEncargado(nameSupervisor??"");
     }
   }
 
@@ -286,46 +287,38 @@ const Form = () => {
         <div className="columna-2">
           <div className="campo campo-encargado">
             <Text>Nombre encargado</Text>
-            <Input placeholder="Nombre encargado" value={nombreEncargado} onChange={(e) => setNombreEncargado(e.target.value)} style={{ width: 290 }} />
-          </div>
-          <div className="box-sustituto">
-            <div className="campo campo-nombre-sustituto">
-              <Text>Requiere sustituto</Text>
-              <Select
-                placeholder="Sustitución"
-                value={sustitucion}
-                onChange={handleSustitucionChange}
-                style={{ width: 100 }}
-              >
-                <Option value="SI">SI</Option>
-                <Option value="NO">NO</Option>
-              </Select>
-            </div>
-            <div className="progress-bar">
-              {mostrarProgress && <Progress percent={100} status="active" style={{ width: '290px' }} />}
-            </div>
-            {sustitucion === 'SI' && !mostrarProgress && (
-              <div className="campo">
-                <Text>Nombre del sustituto</Text>
-                <Input
-                  placeholder="Nombre del sustituto"
-                  value={nombreSustituto}
-                  onChange={(e) => setNombreSustituto(e.target.value)}
-                  style={{ width: 290 }}
-                />
-              </div>
-            )}
-          </div>
-          <div className="campo campo-estado">
-            <Text>Estado</Text>
-            <Select placeholder="Estado" value={estado} onChange={handleEstadoChange} style={{ width: 110 }}>
-              <Option value="Aprobado">Aprobado</Option> {/*el admin es el unico que puede aprobar solicitudes */}
-              {/*<Option value="Pendiente">Aprobar</Option> */}  {/*el supervisor aprueba una solicud para enviarla a admin */}
-              <Option value="Rechazado">Rechazada</Option> {/* Rezachazada se muestra para seleccionar a admin y supervisor */}
-            </Select>
+            <Input placeholder="Nombre encargado" value={nombreEncargado} onChange={(e) => setNombreEncargado(e.target.value)} style={{ width: 290 }} disabled />
           </div>
           {userRole === 'admin' && (
             <>
+              <div className="box-sustituto">
+                <div className="campo campo-nombre-sustituto">
+                  <Text>Requiere sustituto</Text>
+                  <Select
+                    placeholder="Sustitución"
+                    value={sustitucion}
+                    onChange={handleSustitucionChange}
+                    style={{ width: 100 }}
+                  >
+                    <Option value="SI">SI</Option>
+                    <Option value="NO">NO</Option>
+                  </Select>
+                </div>
+                <div className="progress-bar">
+                  {mostrarProgress && <Progress percent={100} status="active" style={{ width: '290px' }} />}
+                </div>
+                {sustitucion === 'SI' && !mostrarProgress && (
+                  <div className="campo">
+                    <Text>Nombre del sustituto</Text>
+                    <Input
+                      placeholder="Nombre del sustituto"
+                      value={nombreSustituto}
+                      onChange={(e) => setNombreSustituto(e.target.value)}
+                      style={{ width: 290 }}
+                    />
+                  </div>
+                )}
+              </div>
               <div className="campo campo-tramitado">
                 <Text>Tramitado por</Text>
                 <Input placeholder="Tramitado por" value={unidadColaborador} style={{ width: 290 }} disabled />
@@ -337,6 +330,14 @@ const Form = () => {
               <div className="campo campo-comentario">
                 <Text>Comentario</Text>
                 <TextArea placeholder="Comentario de Talento Humano" value={comentarioTalentoHumano} onChange={(e) => setComentarioTalentoHumano(e.target.value)} allowClear />
+              </div>
+              <div className="campo campo-estado">
+                <Text>Estado</Text>
+                <Select placeholder="Estado" value={estado} onChange={handleEstadoChange} style={{ width: 110 }}>
+                  <Option value="Aprobado">Aprobado</Option> {/*el admin es el unico que puede aprobar solicitudes */}
+                  {/*<Option value="Pendiente">Aprobar</Option> */}  {/*el supervisor aprueba una solicud para enviarla a admin */}
+                  <Option value="Rechazado">Rechazada</Option> {/* Rezachazada se muestra para seleccionar a admin y supervisor */}
+                </Select>
               </div>
             </>
           )}

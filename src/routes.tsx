@@ -18,7 +18,7 @@ const Rutas = () => {
         <Routes>
             <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} isAuthenticated={loggedIn }/>} />
             <Route path="/solicitudes" element={<ProtectedRoute element={<TabsSolicitudAdmin />} isAuthenticated={loggedIn && userRole === 'admin'}  />} />
-            <Route path="/solicitud-form" element={<ProtectedRoute element={<Form />} isAuthenticated={loggedIn && userRole === 'admin'}  />} />
+            <Route path="/solicitud-form" element={<ProtectedRoute element={<Form />} isAuthenticated={loggedIn}  />} />
             <Route path="/ausencias" element={<ProtectedRoute element={<TabsAusenciaAdmin />} isAuthenticated={loggedIn  && userRole === 'admin'} />} />
             <Route path="/graficos" element={<ProtectedRoute element={<TabsAusenciaGraficoAdmin />} isAuthenticated={loggedIn  && userRole === 'admin'} />} />
             <Route path="/administrador" element={<ProtectedRoute element={<Administrador/>} isAuthenticated={loggedIn  && userRole === 'admin'} />}/>
