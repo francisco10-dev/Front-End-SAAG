@@ -92,7 +92,7 @@ const Preview = ({ selected }: Props) => {
         <Box className= 'preview-box'>
             {expediente ? 
                 <Box>
-                    <PersonalInfo isLoadingImage= {isLoadingImage} imageUrl={imageUrl} colaborador={expediente}/>
+                    <PersonalInfo isLoadingImage= {isLoadingImage} imageUrl={imageUrl} colaborador={expediente} size={6} />
                 </Box>
                 : <Box>            
                     <Box className='no-info'>
