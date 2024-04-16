@@ -1,4 +1,5 @@
-import { useState, useEffect }from 'react';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../../authProvider';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
@@ -7,7 +8,6 @@ import DataTable from './tableSolicitud';
 import SolicitudService from '../../services/solicitud.service';
 import { Solicitud } from '../../services/solicitud.service';
 import { message } from 'antd';
-
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
@@ -42,40 +42,48 @@ function a11yProps(index: number) {
 }
 
 export default function TabsSolicitudAdmin() {
+  const { userRole, colaborador } = useAuth(); // Obtener el rol del usuario autenticado desde el contexto de autenticación
   const Service = new SolicitudService();
   const [value, setValue] = useState(0);
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
-  const [ approved, setApproved ] = useState<Solicitud[]>([]);
+  const [approved, setApproved] = useState<Solicitud[]>([]);
   const [pendings, setPendings] = useState<Solicitud[]>([]);
   const [rejected, setRejected] = useState<Solicitud[]>([]);
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
     event
   };
 
-  const updateData= (data: any) => {
+  const updateData = (data: any) => {
     setData(data);
     setSolicitudes(data);
   }
 
   const loadRequests = () => {
-    setLoading(true); 
+    setLoading(true);
     const fetchData = async () => {
       try {
+        let solicitudesData: Solicitud[] = [];
         const cachedData = localStorage.getItem('solicitudesData');
         if (cachedData) {
           const data = JSON.parse(cachedData);
           updateData(data);
-        }else{
-          const solicitudesData = await Service.getSolicitudes();
+        } else {
+          if (userRole === 'supervisor') { // Verificar si el usuario es un supervisor
+            if (colaborador?.idColaborador) {
+              solicitudesData = await Service.getSolicitudesPorSupervisor(colaborador.idColaborador); // Obtener solicitudes del supervisor
+            }
+          } else {
+            solicitudesData = await Service.getSolicitudes();
+          }
           updateData(solicitudesData)
           localStorage.setItem('solicitudesData', JSON.stringify(solicitudesData));
         }
       } catch (error) {
         message.error('Ocurrió un error al cargar las solicitudes');
-      }finally {
+      } finally {
         setLoading(false);
       }
     };
@@ -86,14 +94,31 @@ export default function TabsSolicitudAdmin() {
     loadRequests();
   }, []);
 
+
   const setData = (solicitudes: Solicitud[]) => {
-    const aprobadas = solicitudes.filter((solicitud) => solicitud.estado === 'Aprobado');
-    setApproved(aprobadas);
+    let approvedStatus: string;
+    let rejectedStatus: string;
+
+    if (userRole === "supervisor") {
+        approvedStatus = "AprobadoPorJefatura";
+        rejectedStatus = "RechazadoPorJefatura";
+    } else {
+        approvedStatus = "Aprobado";
+        rejectedStatus = "Rechazado";
+    }
+
+    const approved = solicitudes.filter((solicitud) => solicitud.estado === approvedStatus);
+    setApproved(approved);
+
     const pendientes = solicitudes.filter((solicitud) => solicitud.estado === 'Pendiente');
     setPendings(pendientes);
-    const rejected = solicitudes.filter((solicitud) => solicitud.estado === 'Rechazado');
+
+    const rejected = solicitudes.filter((solicitud) => solicitud.estado === rejectedStatus);
     setRejected(rejected);
-  }
+}
+
+
+
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -106,16 +131,16 @@ export default function TabsSolicitudAdmin() {
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        <DataTable isLoading={loading} rows={solicitudes} load={loadRequests}/>
+        <DataTable isLoading={loading} rows={solicitudes} load={loadRequests} />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        <DataTable isLoading={loading} rows={approved}  load={loadRequests}/>
+        <DataTable isLoading={loading} rows={approved} load={loadRequests} />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
-        <DataTable isLoading={loading} rows={pendings}  load={loadRequests}/>
+        <DataTable isLoading={loading} rows={pendings} load={loadRequests} />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={3}>
-        <DataTable isLoading={loading} rows={rejected}  load={loadRequests}/>
+        <DataTable isLoading={loading} rows={rejected} load={loadRequests} />
       </CustomTabPanel>
     </Box>
   );

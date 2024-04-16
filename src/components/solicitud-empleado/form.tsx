@@ -12,7 +12,7 @@ const { Text } = Typography;
 const { RangePicker } = DatePicker;
 
 const Form = () => {
-  const { userRole, colaborador,nameSupervisor } = useAuth();
+  const { userRole, colaborador, nameSupervisor } = useAuth();
   const [idUsuario, setId] = useState('');
   const [tipoSolicitud, setTipoSolicitud] = useState('');
   const [asunto, setAsunto] = useState('');
@@ -21,6 +21,7 @@ const Form = () => {
   const [nombreColaborador, setNombreColaborador] = useState('');
   const [unidadColaborador, setUnidadColaborador] = useState('');
   const [nombreEncargado, setNombreEncargado] = useState('');
+  const [nombreJefaturaInmediata, setNombreJefaturaInmediata] = useState('');
   //@ts-ignore
   const [fechaSolicitud, setFechaSolicitud] = useState(null);
   const [fechaInicio, setFechaInicio] = useState<any>(null);
@@ -109,7 +110,7 @@ const Form = () => {
       setId(colaborador?.idColaborador.toString());
       setNombreColaborador(colaborador.nombre);
       setUnidadColaborador(colaborador?.unidad ?? "");
-      setNombreEncargado(nameSupervisor??"");
+      setNombreJefaturaInmediata(nameSupervisor ?? "");
     }
   }
 
@@ -164,6 +165,7 @@ const Form = () => {
     const horaInicioFormateada = formatearHora(horaInicio); // Agrega segundos si son necesarios
     const horaFinFormateada = formatearHora(horaFin); // Agrega segundos
     const goceSalarialFormat = parseInt(goceSalarial); // Parsea la cadena "1" a un número
+    setEstado("Pediente");
     setEnviandoSolicitud(true); // Establecer el estado de envío a true
     const nuevaSolicitud = {
       // Crear objeto de solicitud con los datos del formulario
@@ -283,12 +285,12 @@ const Form = () => {
             <Text>Asunto</Text>
             <TextArea placeholder="Asunto" value={asunto} onChange={(e) => setAsunto(e.target.value)} allowClear />
           </div>
+          <div className="campo campo-jefaura">
+            <Text>Nombre supervisor</Text>
+            <Input placeholder="Nombre supervisor" value={nombreJefaturaInmediata} onChange={(e) => setNombreJefaturaInmediata(e.target.value)} style={{ width: 290 }} disabled />
+          </div>
         </div>
         <div className="columna-2">
-          <div className="campo campo-encargado">
-            <Text>Nombre encargado</Text>
-            <Input placeholder="Nombre encargado" value={nombreEncargado} onChange={(e) => setNombreEncargado(e.target.value)} style={{ width: 290 }} disabled />
-          </div>
           {userRole === 'admin' && (
             <>
               <div className="box-sustituto">
@@ -321,7 +323,7 @@ const Form = () => {
               </div>
               <div className="campo campo-tramitado">
                 <Text>Tramitado por</Text>
-                <Input placeholder="Tramitado por" value={unidadColaborador} style={{ width: 290 }} disabled />
+                <Input placeholder="Tramitado por" value={nombreEncargado} style={{ width: 290 }} disabled />
               </div>
               <div className="campo campo-fecha-recibido">
                 <Text>Fecha recibido</Text>

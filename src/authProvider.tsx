@@ -27,17 +27,17 @@ interface AuthProviderProps {
 }
 
 const decodeToken = () => {
-  
-  try{
+
+  try {
     const token = localStorage.getItem('accessToken');
-    if(token){
+    if (token) {
       const decodedToken: any = jwtDecode(token);
       return decodedToken.rol || null;
     }
-    else{
+    else {
       return null;
     }
-  }catch(error){
+  } catch (error) {
     console.error('Error al decodificar el token: ', error);
     return null;
   }
@@ -45,7 +45,7 @@ const decodeToken = () => {
 
 const StoredData = () => {
   const data = localStorage.getItem('employee');
-  if(data){
+  if (data) {
     const colaborador = JSON.parse(data);
     return colaborador;
   }
@@ -59,29 +59,33 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [colaborador, setColaborador] = useState<Colaborador | null>(StoredData());
   const [nameSupervisor, setNameSupervisor] = useState<string | null>(() => {
     const storedColaborador = StoredData();
-    return storedColaborador ? storedColaborador.supervisor.nombre : null;
-  });  
+    if (storedColaborador && storedColaborador.supervisor) {
+      return storedColaborador.supervisor.nombre;
+    } else {
+      return null;
+    }
+  });
   const [photo, setPhoto] = useState<string | null>(localStorage.getItem('photo'));
   const navigate = useNavigate();
   const usuarioService = new UsuarioService();
 
-   const logout = async() => {
-  
-    const token = localStorage.getItem('refreshToken');
-          if (token) {
+  const logout = async () => {
 
-            const response = await usuarioService.logout(token);
-            
-            if (response.status === 200) {
-              localStorage.removeItem('accessToken');
-              localStorage.removeItem('refreshToken');
-              sessionStorage.removeItem('Welcome');
-              localStorage.removeItem('photo');
-              setPhoto(null);
-              setLoggedIn(false);
-              navigate('/');
-            }
-          }
+    const token = localStorage.getItem('refreshToken');
+    if (token) {
+
+      const response = await usuarioService.logout(token);
+
+      if (response.status === 200) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        sessionStorage.removeItem('Welcome');
+        localStorage.removeItem('photo');
+        setPhoto(null);
+        setLoggedIn(false);
+        navigate('/');
+      }
+    }
   };
 
   const loadPhoto = async (id: any) => {
@@ -108,7 +112,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setColaborador,
     nameSupervisor,
     setNameSupervisor
-  }), [loadPhoto, photo, loggedIn, userRole, colaborador,nameSupervisor]);
+  }), [loadPhoto, photo, loggedIn, userRole, colaborador, nameSupervisor]);
 
 
   return (

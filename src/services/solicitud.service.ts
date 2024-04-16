@@ -62,6 +62,24 @@ class SolicitudService {
     }
   }
 
+  async getSolicitudesPorSupervisor(idSupervisor: number): Promise<Solicitud[]> {
+    try {
+      const response = await this.axiosInstance.get(`/solicitudes-por-supervisor/${idSupervisor}`);
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 403) {
+          throw new Error(error.response.data.message);
+        } else {
+          throw new Error('Error en la solicitud de red');
+        }
+      }
+      throw error;
+    }
+  }
+  
+
   async getSolicitudPorId(id: number): Promise<Solicitud | null> {
     try {
       const response = await this.axiosInstance.get(`/solicitud/${id}`);
@@ -84,6 +102,7 @@ class SolicitudService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
+          console.log(error.response);
           throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
         } else {
           throw new Error('Error en la solicitud de red');
