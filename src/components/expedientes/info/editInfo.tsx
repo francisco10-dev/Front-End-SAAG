@@ -73,6 +73,7 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData}: Props) => {
       await handleUploadPhoto();
       if(response.status === 200){
         setIsEdit(false);
+        localStorage.removeItem("expedientesData");
         loadData();
         message.success('Información actualizada');
       }else{
@@ -100,6 +101,7 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData}: Props) => {
       try {
         const service = new ExpedienteService();
         await service.updatePhoto(colaborador.idColaborador, image);
+        localStorage.removeItem(`imgUrl${colaborador.idColaborador}`);
       } catch (error) {
         message.error('No se ha podido guardar la foto.');
       }

@@ -1,23 +1,21 @@
 import { useState, useEffect } from 'react';
 import { DataGrid, GridColDef, GridRowSelectionModel, esES } from '@mui/x-data-grid';
 import TextField from '@mui/material/TextField';
-import { Solicitud } from '../../services/solicitud.service';
+import SolicitudService, { Solicitud } from '../../services/solicitud.service';
 import *  as utils from './utils'; 
-import EditSolicitudModal from './editRequest';
 import * as  tools from './gridToolBar';
-import { ToastContainer } from 'react-toastify';
 import Badge from './badge';
 import { Box } from '@mui/material';
+import EditDialog from './editModal';
+import { message } from 'antd';
 
 export interface DataTableProps {
   rows: any[];
-  deleteRows: (ids: number[]) => void;
   isLoading: boolean;
-  onSolicitudUpdate: (id: number, status: string) => void;
   load: () => void;
 }
 
-export default function DataTable({rows, deleteRows, isLoading, onSolicitudUpdate, load}: DataTableProps) {
+export default function DataTable({rows, isLoading, load}: DataTableProps) {
 
   const [filterText, setFilterText] = useState('');
   const [filteredRows, setFilteredRows] = useState(rows); 
@@ -52,20 +50,51 @@ export default function DataTable({rows, deleteRows, isLoading, onSolicitudUpdat
     }
   };
 
-
   const onRefresh = () => {
+    localStorage.removeItem('solicitudesData');
     load();
   }
 
   const onDeleteClick = async () => {
     const confirmation= await utils.showConfirmation();
     if(confirmation) {
-        await utils.dropRequests(selectedIds);
-        deleteRows(selectedIds)
+        deleteData();
     }
   };
 
-  
+  const deleteData = async () => {
+    const hideLoadingMessage = message.loading('Cargando', 0);
+    try {
+        const errors = await deleteSolicitudes();
+        handleDeleteResponse(errors);
+        localStorage.removeItem('solicitudesData');
+        load();
+    } catch (error) {
+        handleError();
+    } finally {
+        hideLoadingMessage();
+    }
+  };
+
+  const deleteSolicitudes = async () => {
+      const service = new SolicitudService();
+      return await service.eliminarSolicitudes(selectedIds);
+  };
+
+  const handleDeleteResponse = (errors: number[]) => {
+      const deletedIds = selectedIds.filter(id => !errors.includes(id));
+      deletedIds.forEach(id => {
+          message.success('Solicitud con id: ' + id + ' eliminada.');
+      });
+      errors.forEach(id => {
+          message.error('La solicitud con id: ' + id + ' no se ha podido eliminar');
+      });
+  };
+
+  const handleError = () => {
+    message.error('Ocurrió al eliminar los registros.');
+  };
+
   const applyFilters = () => {
     const filteredData = rows.filter((row) => filterRow(row));
     setFilteredRows(filteredData);
@@ -132,8 +161,7 @@ export default function DataTable({rows, deleteRows, isLoading, onSolicitudUpdat
             boxShadow: 'none',
         }}
       /> 
-      <EditSolicitudModal open={isModalOpen} solicitud={selectedSolicitud} onClose={() => setIsModalOpen(false)} onSolicitudUpdate={onSolicitudUpdate} />
-        <ToastContainer/>
+      <EditDialog open={isModalOpen} solicitud={selectedSolicitud} onClose={() => setIsModalOpen(false)} reload={onRefresh} />
     </div>
   );
 }

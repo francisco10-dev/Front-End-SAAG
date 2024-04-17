@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import DataTable from './tableSolicitud';
 import SolicitudService from '../../services/solicitud.service';
 import { Solicitud } from '../../services/solicitud.service';
-import { CircularProgress } from '@mui/material';
+import { message } from 'antd';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -47,6 +47,7 @@ export default function TabsSolicitudAdmin() {
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
   const [ approved, setApproved ] = useState<Solicitud[]>([]);
   const [pendings, setPendings] = useState<Solicitud[]>([]);
+  const [rejected, setRejected] = useState<Solicitud[]>([]);
   const [loading, setLoading] = useState(false); 
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -54,16 +55,28 @@ export default function TabsSolicitudAdmin() {
     event
   };
 
+  const updateData= (data: any) => {
+    setData(data);
+    setSolicitudes(data);
+  }
+
   const loadRequests = () => {
     setLoading(true); 
     const fetchData = async () => {
       try {
-        const solicitudesData = await Service.getSolicitudes();
-        updateRows(solicitudesData);
+        const cachedData = localStorage.getItem('solicitudesData');
+        if (cachedData) {
+          const data = JSON.parse(cachedData);
+          updateData(data);
+        }else{
+          const solicitudesData = await Service.getSolicitudes();
+          updateData(solicitudesData)
+          localStorage.setItem('solicitudesData', JSON.stringify(solicitudesData));
+        }
       } catch (error) {
-        console.error('Error al obtener solicitudes:', error);
+        message.error('Ocurrió un error al cargar las solicitudes');
       }finally {
-        setLoading(false); // Marcamos que la carga ha finalizado, independientemente de si fue exitosa o no
+        setLoading(false);
       }
     };
     fetchData();
@@ -73,52 +86,36 @@ export default function TabsSolicitudAdmin() {
     loadRequests();
   }, []);
 
-  const setData = (data: Solicitud[]) => {
-    const aprobadas = data.filter((solicitud) => solicitud.estado === 'procesada');
+  const setData = (solicitudes: Solicitud[]) => {
+    const aprobadas = solicitudes.filter((solicitud) => solicitud.estado === 'Aprobado');
     setApproved(aprobadas);
-    const pendientes = data.filter((solicitud) => solicitud.estado === 'pendiente');
+    const pendientes = solicitudes.filter((solicitud) => solicitud.estado === 'Pendiente');
     setPendings(pendientes);
-  }
-
-  const updateRows = (nuevoArray: Solicitud[]) => {
-    setSolicitudes(nuevoArray);
-    setData(nuevoArray);
-  };
-  
-  const deleteRows = (ids: number[]) => {
-    const nuevoArray = solicitudes.filter((elemento) => !ids.includes(elemento.idSolicitud));
-    updateRows(nuevoArray);
-  };
-  
-  const changeStatus = (id: number, status: string) => {
-    const nuevoArray = solicitudes.map((solicitud) =>
-      solicitud.idSolicitud === id ? { ...solicitud, estado: status } : solicitud
-    );
-    updateRows(nuevoArray);
-  };
-  
-
-  if (loading) {
-    return <div><CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%' }}/></div>;
+    const rejected = solicitudes.filter((solicitud) => solicitud.estado === 'Rechazado');
+    setRejected(rejected);
   }
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', maxWidth: { xs: 320, sm: 480 } }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Todas" {...a11yProps(0)} />
-          <Tab label="Procesadas" {...a11yProps(1)} />
+          <Tab label="Aprobadas" {...a11yProps(1)} />
           <Tab label="Pendientes" {...a11yProps(2)} />
+          <Tab label="Rechazadas" {...a11yProps(3)} />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        <DataTable isLoading={loading} rows={solicitudes} deleteRows={deleteRows} onSolicitudUpdate={changeStatus} load={loadRequests}/>
+        <DataTable isLoading={loading} rows={solicitudes} load={loadRequests}/>
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
-        <DataTable isLoading={loading} rows={approved} deleteRows={deleteRows} onSolicitudUpdate={changeStatus} load={loadRequests}/>
+        <DataTable isLoading={loading} rows={approved}  load={loadRequests}/>
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
-        <DataTable isLoading={loading} rows={pendings} deleteRows={deleteRows} onSolicitudUpdate={changeStatus} load={loadRequests}/>
+        <DataTable isLoading={loading} rows={pendings}  load={loadRequests}/>
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={3}>
+        <DataTable isLoading={loading} rows={rejected}  load={loadRequests}/>
       </CustomTabPanel>
     </Box>
   );

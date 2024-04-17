@@ -1,10 +1,18 @@
 import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton, GridToolbarDensitySelector, GridToolbarExport } from '@mui/x-data-grid';
+//@ts-ignore
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+//@ts-ignore
+
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
+//@ts-ignore
+
 import { Button } from '@mui/material';
+//@ts-ignore
 
 export function CustomToolbar({ /*onEditClick, onDeleteClick,*/ onRefresh, selectedIds }: { onRefresh: () => void, /*onEditClick: () => void, onDeleteClick: () => void;*/ selectedIds: string[] }) {
-    const DeleteButtonDisabled = selectedIds.length === 0;
+   //@ts-ignore
+   const DeleteButtonDisabled = selectedIds.length === 0;
+   //@ts-ignore
     const EditButtonDisabled = selectedIds.length !== 1;
   
     return (

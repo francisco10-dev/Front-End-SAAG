@@ -2,7 +2,6 @@ import {Box, Typography} from '@mui/material'
 import Info from './Info';
 import Loader from '../skeleton';
 import { Colaborador } from '../../../services/colaborador.service';
-import { useEffect } from 'react';
 
 interface Props{
     isLoadingImage: boolean;

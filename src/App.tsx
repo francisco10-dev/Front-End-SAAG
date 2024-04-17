@@ -23,6 +23,13 @@ const App: React.FC = () => {
     }
   }, [loggedIn]);
 
+  function getReadableStatus() {
+    if (showWelcome) {
+      return <Welcome/>
+    }
+    return loggedIn ? <Main/>  : <Login/>;
+  }
+
   // Funcionalidad para controlar la inactividad del usuario
   useEffect(() => {
       let inactivityTimer: NodeJS.Timeout;
@@ -59,12 +66,11 @@ const App: React.FC = () => {
 
   const handleWarningClose = () => {
     setShowWarning(false);
-    // Puedes agregar acciones adicionales aquí, si es necesario
   };
 
   return (
     <div>
-      {showWelcome ? <Welcome /> : (loggedIn? <Main/> : <Login />)}
+      {getReadableStatus()}
       {showWarning && <WarningModal onClose={handleWarningClose} />}
     </div>
   );

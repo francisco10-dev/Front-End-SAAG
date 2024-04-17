@@ -18,9 +18,13 @@ import { formatDate } from '../../../solicitudes/utils';
 import TextField from '@mui/material/TextField';
 import Chip from '@mui/material/Chip';
 
-export default function Licencias(props: {licenses: Documento[], loadData: ()=> void}) {
+interface Props{
+    readonly licenses: Documento[],
+    readonly loadData: () => void;
+}
 
-    const {licenses, loadData} = props;
+export default function Licencias({licenses, loadData}: Props) {
+
     const [loading, setLoading] = useState(false);
     const service = new ExpedienteService();
     const [openPdf, setOpenPdf] = useState(false);
@@ -140,7 +144,7 @@ export default function Licencias(props: {licenses: Documento[], loadData: ()=> 
         const formattedDate = formatDate(row.fechaVencimiento);
         const formattedDate2 = formatDate(row.fechaSubida);
         return (
-            (row.licencia && row.licencia.toLowerCase().includes(filterText.toLowerCase())) ||
+            (row.licencia?.toLowerCase().includes(filterText.toLowerCase())) ||
             (formattedDate.toLowerCase().includes(filterText.toLowerCase())) ||
             (formattedDate2.toLowerCase().includes(filterText.toLowerCase()))
         );
@@ -208,7 +212,7 @@ export default function Licencias(props: {licenses: Documento[], loadData: ()=> 
                                 }} 
                                 onClick={() => handleClick(row)}
                             >
-                                <img src={handleImageDoc(row.nombreArchivo).src} style={{ width: handleImageDoc(row.nombreArchivo).size, marginRight: 10, marginLeft: handleImageDoc(row.nombreArchivo).left }} />
+                                <img src={handleImageDoc(row.nombreArchivo).src} alt="doc" style={{ width: handleImageDoc(row.nombreArchivo).size, marginRight: 10, marginLeft: handleImageDoc(row.nombreArchivo).left }} />
                                 {row.nombreArchivo}
                             </Typography>
                         </TableCell>

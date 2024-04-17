@@ -4,7 +4,6 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import DataTable from './tableAusencia';
-import Bars from './graphicAusencia';
 import SolicitudService from '../../services/solicitud.service';
 import { Solicitud } from '../../services/solicitud.service';
 import { CircularProgress } from '@mui/material';
@@ -45,6 +44,7 @@ function a11yProps(index: number) {
 export default function TabsSolicitudAdmin() {
   const Service = new SolicitudService();
   const [value, setValue] = useState(0);
+  //@ts-ignore
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
   const [approved, setApproved] = useState<Solicitud[]>([]);
   const [loading, setLoading] = useState(false);
@@ -109,7 +109,6 @@ export default function TabsSolicitudAdmin() {
           <Tab label="Todas" {...a11yProps(0)} />
           <Tab label="Proximos Ausentes" {...a11yProps(1)} />
           <Tab label="Ausentes" {...a11yProps(2)} />
-          <Tab label="Grafico" {...a11yProps(3)} />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
@@ -128,9 +127,6 @@ export default function TabsSolicitudAdmin() {
           if (!a.fechaInicio || !b.fechaInicio) return 0;
           return new Date(b.fechaInicio).getTime() - new Date(a.fechaInicio).getTime();})}
         /*deleteRows={deleteRows} onSolicitudUpdate={changeStatus}*/ load={loadRequests} />
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={3}>
-        <Bars />
       </CustomTabPanel>
     </Box>
   );

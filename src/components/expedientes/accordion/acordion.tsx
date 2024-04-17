@@ -10,7 +10,6 @@ import Requests from './requests';
 import Absences from './absences';
 import Files from './documents';
 import { useEffect, useState } from 'react';
-import Licenses from './licenses/tableLicenses';
 import TabsLicencias from './licenses/tabsLicencias';
 import TabsCourses from './courses/tabsCourses';
 
@@ -20,15 +19,17 @@ interface Props{
 
 const Accordions = ({data}: Props) =>{
 
-    if(!data){
-        return <div>No se encontró el colaborador</div>
-    }
+    const [colaborador, setColaborador] = useState<Colaborador | null>(null);
 
-    const [colaborador, setColaborador] = useState<Colaborador>(data);
- 
-    useEffect(()=> {
-        setColaborador(data);
+    useEffect(() => {
+        if (data) {
+            setColaborador(data);
+        }
     }, [data]);
+
+    if (!colaborador) {
+        return <div>No se encontró el colaborador</div>;
+    }
 
     return (
         <Box>

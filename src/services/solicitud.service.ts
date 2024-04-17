@@ -1,5 +1,6 @@
 import axios from 'axios';
 import axiosApi from '../services/api.service'
+import { Colaborador } from './colaborador.service';
 
 export interface Solicitud {
     idSolicitud: number;
@@ -11,6 +12,7 @@ export interface Solicitud {
     fechaSolicitud: string;
     fechaInicio?: string;
     fechaFin?: string;
+    fechaRecibido: string;
     horaInicio?: string;
     horaFin?: string;
     sustitucion: string;
@@ -18,6 +20,7 @@ export interface Solicitud {
     estado: string;
     comentarioTalentoHumano: string;
     idColaborador: number;
+    colaborador: Colaborador;
 }
 
 class SolicitudService {
@@ -111,10 +114,9 @@ class SolicitudService {
   
     for (const id of ids) {
       try {
-        const status = await this.eliminarSolicitud(id);
-        statuses.push(status);
+        await this.eliminarSolicitud(id);
       } catch (error) {
-        statuses.push(0); 
+        statuses.push(id); 
       }
     }
     return statuses;

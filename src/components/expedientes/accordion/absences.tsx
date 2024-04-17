@@ -11,9 +11,13 @@ import AusenciaService, { Ausencia } from '../../../services/ausencia.service';
 import { TextField, Typography } from '@mui/material';
 import { formatDate } from '../../solicitudes/utils';
 
-export default function Absences(props: {id: number}) {
+interface Props{
+    readonly id: number;
+}
 
-    const [idColaborador, setIdColaborador] = useState(props.id);
+export default function Absences({id}: Props) {
+
+    const [idColaborador, setIdColaborador] = useState(id);
     const [absences, setAbsences] = useState<Ausencia[]>([]);
     const [filteredRows, setFilteredRows] = useState(absences); 
     const [filterText, setFilterText] = useState('');
@@ -43,11 +47,11 @@ export default function Absences(props: {id: number}) {
         const formattedDate = formatDate(row.fechaAusencia);
         const formattedDate2 = formatDate(row.fechaFin);
         return (
-          (row.nombreColaborador && row.nombreColaborador.toLowerCase().includes(filterText.toLowerCase())) ||
-          (row.razon && row.razon.toLowerCase().includes(filterText.toLowerCase())) ||
-          (row.idAusencia && row.idAusencia.toString().includes(filterText)) ||
-          (formattedDate.toLowerCase().includes(filterText.toLowerCase())) ||
-          (formattedDate2.toLowerCase().includes(filterText.toLowerCase()))
+            (row.nombreColaborador?.toLowerCase().includes(filterText.toLowerCase())) ||
+            (row.razon?.toLowerCase().includes(filterText.toLowerCase())) ||
+            (row.idAusencia?.toString().includes(filterText)) ||
+            (formattedDate?.toLowerCase().includes(filterText.toLowerCase())) ||
+            (formattedDate2?.toLowerCase().includes(filterText.toLowerCase()))
         );
       };
     
@@ -56,8 +60,8 @@ export default function Absences(props: {id: number}) {
       },[filterText, absences]);
 
     useEffect(()=> {
-        setIdColaborador(props.id);
-    },[props.id]);
+        setIdColaborador(id);
+    },[id]);
 
     useEffect(()=> {
         loadData();

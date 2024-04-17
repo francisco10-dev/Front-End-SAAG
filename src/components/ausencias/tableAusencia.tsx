@@ -6,8 +6,7 @@ import *  as utils from './utils';
 import EditSolicitudModal from './editRequest';
 import * as  tools from './gridToolBar';
 import { ToastContainer } from 'react-toastify';
-import Badge from './badge';
-import { Box } from '@mui/material';
+
 
 export interface DataTableProps {
   rows: any[];
@@ -16,7 +15,7 @@ export interface DataTableProps {
   // onSolicitudUpdate: (id: number, status: string) => void; // Método que no vas a usar
   load: () => void;
 }
-
+//@ts-ignore
 export default function DataTable({rows, /*deleteRows,*/ isLoading, /*onSolicitudUpdate,*/ load}: DataTableProps) {
 
   const [filterText, setFilterText] = useState('');
@@ -25,25 +24,18 @@ export default function DataTable({rows, /*deleteRows,*/ isLoading, /*onSolicitu
   const getRowId = (row: Solicitud) => row.idSolicitud;
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedSolicitud, setSelectedSolicitud] = useState<Solicitud | null>(null);
+  const [selectedSolicitud] = useState<Solicitud | null>(null);
   selectedRow
 
   const columns: GridColDef[] = [
     { field: 'idSolicitud', headerName: 'ID', width: 60, disableColumnMenu: true },
     { field: 'tipoSolicitud', headerName: 'Tipo', width: 100 },
-    { field: 'fechaSolicitud', headerName: 'Fecha De Solicitud', width: 100, valueGetter: (params) => utils.formatDate(params.value) },
-    { field: 'fechaInicio', headerName: 'Fecha De Inicio', width: 100, valueGetter: (params) => utils.formatDate(params.value) },
-    { field: 'fechaFin', headerName: 'Fecha De Fin', width: 100, valueGetter: (params) => utils.formatDate(params.value) },
-    {field: 'horaInicio', headerName: 'Hora De Inicio', },
-    {field: 'horaFin', headerName: 'Hora De fin',},
-    { field: 'nombreColaborador', headerName: 'Colaborador', width: 100 },
-    { field: 'estado', headerName: 'Estado', width: 110,
-      renderCell: (params) => (
-          <Box minWidth={100}>
-           <Badge estado={params.row.estado}/>
-          </Box>
-      ),
-    },
+    { field: 'fechaSolicitud', headerName: 'Fecha De Solicitud', width: 145, valueGetter: (params) => utils.formatDate(params.value) },
+    { field: 'fechaInicio', headerName: 'Fecha De Inicio', width: 125, valueGetter: (params) => utils.formatDate(params.value) },
+    { field: 'fechaFin', headerName: 'Fecha De Fin', width: 115, valueGetter: (params) => utils.formatDate(params.value) },
+    {field: 'horaInicio', headerName: 'Hora De Inicio', width: 115, },
+    {field: 'horaFin', headerName: 'Hora De fin', width: 115,},
+    { field: 'nombreColaborador', headerName: 'Colaborador', width: 115 },
   ];
 
   // const onEditClick = () => { // Método que no vas a usar

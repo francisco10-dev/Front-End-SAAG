@@ -1,17 +1,12 @@
-import { Box } from "@mui/material";
 import { useState, useEffect } from "react";
-import { Typography } from "@mui/material";
+import { Typography, CircularProgress, Box } from "@mui/material";
 import '../expedientes.css'
 import PersonalInfo from "./personalInfo";
-import ExpedienteService from "../../../services/expediente.service";
-import {CircularProgress} from "@mui/material";
 import ColaboradorService, { Colaborador } from "../../../services/colaborador.service";
 
 interface Props {
     selected: number | null;
 }
-
-//const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const Preview = ({ selected }: Props) => {
 
@@ -20,12 +15,19 @@ const Preview = ({ selected }: Props) => {
     const [expediente, setExpediente] = useState<Colaborador | null>();
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const service = new ColaboradorService();
+    const cachedData = localStorage.getItem('expedientesData');
 
     const fetchExpediente = async (id: number) => {
         try {
             setLoading(true);
-            const data = await service.obtenerColaboradorPorId(id);
-            setExpediente(data);
+            if (cachedData) {
+                let storedData = JSON.parse(cachedData);
+                const data = storedData.find((colaborador : Colaborador) => colaborador.idColaborador === id);
+                setExpediente(data);
+            }else{
+                const data = await service.obtenerColaboradorPorId(id);
+                setExpediente(data);                
+            }
         } catch (error) {
             console.log(error);
         } finally {
@@ -37,8 +39,16 @@ const Preview = ({ selected }: Props) => {
         if(expediente){
             try {
                 setLoadingImage(true);
-                const response = await service.getPhoto(expediente?.idColaborador);
-                setImageUrl(response.data.imageUrl);
+                const storedImg = localStorage.getItem(`imgUrl${expediente.idColaborador}`)
+                if(storedImg){
+                    setImageUrl(storedImg);
+                    setLoadingImage(false);
+                    return;
+                }
+                const response = await service.getPhoto(expediente.idColaborador);
+                const imgUrl = response.data.imageUrl;
+                localStorage.setItem(`imgUrl${expediente.idColaborador}`, imgUrl);
+                setImageUrl(imgUrl);
             } catch (error) {
                 console.log(error);
             } finally {

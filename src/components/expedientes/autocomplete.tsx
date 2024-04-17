@@ -14,11 +14,11 @@ interface AutoCompleteExpedienteProps {
 
 const AutoCompleteExpediente: React.FC<AutoCompleteExpedienteProps> = ({ expedientes, setSelected }) => {
     const [selectedExpediente, setSelectedExpediente] = useState<Colaborador | null>(null);
-  
+   
+    //@ts-ignore
     const handleSelect = (event: React.ChangeEvent<{}>, value: Colaborador | null) => {
       setSelectedExpediente(value);
       setSelected(value);
-      console.log(value);
     };
   
     return (

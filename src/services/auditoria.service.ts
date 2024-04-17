@@ -6,8 +6,8 @@ export interface Auditoria {
     idUsuario:  number;
     nombreUsuario: string;
     rol: string;
-    metodo: string;
-    url : string;
+    accion: string;
+    nombre : string;
     datosAntiguos : Text;
     datosNuevos : Text;
     fecha: Date;

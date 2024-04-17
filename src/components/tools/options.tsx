@@ -9,6 +9,7 @@ import {
     SecurityScanOutlined,
     SendOutlined,
     FolderOutlined,
+    BarChartOutlined,
   } from '@ant-design/icons';
 
 export const items: MenuProps['items'] = [
@@ -23,9 +24,21 @@ export const items: MenuProps['items'] = [
       label: 'Empleados',
     },
     {
-      key: '3',
+      key: 'Ausencias',
       icon: <ClockCircleOutlined/>,
       label: 'Ausencias',
+      children: [
+        {
+          key: '3',
+          label: 'Ausencias',
+          icon: <FileOutlined/>
+        },
+        {
+          key: '4',
+          label: 'Graficos',
+          icon: <BarChartOutlined/>
+        },
+      ]
     },
     {
       key: 'permisos',
@@ -33,12 +46,12 @@ export const items: MenuProps['items'] = [
       label: 'Permisos',
       children: [
         {
-          key: '4',
+          key: '5',
           label: 'Solicitudes',
           icon: <FileOutlined/>
         },
         {
-          key: '5',
+          key: '6',
           label: 'Ingresar solicitud',
           icon: <SendOutlined/>
         },
@@ -50,12 +63,12 @@ export const items: MenuProps['items'] = [
       label: 'Auditoría',
       children: [
         {
-          key: '6',
+          key: '7',
           label: 'Actividad',
           icon: <SwapOutlined/>
         },
         {
-          key: '7',
+          key: '8',
           label: 'Sesiones',
           icon: <LoginOutlined/>
         },

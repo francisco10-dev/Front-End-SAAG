@@ -32,15 +32,6 @@ export default function DataTable(props: DataTableProps) {
     { field: 'agenteUsuario', headerName: 'Agente', width: 600 },
   ];
 
-  
-
-  const onDeleteClick = async () => {
-    const confirmation= await utils.showConfirmation();
-    if(confirmation) {
-        await utils.dropRequests(selectedIds);
-        props.updateAuditoriasLogin(props.rows.filter(AuditoriaLogin => !selectedIds.includes(AuditoriaLogin.idAuditoria)));
-    }
-  };
 
   const applyFilters = () => {
     const filteredData = rows.filter((row) => {
@@ -97,7 +88,7 @@ export default function DataTable(props: DataTableProps) {
           toolbar: tools.CustomToolbar
         }}
         slotProps={{
-          toolbar: { onDeleteClick, selectedIds }
+          toolbar: { selectedIds }
         }}
         style={{
             marginBottom: '16px',

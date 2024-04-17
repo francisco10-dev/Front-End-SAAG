@@ -10,13 +10,12 @@ import Paper from '@mui/material/Paper';
 import { IconButton, Typography, Button } from '@mui/material';
 import ExpedienteService, {Documento} from '../../../services/expediente.service';
 import { MinusCircleOutlined } from '@ant-design/icons';
-import { Popconfirm, message, Modal } from 'antd';
+import { Popconfirm, message, Modal, Spin } from 'antd';
 import DownloadIcon from '@mui/icons-material/Download';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import { saveAs } from  'file-saver';
 import type { UploadFile } from 'antd/lib/upload/interface';
 import UploadFiles from '../file/uploadFile';
-import { Spin } from 'antd';
 
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
@@ -65,24 +64,6 @@ export default function Files(props: {idColaborador: number}) {
         setId(idColaborador);
     },[idColaborador]);
     
-    //@ts-ignore
-    const viewPDF = async (row: Documento) => {
-        try {
-          const fileBlob = await service.getDocument(row.idDocumento);
-      
-          const blobUrl = URL.createObjectURL(fileBlob);
-
-          const pdfWindow = window.open(blobUrl, 'PDFViewer');
-          if (pdfWindow) {
-            pdfWindow.addEventListener('load', () => {
-              pdfWindow.document.title = row.nombreArchivo;
-            });
-          }
-        } catch (error) {
-          console.log(error);
-        }
-    };
-      
 
     const downloadFile = async (row: Documento) => {
         try {
@@ -108,7 +89,6 @@ export default function Files(props: {idColaborador: number}) {
 
     const handleFilesChange = (files: UploadFile<any>[]) => {
         setSelectedFiles((prevFiles) => [...prevFiles, ...files]);
-        //setVisible(false); 
     };
 
     const handleDelete = async (row: Documento)=>{
@@ -226,7 +206,6 @@ export default function Files(props: {idColaborador: number}) {
         position: 'sticky',
         top: 0,
         background: 'white',
-        zIndex: 1
     };
 
     const Files = () => {
@@ -299,7 +278,6 @@ export default function Files(props: {idColaborador: number}) {
             <Table sx={{ minWidth: 65 }} aria-label="simple table">
                 <TableHead>
                 <TableRow>
-                   {/**<TableCell align='center' sx={styles}>N# Documento</TableCell> */} 
                     <TableCell sx={styles}>Archivo</TableCell>
                     <TableCell align='center' sx={styles}>Tamaño</TableCell>
                     <TableCell align='center' sx={styles}>Fecha de registro</TableCell>

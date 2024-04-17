@@ -108,7 +108,7 @@ export default function TabsCourses(props: { idColaborador: number }) {
     const upcomingExpirationsArray = courses.filter((course) => {
       const dateToCheck = parseISO(course.fechaVencimiento);
       return isBefore(dateToCheck, currentDate) ? false :
-        isBefore(dateToCheck, addDays(currentDate, daysToExpire ? daysToExpire : 15));
+        isBefore(dateToCheck, addDays(currentDate, daysToExpire || 15));
     });
 
     upcomingExpirationsArray.sort((a, b) => {
@@ -174,22 +174,22 @@ export default function TabsCourses(props: { idColaborador: number }) {
             <Box>
                 <Box mt={2}>
                 <Alert  variant="filled" severity="info">Vencimiento más próximo el {proximo}</Alert>
-                </Box>
-                <Box mb={2} mt={5} >
-                <Select
-                    defaultValue={15}
-                    style={{ width: '30%', marginBottom: 10 }}
-                    onChange={handleChangeDaysToExpire}
-                    value={daysToExpire}
-                >
-                    <Option value={20}>20 días de proximidad</Option>
-                    <Option value={15}>15 días de proximidad</Option>
-                    <Option value={7}>7 días de proximidad</Option>
-                    <Option value={5}>5 días de proximidad</Option>
-                </Select>
-                </Box>            
+                </Box>           
             </Box>
           )}
+        <Box mb={2} mt={5} >
+            <Select
+                defaultValue={15}
+                style={{ width: '30%', marginBottom: 10 }}
+                onChange={handleChangeDaysToExpire}
+                value={daysToExpire}
+            >
+                <Option value={20}>20 días de proximidad</Option>
+                <Option value={15}>15 días de proximidad</Option>
+                <Option value={7}>7 días de proximidad</Option>
+                <Option value={5}>5 días de proximidad</Option>
+            </Select>
+        </Box> 
         <Courses courses={upcomingExpirations} loadData={loadData} /> 
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>

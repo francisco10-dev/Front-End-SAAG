@@ -24,13 +24,19 @@ const ExpedienteInfo = ({data}: Props) => {
     const service = new ColaboradorService();
     const [expediente, setExpediente] = useState<Colaborador>(data);
     const [isEdit, setIsEdit] = useState(false);
+   
 
     const loadImage = async () => {
         if(expediente){
             try {
                 setLoading(true);
-                const response = await service.getPhoto(expediente?.idColaborador);
-                setImageUrl(response.data.imageUrl);
+                const imgUrl = localStorage.getItem(`imgUrl${expediente.idColaborador}`);
+                if(imgUrl){
+                    setImageUrl(imgUrl);
+                }else{
+                    const response = await service.getPhoto(expediente?.idColaborador);
+                    setImageUrl(response.data.imageUrl);                    
+                }
             } catch (error) {
                 console.log(error);
             } finally {

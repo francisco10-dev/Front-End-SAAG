@@ -6,7 +6,7 @@ import Box from '@mui/material/Box';
 import DataTable from './tableAuditoria';
 import AuditoriaService from '../../services/auditoria.service';
 import { Auditoria } from '../../services/auditoria.service';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, MenuItem, SelectChangeEvent, Select } from '@mui/material';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -45,48 +45,78 @@ export default function TabsAuditoriasLogin() {
   const Service = new AuditoriaService();
   const [value, setValue] = React.useState(0);
   const [auditorias, setAuditorias] = React.useState<Auditoria[]>([]);
-  const [loading, setLoading] = React.useState(false); 
+  const [filteredAuditorias, setFilteredAuditorias] = React.useState<Auditoria[]>([]);
+  const [filterValue, setFilterValue] = React.useState<string>('');
+  const [loading, setLoading] = React.useState(false);
+
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
-    event
   };
 
-  const loadRequests = () => {
-    setLoading(true); 
-    const fetchData = async () => {
-      try {
-        const auditoriasLoginData = await Service.getAuditorias();
-        setAuditorias(auditoriasLoginData);
-      } catch (error) {
-        console.error('Error al obtener auditoria:', error);
-      }finally {
-        setLoading(false); // Marcamos que la carga ha finalizado, independientemente de si fue exitosa o no
-      }
-    };
-    fetchData();
-  }
+  const handleFilterChange = (event: SelectChangeEvent<string>) => {
+    const filterValue = event.target.value as string;
+    setFilterValue(filterValue); // Actualiza el estado del filtro al seleccionar una opción
+    filterAuditorias(filterValue);
+  };
 
-React.useEffect(() => {
-  loadRequests();
-}, [value]);
+  const filterAuditorias = (filter: string) => {
+    if (filter === '') {
+      setFilteredAuditorias(auditorias); // Restaurar auditorias originales cuando se borra el filtro
+    } else {
+      const filtered = auditorias.filter(auditoria => auditoria.nombre.toLowerCase().includes(filter.toLowerCase()));
+      setFilteredAuditorias(filtered);
+    }
+  };
 
-const renderContent = (data: Auditoria[]) =>
-  loading ? (
-    <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%' }} />
-  ) : (
-    <DataTable rows={data} updateAuditorias={loadRequests} />
-  );
+  const loadRequests = async () => {
+    try {
+      const auditoriasData = await Service.getAuditorias();
+      setAuditorias(auditoriasData);
+      setFilteredAuditorias(auditoriasData);
+    } catch (error) {
+      console.error('Error al obtener auditorias:', error);
+    }finally {
+      setLoading(false);
+    }
+  };
+
+  React.useEffect(() => {
+    loadRequests();
+  }, []);
+
+  const renderContent = (data: Auditoria[]) =>
+    loading ? (
+      <CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%' }} />
+    ) : (
+      <DataTable rows={data} updateAuditorias={loadRequests} />
+    );
 
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Todas" {...a11yProps(0)} />
+          <Tab label="Filtrar" {...a11yProps(1)} />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-      {renderContent(auditorias)}
+        {renderContent(auditorias)}
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={1}>
+        <Select
+          value={filterValue} // Usa el estado del filtro como valor del Select
+          onChange={handleFilterChange}
+          displayEmpty
+          inputProps={{ 'aria-label': 'Select filter' }}
+        >
+          <MenuItem value="">Seleccionar filtro</MenuItem>
+          <MenuItem value="solicitud">Solicitud</MenuItem>
+          <MenuItem value="ausencia">Ausencia</MenuItem>
+          <MenuItem value="colaborador">Colaborador</MenuItem>
+          <MenuItem value="puesto">Puesto</MenuItem>
+        </Select>
+        <Box mt={2}>{renderContent(filteredAuditorias)}</Box>
       </CustomTabPanel>
     </Box>
   );

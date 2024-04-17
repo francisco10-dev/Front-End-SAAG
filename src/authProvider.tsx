@@ -1,8 +1,9 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useMemo } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { useNavigate } from 'react-router-dom';
 import UsuarioService from './services/usuario.service';
 import { Colaborador } from './services/colaborador.service';
+import ExpedienteService from './services/expediente.service';
 
 
 interface AuthContextType {
@@ -13,12 +14,14 @@ interface AuthContextType {
   logout: () => void;
   colaborador: Colaborador | null;
   setColaborador: (colaborador: Colaborador | null) => void;
+  photo: string | null;
+  loadPhoto: (id: any) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
-  children: ReactNode;
+  readonly children: ReactNode;
 }
 
 const decodeToken = () => {
@@ -52,6 +55,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('accessToken'));
   const [userRole, setUserRole] = useState<string | null>(decodeToken());
   const [colaborador, setColaborador] = useState<Colaborador | null>(StoredData());
+  const [photo, setPhoto] = useState<string | null>(localStorage.getItem('photo'));
   const navigate = useNavigate();
   const usuarioService = new UsuarioService();
 
@@ -66,15 +70,41 @@ export function AuthProvider({ children }: AuthProviderProps) {
               localStorage.removeItem('accessToken');
               localStorage.removeItem('refreshToken');
               sessionStorage.removeItem('Welcome');
+              localStorage.removeItem('photo');
+              setPhoto(null);
               setLoggedIn(false);
               navigate('/');
             }
           }
   };
 
+  const loadPhoto = async (id: any) => {
+    try {
+      const expService = new ExpedienteService();
+      const response = await expService.getPhoto(id);
+      const imageUrl = response.data.imageUrl;
+      setPhoto(imageUrl);
+      localStorage.setItem('photo', imageUrl);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const contextValue = useMemo(() => ({
+    loadPhoto,
+    photo,
+    loggedIn,
+    setLoggedIn,
+    userRole,
+    setUserRole,
+    logout,
+    colaborador,
+    setColaborador
+  }), [loadPhoto, photo, loggedIn, userRole, colaborador]);
+
 
   return (
-    <AuthContext.Provider value={{ loggedIn, setLoggedIn, userRole, setUserRole, logout, colaborador, setColaborador }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
