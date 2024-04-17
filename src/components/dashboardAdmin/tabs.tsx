@@ -7,11 +7,11 @@ import { GridColDef } from '@mui/x-data-grid';
 import CustomTabPanel from './CustomTabPanel';
 import { toast } from 'react-toastify';  
 
-export interface ColabUsuario{  // cambiar datos aqui para que se actualice con respecto a lo que se necesita y con los que deberiamos poner en pa tabla de los usuarios 
-  idUsuario: number,
+export interface ColabUsuario {
+  idUsuario: number;
   nombreUsuario: string;
-  rol: string,
-  correo: string,
+  rol: string;
+  correo: string;
 }
 
 const columns: GridColDef[] = [
@@ -28,14 +28,13 @@ export default function TabsUsuarioAdmin() {
   const [ColabUsuario, setUsuarios] = useState<ColabUsuario[]>([]);
   const [selectedUsuario] = useState<ColabUsuario | null>(null);
   const [filterText, setFilterText] = useState('');
-  const [, setIsModalOpen] = useState(false);
 
   const onUpdateRow = async () => {
     if (selectedUsuario) {
-      setIsModalOpen(true);
+      // Aquí debes abrir el modal de edición
     }
   };
-  
+
   const onDeleteRow = async (idsToDelete: number[]) => {
     const cantidadRegistros = idsToDelete.length;
     const confirmMessage = `¿Estás seguro de que quieres eliminar ${cantidadRegistros} usuario(s)?`;
@@ -45,9 +44,8 @@ export default function TabsUsuarioAdmin() {
         for (const idToDelete of idsToDelete) {
           await service.eliminarUsuario(idToDelete);
         }
-        toast.success('Se han eliminado: '+ cantidadRegistros + 'usuarios');
+        toast.success(`Se han eliminado ${cantidadRegistros} usuarios`);
         obtenerYActualizarUsuarios();
-        window.location.reload();
       } catch (error) {
         toast.error('Error al eliminar usuarios: ' + error);
       }
@@ -55,7 +53,7 @@ export default function TabsUsuarioAdmin() {
       toast.error('Eliminación cancelada por el usuario');
     }
   };
-  
+
   const obtenerYActualizarUsuarios = async () => {
     try {
       const usuariosActualizados = await service.obtenerUsuarios();
@@ -80,6 +78,7 @@ export default function TabsUsuarioAdmin() {
       toast.error('Error al obtener usuarios: ' + error);
     }
   };
+
   useEffect(() => {
     obtenerYActualizarUsuarios();
   }, []);
@@ -98,15 +97,7 @@ export default function TabsUsuarioAdmin() {
           key={index}
           value={value}
           index={index}
-          colabUsuario={ColabUsuario.filter((ColabUsuario) => {
-            const formattedId = ColabUsuario.idUsuario.toString();
-            const nombreUsuario = ColabUsuario.nombreUsuario ? ColabUsuario.nombreUsuario.toLowerCase().trim() : '';
-            const searchText = filterText.toLowerCase().trim();
-            return (
-              nombreUsuario.includes(searchText) ||
-              formattedId.includes(searchText)
-            );
-          })}
+          colabUsuario={ColabUsuario} // Utiliza el array completo
           columns={columns}
           onDeleteRow={onDeleteRow}
           onUpdateRow={onUpdateRow}
@@ -115,5 +106,3 @@ export default function TabsUsuarioAdmin() {
     </Box>
   );
 }
-
-
