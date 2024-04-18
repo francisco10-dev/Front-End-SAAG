@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, SetStateAction } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import UsuarioService from '../../services/usuario.service';
@@ -31,9 +31,17 @@ export default function TabsUsuarioAdmin() {
 
   const onUpdateRow = async () => {
     if (selectedUsuario) {
-      // Aquí debes abrir el modal de edición
+      const { idUsuario, nombreUsuario, rol } = selectedUsuario;
+      try {
+        await service.actualizarUsuario(idUsuario, { nombreUsuario, rol });
+        toast.success('Usuario actualizado correctamente');
+        obtenerYActualizarUsuarios();
+      } catch (error) {
+        toast.error('Error al actualizar usuario: ' + error);
+      }
     }
   };
+  
 
   const onDeleteRow = async (idsToDelete: number[]) => {
     const cantidadRegistros = idsToDelete.length;
@@ -89,7 +97,7 @@ export default function TabsUsuarioAdmin() {
         label="Buscar..."
         variant="standard"
         value={filterText}
-        onChange={(e) => setFilterText(e.target.value)}
+        onChange={(e: { target: { value: SetStateAction<string>; }; }) => setFilterText(e.target.value)}
         style={{ marginBottom: '20px' }}
       />
       {[0, 1, 2, 3].map((index) => (
@@ -97,7 +105,7 @@ export default function TabsUsuarioAdmin() {
           key={index}
           value={value}
           index={index}
-          colabUsuario={ColabUsuario} // Utiliza el array completo
+          colabUsuario={ColabUsuario} 
           columns={columns}
           onDeleteRow={onDeleteRow}
           onUpdateRow={onUpdateRow}
