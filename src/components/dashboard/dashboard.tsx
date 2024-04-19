@@ -4,7 +4,7 @@ import CustomBox from '../dashboard/boxes/customBox';
 import Footer from "./layout/footer";
 import CustomCard from "./cards/customCard";
 import Projects from "./tables/teams";
-import Orders from "./tables/order";
+import Orders from "./tables/timeLine";
 import { getEmployeeData, getRequestData, getAbsenceData, getAuditData } from "./data/summary"
 import { useAuth } from '../../authProvider'; 
 import WeekendIcon from '@mui/icons-material/Weekend';
@@ -128,9 +128,9 @@ function Dashboard() {
     // Llamar a la función para obtener los datos de los colaboradores
     fetchEmployeeData();
     fetchRequestData();
-    fetchAbsenceData();
     fetchAuditData();
     fetchRequestsInfo();
+    fetchAbsenceData();
     }
   }, []);
 
@@ -172,7 +172,7 @@ function Dashboard() {
                   color={absenceData?.color || defaultEmployeeData.color}
                   icon={absenceData?.icon || defaultEmployeeData.icon}
                   title={absenceData?.title || defaultEmployeeData.title}
-                  count={absenceData?.totalCount || defaultEmployeeData.totalCount}
+                  count={absenceData?.totalCount ? `${absenceData.totalCount}%` : `${defaultEmployeeData.totalCount}%`}
                   route = {'/ausencias'}
               />
           </Grid>
