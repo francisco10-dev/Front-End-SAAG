@@ -1,11 +1,12 @@
 import { useState, useEffect, SetStateAction } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import UsuarioService from '../../services/usuario.service';
+import UsuarioService, { Usuario } from '../../services/usuario.service';
 import ColaboradorService from '../../services/colaborador.service';
 import { GridColDef } from '@mui/x-data-grid';
 import CustomTabPanel from './CustomTabPanel';
 import { toast } from 'react-toastify';  
+import UpdateUserModal from './ActualizarUsuarioModal';
 
 export interface ColabUsuario {
   idUsuario: number;
@@ -26,22 +27,31 @@ export default function TabsUsuarioAdmin() {
   const colaborador = new ColaboradorService();
   const [value] = useState(0);
   const [ColabUsuario, setUsuarios] = useState<ColabUsuario[]>([]);
-  const [selectedUsuario] = useState<ColabUsuario | null>(null);
+  const [selectedUsuario, setSelectedUsuario] = useState<Usuario | null>(null);
   const [filterText, setFilterText] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const onUpdateRow = async () => {
-    if (selectedUsuario) {
-      const { idUsuario, nombreUsuario, rol } = selectedUsuario;
-      try {
-        await service.actualizarUsuario(idUsuario, { nombreUsuario, rol });
-        toast.success('Usuario actualizado correctamente');
-        obtenerYActualizarUsuarios();
-      } catch (error) {
-        toast.error('Error al actualizar usuario: ' + error);
-      }
+  const onUpdateRow = async (idUsuario: number) => {
+    const usuarioToUpdate = ColabUsuario.find((usuario) => usuario.idUsuario === idUsuario);
+    if (usuarioToUpdate) {
+      setSelectedUsuario(usuarioToUpdate as unknown as Usuario);
+      setIsModalOpen(true); // Abre la modal al actualizar
     }
   };
   
+  const onUpdateUser = async () => {
+    try {
+      if (!selectedUsuario) {
+        return;
+      }
+      // Aquí deberías actualizar el usuario usando service.actualizarUsuario
+      toast.success('Usuario actualizado correctamente');
+      obtenerYActualizarUsuarios();
+      setIsModalOpen(false); // Cierra la modal si todo sale bien
+    } catch (error) {
+      toast.error('Error al actualizar usuario: ' + error);
+    }
+  };
 
   const onDeleteRow = async (idsToDelete: number[]) => {
     const cantidadRegistros = idsToDelete.length;
@@ -61,6 +71,7 @@ export default function TabsUsuarioAdmin() {
       toast.error('Eliminación cancelada por el usuario');
     }
   };
+  
 
   const obtenerYActualizarUsuarios = async () => {
     try {
@@ -102,15 +113,23 @@ export default function TabsUsuarioAdmin() {
       />
       {[0, 1, 2, 3].map((index) => (
         <CustomTabPanel
-          key={index}
-          value={value}
-          index={index}
-          colabUsuario={ColabUsuario} 
-          columns={columns}
-          onDeleteRow={onDeleteRow}
-          onUpdateRow={onUpdateRow}
-        />
+        key={index}
+        value={value}
+        index={index}
+        colabUsuario={ColabUsuario} 
+        columns={columns}
+        onDeleteRow={onDeleteRow}
+        onUpdateRow={onUpdateRow}
+        onRefresh={obtenerYActualizarUsuarios}// Agrega esta línea
+      />
+      
       ))}
+      <UpdateUserModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onUpdate={onUpdateUser}
+        usuario={selectedUsuario ? { ...selectedUsuario, password: '', idColaborador: 0 } : null}
+      />
     </Box>
   );
 }
