@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { DataGrid, GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowSelectionModel, esES } from '@mui/x-data-grid';
 import TextField from '@mui/material/TextField';
 import { Auditoria } from '../../services/auditoria.service';
 import *  as utils from './utils'; 
@@ -88,7 +88,7 @@ export default function DataTable(props: DataTableProps) {
             paginationModel: { page: 0, pageSize: 50 },
           },
         }}
-        localeText={tools.setToolBartext}
+        localeText={esES.components.MuiDataGrid.defaultProps.localeText}
         getRowId={getRowId}
         pageSizeOptions={[5, 10, 20, 30, 50]}
         checkboxSelection

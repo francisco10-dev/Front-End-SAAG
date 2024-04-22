@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, esES } from '@mui/x-data-grid';
 import { ColabUsuario } from './tabs';
 
 interface DataTableProps {
@@ -41,6 +41,7 @@ export default function DataTable(props: DataTableProps) {
                         paginationModel: { page: 0, pageSize: 5 },
                     },
                 }}
+                localeText={esES.components.MuiDataGrid.defaultProps.localeText}
                 getRowId={getRowId}
                 pageSizeOptions={[5, 10]}
                 style={{
