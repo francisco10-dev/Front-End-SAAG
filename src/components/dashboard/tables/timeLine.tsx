@@ -3,8 +3,8 @@ import Card from "@mui/material/Card";
 import Icon from "@mui/material/Icon";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import AuditService from '../../..//services/auditoria.service';
-import { Auditoria } from '../../..//services/auditoria.service';
+import AuditService from '../../../services/auditoria.service';
+import { Auditoria } from '../../../services/auditoria.service';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import UpdateIcon from '@mui/icons-material/Update';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -40,7 +40,7 @@ function Orders() {
 
   return (
     <Card className="custom-card" sx={{ height: "100%"}}>
-      <Box pt={3} px={3}>
+      <Box pt={3} px={3} >
         <Grid container spacing={3}>
           {/* Contenedor arriba */}
           <Grid item xs={12} >
@@ -93,7 +93,7 @@ function Orders() {
           </Grid>
           {/* Contenedor del botón */}
           <Grid item xs={12}>
-            <Box textAlign="center">
+            <Box textAlign="center" mb={2}>
               <Button component={Link} to="/auditorias" variant="contained" color="primary">Ver Todo</Button>
             </Box>
           </Grid>

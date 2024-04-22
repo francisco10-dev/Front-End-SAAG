@@ -528,7 +528,7 @@ const BarsDiurno = () => {
           >
             <Tabs value={tabIndex} onChange={handleTabChange}>
               <Tab label="Anual" />
-              <Tab label="Mesual" />
+              <Tab label="Mensual" />
               <Tab label="Departamentos" />
             </Tabs>
             {tabIndex === 0 && (

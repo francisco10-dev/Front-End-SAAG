@@ -34,7 +34,7 @@ function PieCard({ color, title, description, chart }: PieCardProps) {
                         >
                             <PieChart
                                 series={[{ data: chart.labels.map((label, index) => ({ id: index, value: chart.data[index], label })) }]} // Ajuste aquí
-                                height={170} width={320}
+                                height={170} width={350}
                             />
                         </Box>
                     ),

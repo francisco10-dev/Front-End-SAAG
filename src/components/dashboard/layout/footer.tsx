@@ -53,19 +53,19 @@ function Footer({ company, links }: FooterProps) {
         fontSize={12}
         px={1.5}
       >
-        &copy; {new Date().getFullYear()}, made with
+        &copy; {new Date().getFullYear()}, hecho con
         <Box fontSize={10} color="text" mb={-0.5} mx={0.25}>
           <FavoriteIcon color="inherit" fontSize="inherit">
             
           </FavoriteIcon>
         </Box>
-        by
+        por
         <Link href={href} target="_blank">
           <Typography variant="button" fontWeight="small" >
             &nbsp;{name}&nbsp;
           </Typography>
         </Link>
-        for a better web.
+        para una mejor experiencia
       </Box>
       <Box
         component="ul"
@@ -104,12 +104,12 @@ Footer.propTypes = {
 };
 
 Footer.defaultProps = {
-  company: { href: "https://www.creative-tim.com/", name: "Creative Tim" },
+  company: { href: "https://www.acibfunin.com/", name: "estudiantes UNA" },
   links: [
-    { href: "https://www.creative-tim.com/", name: "Creative Tim" },
-    { href: "https://www.creative-tim.com/presentation", name: "About Us" },
-    { href: "https://www.creative-tim.com/blog", name: "Blog" },
-    { href: "https://www.creative-tim.com/license", name: "License" },
+    { href: "https://www.acibfunin.com/", name: "ACIB-FUNIN" },
+    { href: "https://www.acibfunin.com/quienes-somos/", name: "Sobre nosotros" },
+    { href: "https://www.acibfunin.com/contacto/", name: "Contactos" },
+    { href: "https://www.acibfunin.com/biblioteca", name: "Biblioteca" },
   ],
 };
 

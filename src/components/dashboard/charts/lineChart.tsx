@@ -38,7 +38,7 @@ function LineCard({ color, title, description, chart }: LineCardProps) {
                                 {
                                     data: chart.data,
                                 },
-                            ]}height={180} width={330}
+                            ]}height={180} width={350}
                             />
                         </Box>
                     ),
