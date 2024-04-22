@@ -10,7 +10,7 @@ import { Button } from '@mui/material';
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import Add from './addLicense';
 import { isBefore, addDays, parseISO, isAfter, format } from 'date-fns';
-import { Select } from 'antd';
+import { Select, Input } from 'antd';
 import Alert from '@mui/material/Alert';
 import { es } from 'date-fns/locale';
 
@@ -62,6 +62,7 @@ export default function TabsLicencias(props:{idColaborador: number}) {
   const service = new ExpedienteService();
   const [value, setValue] = React.useState(0);
   const [daysToExpire, setDaysToExpire] = useState<number>();
+  const [customDayToExpire, setCustomDayToExpire] = useState<number>();
   const [proximo, setProximo] = useState<string>();
 
   const getFirstToExpire = () => {
@@ -109,7 +110,7 @@ export default function TabsLicencias(props:{idColaborador: number}) {
     const upcomingExpirationsArray = licenses.filter((license) => {
       const dateToCheck = parseISO(license.fechaVencimiento);
       return isBefore(dateToCheck, currentDate) ? false :
-        isBefore(dateToCheck, addDays(currentDate, daysToExpire || 15));
+        isBefore(dateToCheck, addDays(currentDate, (daysToExpire !== 6 ? daysToExpire : customDayToExpire) || 15));
     });
 
     upcomingExpirationsArray.sort((a, b) => {
@@ -143,6 +144,10 @@ export default function TabsLicencias(props:{idColaborador: number}) {
   useEffect(() => {
     updateData();
   }, [licenses, daysToExpire]);
+
+  useEffect(() => {
+    updateData();
+  }, [licenses, customDayToExpire]);
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -189,7 +194,13 @@ export default function TabsLicencias(props:{idColaborador: number}) {
                   <Option value={15}>15 días de proximidad</Option>
                   <Option value={7}>7 días de proximidad</Option>
                   <Option value={5}>5 días de proximidad</Option>
+                  <Option value={6}>Ingresar parámetro manualmente</Option>
               </Select>
+              {daysToExpire === 6 && (
+                <Box>
+                  <Input type='number' placeholder='Ingrese el valor en días' style={{width: 200}} onChange={(e) => setCustomDayToExpire(+e.target.value)} />
+                </Box>                
+              )}
           </Box> 
         <Licencias licenses={upcomingExpirations} loadData={loadData}/>
       </CustomTabPanel>
