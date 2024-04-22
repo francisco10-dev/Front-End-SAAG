@@ -44,7 +44,7 @@ function BarCard({color, title, description, chart }: BarCardProps) {
                                 dataset={chart.labels.map((label, index) => ({ label, value: chart.datasets.data[index] }))}
                                 xAxis={[{scaleType: "band", dataKey: 'label' }]}
                                 series={[{ dataKey: 'value', label: chart.datasets.label }]} // Ajuste aquí
-                                height={180} width={320}
+                                height={180} width={350}
                             />
                         </Box>
                     ),

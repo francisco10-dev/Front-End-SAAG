@@ -1,17 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, SetStateAction } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
-import UsuarioService from '../../services/usuario.service';
+import UsuarioService, { Usuario } from '../../services/usuario.service';
 import ColaboradorService from '../../services/colaborador.service';
 import { GridColDef } from '@mui/x-data-grid';
 import CustomTabPanel from './CustomTabPanel';
 import { toast } from 'react-toastify';  
+import UpdateUserModal from './ActualizarUsuarioModal';
 
-export interface ColabUsuario{  // cambiar datos aqui para que se actualice con respecto a lo que se necesita y con los que deberiamos poner en pa tabla de los usuarios 
-  idUsuario: number,
+export interface ColabUsuario {
+  idUsuario: number;
   nombreUsuario: string;
-  rol: string,
-  correo: string,
+  rol: string;
+  correo: string;
 }
 
 const columns: GridColDef[] = [
@@ -26,16 +27,32 @@ export default function TabsUsuarioAdmin() {
   const colaborador = new ColaboradorService();
   const [value] = useState(0);
   const [ColabUsuario, setUsuarios] = useState<ColabUsuario[]>([]);
-  const [selectedUsuario] = useState<ColabUsuario | null>(null);
+  const [selectedUsuario, setSelectedUsuario] = useState<Usuario | null>(null);
   const [filterText, setFilterText] = useState('');
-  const [, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const onUpdateRow = async () => {
-    if (selectedUsuario) {
-      setIsModalOpen(true);
+  const onUpdateRow = async (idUsuario: number) => {
+    const usuarioToUpdate = ColabUsuario.find((usuario) => usuario.idUsuario === idUsuario);
+    if (usuarioToUpdate) {
+      setSelectedUsuario(usuarioToUpdate as unknown as Usuario);
+      setIsModalOpen(true); // Abre la modal al actualizar
     }
   };
   
+  const onUpdateUser = async () => {
+    try {
+      if (!selectedUsuario) {
+        return;
+      }
+      // Aquí deberías actualizar el usuario usando service.actualizarUsuario
+      toast.success('Usuario actualizado correctamente');
+      obtenerYActualizarUsuarios();
+      setIsModalOpen(false); // Cierra la modal si todo sale bien
+    } catch (error) {
+      toast.error('Error al actualizar usuario: ' + error);
+    }
+  };
+
   const onDeleteRow = async (idsToDelete: number[]) => {
     const cantidadRegistros = idsToDelete.length;
     const confirmMessage = `¿Estás seguro de que quieres eliminar ${cantidadRegistros} usuario(s)?`;
@@ -45,9 +62,8 @@ export default function TabsUsuarioAdmin() {
         for (const idToDelete of idsToDelete) {
           await service.eliminarUsuario(idToDelete);
         }
-        toast.success('Se han eliminado: '+ cantidadRegistros + 'usuarios');
+        toast.success(`Se han eliminado ${cantidadRegistros} usuarios`);
         obtenerYActualizarUsuarios();
-        window.location.reload();
       } catch (error) {
         toast.error('Error al eliminar usuarios: ' + error);
       }
@@ -56,6 +72,7 @@ export default function TabsUsuarioAdmin() {
     }
   };
   
+
   const obtenerYActualizarUsuarios = async () => {
     try {
       const usuariosActualizados = await service.obtenerUsuarios();
@@ -80,6 +97,7 @@ export default function TabsUsuarioAdmin() {
       toast.error('Error al obtener usuarios: ' + error);
     }
   };
+
   useEffect(() => {
     obtenerYActualizarUsuarios();
   }, []);
@@ -90,30 +108,28 @@ export default function TabsUsuarioAdmin() {
         label="Buscar..."
         variant="standard"
         value={filterText}
-        onChange={(e) => setFilterText(e.target.value)}
+        onChange={(e: { target: { value: SetStateAction<string>; }; }) => setFilterText(e.target.value)}
         style={{ marginBottom: '20px' }}
       />
       {[0, 1, 2, 3].map((index) => (
         <CustomTabPanel
-          key={index}
-          value={value}
-          index={index}
-          colabUsuario={ColabUsuario.filter((ColabUsuario) => {
-            const formattedId = ColabUsuario.idUsuario.toString();
-            const nombreUsuario = ColabUsuario.nombreUsuario ? ColabUsuario.nombreUsuario.toLowerCase().trim() : '';
-            const searchText = filterText.toLowerCase().trim();
-            return (
-              nombreUsuario.includes(searchText) ||
-              formattedId.includes(searchText)
-            );
-          })}
-          columns={columns}
-          onDeleteRow={onDeleteRow}
-          onUpdateRow={onUpdateRow}
-        />
+        key={index}
+        value={value}
+        index={index}
+        colabUsuario={ColabUsuario} 
+        columns={columns}
+        onDeleteRow={onDeleteRow}
+        onUpdateRow={onUpdateRow}
+        onRefresh={obtenerYActualizarUsuarios}// Agrega esta línea
+      />
+      
       ))}
+      <UpdateUserModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onUpdate={onUpdateUser}
+        usuario={selectedUsuario ? { ...selectedUsuario, password: '', idColaborador: 0 } : null}
+      />
     </Box>
   );
 }
-
-

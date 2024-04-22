@@ -112,7 +112,7 @@ class UsuarioService {
       throw error;
     }
   }
-
+   // esto debe de ser observado porque no se deberian eliminar
   async eliminarUsuario(id: number): Promise<void> {
     try {
       console.log(id);

@@ -1,49 +1,37 @@
-    .boton {
-        background-color: #35aa3f;
-        border-radius: 5px;
-        color: #fff;
-        padding: 15px 40px !important; /* Aumenta el padding horizontal para hacer el botón más ancho */
-        border: none;
-        cursor: pointer;
-        margin-bottom: 20px;
-    }
 
-    .container {
-        width: 30%;
-        float: left;
-    }
-    
-    .usuarios-container {
-        display: flex;
-        flex-direction: column;
-        padding: 20px;
-        border-radius: 5px;
-        box-shadow: -5px 0 10px rgba(0, 0, 0, 0.2);
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-    }
-    
-    body {
-        font-family: 'GOTHAM Medium' !important;
-        font-size: 18px !important;
-        color: #333 !important;
-    }
-    
-    .Input, .slect {
-        width: 100%; 
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        padding: 5px;
-        transition: box-shadow 0.3s;
-        appearance: none;
-    }
+body {
+    font-family: 'GOTHAM Medium' !important;
+    font-size: 18px !important;
+    color: #333 !important;
+}
 
-    .Input:focus, .slect:focus {
-        box-shadow: 0 0 5px rgba(53, 170, 63, 0.7);
-    }
-    
-    .tabla{
-        float: right;
-        width: 68%;
-    }
+.Input, .slect {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    transition: box-shadow 0.3s;
+    appearance: none;
+}
+
+.Input:focus, .slect:focus {
+    box-shadow: 0 0 5px rgba(53, 170, 63, 0.7);
+}
+
+.tabla {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.tabla table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabla table th,
+.tabla table td {
+    border: none;
+    padding: 8px;
+    text-align: left;
+}
+

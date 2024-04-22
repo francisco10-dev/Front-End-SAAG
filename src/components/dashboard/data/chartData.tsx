@@ -9,17 +9,14 @@ export async function getRequestsInfo() {
     const fechaInicioSemana = new Date(fechaActual.getTime() - 6 * 24 * 60 * 60 * 1000); // Hace 6 días
     const solicitudesPorDia: number[] = [0, 0, 0, 0, 0, 0, 0]; // Arreglo para almacenar las solicitudes por día
 
-    // Filtra las solicitudes dentro del rango desde hace 6 días hasta hoy, incluyendo hoy
-    const solicitudesUltimaSemana = solicitudes.filter(solicitud => {
+    // Recorre las solicitudes y asigna las que estén dentro del rango de la última semana a sus respectivos días en el arreglo
+    solicitudes.forEach(solicitud => {
       const fechaSolicitud = new Date(solicitud.fechaSolicitud);
-      return fechaSolicitud >= fechaInicioSemana && fechaSolicitud <= fechaActual;
-    });
-
-    // Recorre las solicitudes de la última semana y las asigna a sus respectivos días en el arreglo
-    solicitudesUltimaSemana.forEach(solicitud => {
-      const fechaSolicitud = new Date(solicitud.fechaSolicitud);
-      const dia = fechaSolicitud.getDay(); // 0: Domingo, 1: Lunes, ..., 6: Sábado
-      solicitudesPorDia[dia]++;
+      
+      if (fechaSolicitud >= fechaInicioSemana && fechaSolicitud <= fechaActual) {
+        const dia = fechaSolicitud.getDay(); // 0: Domingo, 1: Lunes, ..., 6: Sábado
+        solicitudesPorDia[dia]++;
+      }
     });
 
     // Reorganiza los datos para que estén ordenados desde el domingo hasta el sábado
@@ -32,5 +29,6 @@ export async function getRequestsInfo() {
     return [];
   }
 }
+
 
 
