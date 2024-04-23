@@ -1,11 +1,13 @@
 import './form.css';
 import { useState, useEffect } from 'react';
-import { Input, Select, DatePicker, Typography, Progress, Checkbox, TimePicker } from 'antd';
-import Button from '@mui/material/Button';
+import { Input, Select, DatePicker, Typography, Progress, Checkbox, TimePicker, message } from 'antd';
+import { Button, Alert } from '@mui/material';
 import { useAuth } from '../../authProvider';
 import { toast } from 'react-toastify';
 import moment from 'moment';
 import SolicitudService from '../../services/solicitud.service';
+import UploadFiles from '../expedientes/file/uploadFile';
+import type { UploadFile } from 'antd/lib/upload/interface';
 const { Option } = Select;
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -34,10 +36,14 @@ const Form = () => {
   const [estado, setEstado] = useState('');
   const [comentarioTalentoHumano, setComentarioTalentoHumano] = useState('');
   const [mostrarProgress, setMostrarProgress] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
+  const [selectedFile, setSelectedFile] = useState<UploadFile[]>([]);
+  const [openUploader, setOpenUploader] = useState(true);
 
   useEffect(() => {
     // Lógica para recuperar los datos y establecer el nombre del colaborador
     recuperarDatos();
+    console.log(nameSupervisor);//borrar
   }, []); // El segundo argumento del useEffect es un array vacío para que se ejecute solo una vez al montar el componente
 
   //@ts-ignore
@@ -96,6 +102,10 @@ const Form = () => {
     }
   }
 
+  const handleFilesChange = (files: UploadFile<any>[]) => {
+    setSelectedFile(files);
+    setOpenUploader(false); 
+ };
 
   const handleGoceChange = (value: any) => {
     setGoce(value);
@@ -142,6 +152,38 @@ const Form = () => {
       return null
     }
   };
+
+  let alerta = (type: "success" | "error" | undefined, content: string) => {
+    messageApi.open({
+      type: type,
+      content: content,
+    });
+    return null;
+  }
+
+  const validarFecha = (fecha: any) => {
+    console.log(fecha);
+    if (userRole !== "admin") {
+      if (fecha) {
+        const a = moment();
+        const b = formatearFecha(fecha);
+
+        const diferencia = a.diff(b, 'days'); // Calcular la diferencia en días
+        console.log(`diferencia ${diferencia}`);
+
+        if (diferencia >= 7) {
+          alerta('success', 'La fecha es válida  (cumple con el minimo de 7 días de anticipación)');
+        } else {
+          // La fecha no es válida (menos de 7 días de diferencia)
+          alerta('error', 'La fecha no es válida (solicitud debe hacerse minimo con 7 días de anticipación)');
+        }
+      }
+    } else {
+      alerta('success', 'Como administrador no tiene restrcciones en el ingreso de fechas')
+    }
+  };
+
+
 
   const formatearHora = (horas: any) => {
     if (horas) {
@@ -209,6 +251,7 @@ const Form = () => {
 
   return (
     <div className='box'>
+      <Alert severity="error"><Text className='text'>Solicitud debe hacerse minimo con 7 días de anticipación.</Text></Alert>
       <div className="contenedor-campos">
         <div className="columna-1">
           <div className="campo">
@@ -245,22 +288,26 @@ const Form = () => {
             </div>
             {!esRangoDias ? (
               <div>
+                {contextHolder}
                 <RangePicker
                   placeholder={['Fecha de inicio', 'Fecha de fin']}
                   value={[fechaInicio, fechaFin]}
                   onChange={(dates: any) => {
                     handleFechaInicioChange(dates[0]);
+                    validarFecha(dates[0]);
                     handleFechaFinChange(dates[1]);
                   }}
                 />
               </div>
             ) : (
               <div className='hora'>
+                {contextHolder}
                 <RangePicker
                   placeholder={['Fecha de inicio', 'Fecha de fin']}
                   value={[fechaInicio, fechaFin]}
                   onChange={(dates: any) => {
                     handleFechaInicioChange(dates[0]);
+                    validarFecha(dates[0]);
                     handleFechaFinChange(dates[1]);
                   }}
                 />
@@ -290,6 +337,7 @@ const Form = () => {
             <Input placeholder="Nombre supervisor" value={nombreJefaturaInmediata} onChange={(e) => setNombreJefaturaInmediata(e.target.value)} style={{ width: 290 }} disabled />
           </div>
         </div>
+        <UploadFiles  onFilesChange={handleFilesChange} isMultiple={false} message='Seleccione documento' />
         <div className="columna-2">
           {userRole === 'admin' && (
             <>
