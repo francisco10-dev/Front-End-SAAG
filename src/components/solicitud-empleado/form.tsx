@@ -1,7 +1,9 @@
 import './form.css';
 import { useState, useEffect } from 'react';
 import { Input, Select, DatePicker, Typography, Progress, Checkbox, TimePicker, message } from 'antd';
-import { Button, Alert } from '@mui/material';
+import { Button, Alert, Box, Grid, List, ListItem, IconButton, Avatar, ListItemAvatar, ListItemText } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
 import { useAuth } from '../../authProvider';
 import { toast } from 'react-toastify';
 import moment from 'moment';
@@ -68,6 +70,11 @@ const Form = () => {
     setFechaFin(date);
   };
 
+  const reset = () => {
+    setOpenUploader(true);
+    setSelectedFile([]);
+  }
+
   const handleHoraInicioChange = (time: any) => {
     setHoraInicio(time);
   };
@@ -104,8 +111,8 @@ const Form = () => {
 
   const handleFilesChange = (files: UploadFile<any>[]) => {
     setSelectedFile(files);
-    setOpenUploader(false); 
- };
+    setOpenUploader(false);
+  };
 
   const handleGoceChange = (value: any) => {
     setGoce(value);
@@ -336,8 +343,38 @@ const Form = () => {
             <Text>Nombre supervisor</Text>
             <Input placeholder="Nombre supervisor" value={nombreJefaturaInmediata} onChange={(e) => setNombreJefaturaInmediata(e.target.value)} style={{ width: 290 }} disabled />
           </div>
+          <div className="campo campo-comprobante" style={{ marginTop: '1rem' }}>
+            <Box mb={2} >
+              {openUploader && (
+                <UploadFiles onFilesChange={handleFilesChange} isMultiple={false} message='Seleccione documento' />
+              )}
+              <Box>
+                <Grid item xs={12} md={6}>
+                  <List dense={true}>
+                    {selectedFile.map((file, index) =>
+                      <ListItem key={index}
+                        secondaryAction={
+                          <IconButton edge="end" aria-label="delete" onClick={reset} color='error'>
+                            <DeleteIcon />
+                          </IconButton>
+                        }
+                      >
+                        <ListItemAvatar>
+                          <Avatar>
+                            <AttachFileOutlinedIcon />
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={file.name}
+                        />
+                      </ListItem>,
+                    )}
+                  </List>
+                </Grid>
+              </Box>
+            </Box>
+          </div>
         </div>
-        <UploadFiles  onFilesChange={handleFilesChange} isMultiple={false} message='Seleccione documento' />
         <div className="columna-2">
           {userRole === 'admin' && (
             <>
