@@ -86,7 +86,7 @@ const AgregarUsuarioModal: React.FC<AgregarUsuarioModalProps> = ({ visible, setV
   return (
     <Modal
       title="Agregar Usuario"
-      visible={visible}
+      open={visible}
       onCancel={() => setVisible(false)}
       footer={[
         <Button key="back" onClick={() => setVisible(false)}>
