@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Select } from 'antd';
 import ColaboradorService, { Colaborador } from '../../services/colaborador.service';
+import { Usuario } from '../../services/usuario.service';
 
-interface ColaboradorOption {
+export interface ColaboradorOption {
   value: string;
   label: string;
   colaborador: Colaborador;
+  usuario:Usuario;
 }
 
-const ColaboradorSelect: React.FC = () => {
+const ColaboradorSelect: React.FC<{ onSelect: (option: ColaboradorOption) => void }> = ({ onSelect }) => {
   const [colaboradores, setColaboradores] = useState<ColaboradorOption[]>([]);
 
   useEffect(() => {
@@ -41,6 +43,7 @@ const ColaboradorSelect: React.FC = () => {
         (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
       }
       options={colaboradores}
+      onSelect={(value, option) => onSelect(option as ColaboradorOption)}
     />
   );
 };

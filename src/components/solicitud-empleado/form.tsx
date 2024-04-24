@@ -8,7 +8,7 @@ import { useAuth } from '../../authProvider';
 import { toast } from 'react-toastify';
 import moment from 'moment';
 import ModalComponent from './modal';
-import ColaboradorSelect from './colaboradorSelect';
+import ColaboradorSelect, { ColaboradorOption } from './colaboradorSelect';
 import SolicitudService from '../../services/solicitud.service';
 import UploadFiles from '../expedientes/file/uploadFile';
 import type { UploadFile } from 'antd/lib/upload/interface';
@@ -45,7 +45,7 @@ const Form = () => {
   const [openUploader, setOpenUploader] = useState(true);
   const [showModal, setShowModal] = useState(false); // Estado para controlar la visibilidad del modal
   const [userChoice, setUserChoice] = useState<string | null>(null); // Estado para almacenar la elección del usuario
-
+  const [userSelect, setUserSelect] = useState<ColaboradorOption | null>(null);
   useEffect(() => {
     if (userRole === "admin") {
       setShowModal(true);
@@ -203,6 +203,14 @@ const Form = () => {
     }
   };
 
+  const handleSelect = (option: ColaboradorOption) => {
+    setUserSelect(option);
+    console.log('Colaborador seleccionado:', option.colaborador);
+    console.log('Usuario seleccionado:', option.usuario);
+    setNombreColaborador(option.colaborador.nombre);
+    setUnidadColaborador(option.colaborador?.puesto?.nombrePuesto ?? 'Default Unidad');
+    setId(option.usuario.idUsuario.toString());
+  };
 
 
   const formatearHora = (horas: any) => {
@@ -270,7 +278,9 @@ const Form = () => {
 
   return (
     <div className='box'>
-      <ColaboradorSelect />
+      <div>
+        <ColaboradorSelect onSelect={handleSelect} />
+      </div>
       <div>
         {showModal && <ModalComponent onAdminChoice={handleAdminChoice} />}
       </div>
@@ -279,7 +289,7 @@ const Form = () => {
         <div className="columna-1">
           <div className="campo">
             <Text>Nombre colaborador</Text>
-            <Input placeholder="Nombre colaborador" value={nombreColaborador} className="inputWidth" style={{ width: 290 }}  disabled={userChoice !== "solicitudEmpleado"} />
+            <Input placeholder="Nombre colaborador" value={nombreColaborador} className="inputWidth" style={{ width: 290 }} disabled />
           </div>
           <div className="campo">
             <Text>Unidad a la que pertenece</Text>
@@ -437,9 +447,9 @@ const Form = () => {
               <div className="campo campo-estado">
                 <Text>Estado</Text>
                 <Select placeholder="Estado" value={estado} onChange={handleEstadoChange} style={{ width: 110 }}>
-                  <Option value="Aprobado">Aprobado</Option> 
-                  <Option value="Rechazado">Rechazada</Option> 
-                  <Option value="Pendiente">Pendiente</Option> 
+                  <Option value="Aprobado">Aprobado</Option>
+                  <Option value="Rechazado">Rechazada</Option>
+                  <Option value="Pendiente">Pendiente</Option>
                 </Select>
               </div>
             </>
