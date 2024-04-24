@@ -59,6 +59,10 @@ const Form = () => {
     if (choice === 'solicitudPropia') {
       // Lógica para recuperar datos si la elección del usuario es 'solicitudPropia'
       recuperarDatos();
+    } else {
+      if (colaborador) {
+        setNombreEncargado(colaborador.nombre);
+      }
     }
   };
 
@@ -205,11 +209,13 @@ const Form = () => {
 
   const handleSelect = (option: ColaboradorOption) => {
     setUserSelect(option);
-    console.log('Colaborador seleccionado:', option.colaborador);
-    console.log('Usuario seleccionado:', option.usuario);
     setNombreColaborador(option.colaborador.nombre);
     setUnidadColaborador(option.colaborador?.puesto?.nombrePuesto ?? 'Default Unidad');
-    setId(option.usuario.idUsuario.toString());
+    if (option.usuario) {
+      setId(option.usuario.idUsuario.toString());
+    } else {
+      alerta('error', 'Error, este colaborador no tiene usuario en el sistema');
+    }
     setNombreJefaturaInmediata(option.supervisor?.nombre ?? '');
   };
 
@@ -236,7 +242,9 @@ const Form = () => {
     const horaInicioFormateada = formatearHora(horaInicio); // Agrega segundos si son necesarios
     const horaFinFormateada = formatearHora(horaFin); // Agrega segundos
     const goceSalarialFormat = parseInt(goceSalarial); // Parsea la cadena "1" a un número
+    if(userRole!="admin"){
     setEstado("Pediente");
+    }
     setEnviandoSolicitud(true); // Establecer el estado de envío a true
     const nuevaSolicitud = {
       // Crear objeto de solicitud con los datos del formulario
@@ -280,14 +288,16 @@ const Form = () => {
   return (
     <div className='box'>
       <div>
-        <ColaboradorSelect onSelect={handleSelect} />
-      </div>
-      <div>
         {showModal && <ModalComponent onAdminChoice={handleAdminChoice} />}
       </div>
       <Alert severity="error"><Text className='text'>Solicitud debe hacerse minimo con 7 días de anticipación.</Text></Alert>
       <div className="contenedor-campos">
         <div className="columna-1">
+        {userChoice === 'solicitudEmpleado' &&(
+          <div className="campo">
+            <ColaboradorSelect onSelect={handleSelect} />
+          </div>
+        )}
           <div className="campo">
             <Text>Nombre colaborador</Text>
             <Input placeholder="Nombre colaborador" value={nombreColaborador} className="inputWidth" style={{ width: 290 }} disabled />

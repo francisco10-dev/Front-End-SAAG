@@ -46,6 +46,7 @@ const ColaboradorSelect: React.FC<{ onSelect: (option: ColaboradorOption) => voi
       }
       options={colaboradores}
       onSelect={(value, option) => onSelect(option as ColaboradorOption)}
+      style={{ width: 200 }}
     />
   );
 };
