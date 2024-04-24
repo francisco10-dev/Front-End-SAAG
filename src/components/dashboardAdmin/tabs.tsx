@@ -46,7 +46,7 @@ export default function TabsUsuarioAdmin() {
       }
       // Aquí deberías actualizar el usuario usando service.actualizarUsuario
       toast.success('Usuario actualizado correctamente');
-      obtenerYActualizarUsuarios();
+      obtenerYRecargarUsuarios();
       setIsModalOpen(false); // Cierra la modal si todo sale bien
     } catch (error) {
       toast.error('Error al actualizar usuario: ' + error);
@@ -63,7 +63,7 @@ export default function TabsUsuarioAdmin() {
           await service.eliminarUsuario(idToDelete);
         }
         toast.success(`Se han eliminado ${cantidadRegistros} usuarios`);
-        obtenerYActualizarUsuarios();
+        obtenerYRecargarUsuarios();
       } catch (error) {
         toast.error('Error al eliminar usuarios: ' + error);
       }
@@ -73,33 +73,36 @@ export default function TabsUsuarioAdmin() {
   };
   
 
-  const obtenerYActualizarUsuarios = async () => {
+  const obtenerYRecargarUsuarios = async () => {
     try {
-      const usuariosActualizados = await service.obtenerUsuarios();
-      const consultasColaboradores = await Promise.all(
-        usuariosActualizados.map(async (usuario) => {
-          const colaboradores = await colaborador.obtenerColaboradores();
-          const datosColaborador = colaboradores.find((colaborador) => colaborador.idColaborador === usuario.idColaborador);
-          if (datosColaborador) {
-            return {
-              idUsuario: usuario.idUsuario,
-              nombreUsuario: usuario.nombreUsuario,
-              rol: usuario.rol,
-              correo: datosColaborador.correoElectronico,
-            };
-          } else {
-            throw new Error(`No se encontró el colaborador para el usuario con ID: ${usuario.idUsuario}`);
-          }
-        })
-      );
+      const [usuariosActualizados, colaboradores] = await Promise.all([
+        service.obtenerUsuarios(),
+        colaborador.obtenerColaboradores()
+      ]);
+  
+      const consultasColaboradores = usuariosActualizados.map(usuario => {
+        const datosColaborador = colaboradores.find(colaborador => colaborador.idColaborador === usuario.idColaborador);
+        if (datosColaborador) {
+          return {
+            idUsuario: usuario.idUsuario,
+            nombreUsuario: usuario.nombreUsuario,
+            rol: usuario.rol,
+            correo: datosColaborador.correoElectronico,
+          };
+        } else {
+          throw new Error(`No se encontró el colaborador para el usuario con ID: ${usuario.idUsuario}`);
+        }
+      });
+  
       setUsuarios(consultasColaboradores);
-    } catch (error) {
-      toast.error('Error al obtener usuarios: ' + error);
+    } catch (err) {
+      toast.error('Error al obtener usuarios: ' + err);
     }
   };
+  
 
   useEffect(() => {
-    obtenerYActualizarUsuarios();
+    obtenerYRecargarUsuarios();
   }, []);
 
   return (
@@ -120,7 +123,7 @@ export default function TabsUsuarioAdmin() {
         columns={columns}
         onDeleteRow={onDeleteRow}
         onUpdateRow={onUpdateRow}
-        onRefresh={obtenerYActualizarUsuarios}// Agrega esta línea
+        onRefresh={obtenerYRecargarUsuarios}// Agrega esta línea
       />
       
       ))}
