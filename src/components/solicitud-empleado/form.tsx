@@ -7,6 +7,8 @@ import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
 import { useAuth } from '../../authProvider';
 import { toast } from 'react-toastify';
 import moment from 'moment';
+import ModalComponent from './modal';
+import ColaboradorSelect from './colaboradorSelect';
 import SolicitudService from '../../services/solicitud.service';
 import UploadFiles from '../expedientes/file/uploadFile';
 import type { UploadFile } from 'antd/lib/upload/interface';
@@ -41,18 +43,29 @@ const Form = () => {
   const [messageApi, contextHolder] = message.useMessage();
   const [selectedFile, setSelectedFile] = useState<UploadFile[]>([]);
   const [openUploader, setOpenUploader] = useState(true);
+  const [showModal, setShowModal] = useState(false); // Estado para controlar la visibilidad del modal
+  const [userChoice, setUserChoice] = useState<string | null>(null); // Estado para almacenar la elección del usuario
 
   useEffect(() => {
-    // Lógica para recuperar los datos y establecer el nombre del colaborador
-    recuperarDatos();
-    console.log(nameSupervisor);//borrar
+    if (userRole === "admin") {
+      setShowModal(true);
+    }
+    console.log(userChoice)
   }, []); // El segundo argumento del useEffect es un array vacío para que se ejecute solo una vez al montar el componente
 
-  //@ts-ignore
-  const handleChange = (event: any) => {
+  const handleAdminChoice = (choice: string | null) => {
+    setShowModal(false);
+    setUserChoice(choice);
+    if (choice === 'solicitudPropia') {
+      // Lógica para recuperar datos si la elección del usuario es 'solicitudPropia'
+      recuperarDatos();
+    }
+  };
+
+  {/*const handleChange = (event: any) => {
     // Lógica para manejar cambios en el input si es necesario
     setNombreColaborador(event.target.value);
-  };
+  };*/}
 
   const handleTipoSolicitudChange = (value: any) => {
     setTipoSolicitud(value);
@@ -255,15 +268,18 @@ const Form = () => {
     }
   };
 
-
   return (
     <div className='box'>
+      <ColaboradorSelect />
+      <div>
+        {showModal && <ModalComponent onAdminChoice={handleAdminChoice} />}
+      </div>
       <Alert severity="error"><Text className='text'>Solicitud debe hacerse minimo con 7 días de anticipación.</Text></Alert>
       <div className="contenedor-campos">
         <div className="columna-1">
           <div className="campo">
             <Text>Nombre colaborador</Text>
-            <Input placeholder="Nombre colaborador" value={nombreColaborador} className="inputWidth" style={{ width: 290 }} disabled />
+            <Input placeholder="Nombre colaborador" value={nombreColaborador} className="inputWidth" style={{ width: 290 }}  disabled={userChoice !== "solicitudEmpleado"} />
           </div>
           <div className="campo">
             <Text>Unidad a la que pertenece</Text>
@@ -421,9 +437,9 @@ const Form = () => {
               <div className="campo campo-estado">
                 <Text>Estado</Text>
                 <Select placeholder="Estado" value={estado} onChange={handleEstadoChange} style={{ width: 110 }}>
-                  <Option value="Aprobado">Aprobado</Option> {/*el admin es el unico que puede aprobar solicitudes */}
-                  {/*<Option value="Pendiente">Aprobar</Option> */}  {/*el supervisor aprueba una solicud para enviarla a admin */}
-                  <Option value="Rechazado">Rechazada</Option> {/* Rezachazada se muestra para seleccionar a admin y supervisor */}
+                  <Option value="Aprobado">Aprobado</Option> 
+                  <Option value="Rechazado">Rechazada</Option> 
+                  <Option value="Pendiente">Pendiente</Option> 
                 </Select>
               </div>
             </>

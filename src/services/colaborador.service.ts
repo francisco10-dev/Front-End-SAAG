@@ -2,6 +2,7 @@
     import axiosApi from '../services/api.service';
     import { Solicitud } from './solicitud.service';
     import { Puesto } from './puesto.service';
+    import { Usuario } from './usuario.service';
 
       
     export interface Colaborador {
@@ -62,6 +63,23 @@
         throw error;
         }
     }
+
+    async obtenerColaboradoresConSuUsuario(): Promise<{ colaborador: Colaborador, usuario: Usuario }[]> {
+      try {
+        const response = await this.axiosInstance.get('/colaboradores-with-user/');
+        return response.data;
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          if (error.response) {
+            throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
+          } else {
+            throw new Error('Error en la solicitud de red');
+          }
+        }
+        throw error;
+      }
+    }
+    
 
     async obtenerColaboradorPorId(id: number): Promise<Colaborador> {
         try {
