@@ -6,7 +6,7 @@ import ColaboradorService from '../../services/colaborador.service';
 import { GridColDef } from '@mui/x-data-grid';
 import CustomTabPanel from './CustomTabPanel';
 import { toast } from 'react-toastify';  
-import UpdateUserModal from './ActualizarUsuarioModal';
+import UpdateUserModal from './EditUser';
 
 export interface ColabUsuario {
   idUsuario: number;
@@ -125,7 +125,7 @@ export default function TabsUsuarioAdmin() {
       
       ))}
       <UpdateUserModal
-        isOpen={isModalOpen}
+        open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onUpdate={onUpdateUser}
         usuario={selectedUsuario ? { ...selectedUsuario, password: '', idColaborador: 0 } : null}
