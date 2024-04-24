@@ -8,6 +8,7 @@ export interface ColaboradorOption {
   label: string;
   colaborador: Colaborador;
   usuario:Usuario;
+  supervisor: { nombre: string } | null;
 }
 
 const ColaboradorSelect: React.FC<{ onSelect: (option: ColaboradorOption) => void }> = ({ onSelect }) => {
@@ -22,7 +23,8 @@ const ColaboradorSelect: React.FC<{ onSelect: (option: ColaboradorOption) => voi
           value: colaborador.idColaborador.toString() ?? null,
           label: colaborador.nombre,
           colaborador: colaborador,
-          usuario: usuario
+          usuario: usuario,
+          supervisor: colaborador.supervisor || null
         }));
         
         setColaboradores(colaboradoresOptions);

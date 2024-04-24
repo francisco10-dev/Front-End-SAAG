@@ -210,6 +210,7 @@ const Form = () => {
     setNombreColaborador(option.colaborador.nombre);
     setUnidadColaborador(option.colaborador?.puesto?.nombrePuesto ?? 'Default Unidad');
     setId(option.usuario.idUsuario.toString());
+    setNombreJefaturaInmediata(option.supervisor?.nombre ?? '');
   };
 
 

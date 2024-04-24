@@ -22,6 +22,7 @@
         tipoJornada: string | null;
         fechaIngreso: string;
         fechaSalida: string | null;
+        supervisor: { nombre: string } | null;
     }
 
     class ColaboradorService {
