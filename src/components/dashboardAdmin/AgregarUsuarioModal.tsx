@@ -36,19 +36,16 @@ const AgregarUsuarioModal: React.FC<AgregarUsuarioModalProps> = ({ visible, setV
   const cargarColaboradores = async () => {
     try {
       const response = await colaboradorService.colaboradorSinUsuario();
-      if (response.length > 0) {
-        const options = response.map((colaborador) => ({
-          value: colaborador.idColaborador,
-          label: colaborador.nombre,
-        }));
-        setColaboradores(options);
-      } else {
-        setColaboradores([{ value: 0, label: "No hay registros" }]);
-      }
+      const options = response.map(colaborador => ({
+        value: colaborador.idColaborador,
+        label: colaborador.nombre,
+      }));
+      setColaboradores(options.length > 0 ? options : [{ value: 0, label: "No hay registros" }]);
     } catch (error) {
       setColaboradores([{ value: 0, label: "No existen colaboradores disponibles" }]);
     }
   };
+  
 
   useEffect(() => {
     cargarColaboradores();

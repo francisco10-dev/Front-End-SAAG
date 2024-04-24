@@ -56,6 +56,7 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
   }, []);
 
   const handleSave = async () => {
+    console.log(nombreUsuario + " "+ rol+ " " + idColaborador);
     if (!nombreUsuario || !rol || idColaborador === null) {
       toast.error('Todos los campos son obligatorios');
       return;
