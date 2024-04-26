@@ -47,8 +47,10 @@ export default function TabsSolicitudAdmin() {
   const [value, setValue] = useState(0);
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
   const [approved, setApproved] = useState<Solicitud[]>([]);
+  const [approvedByHeadquarters , setApprovedByHeadquarters ] = useState<Solicitud[]>([]);
   const [pendings, setPendings] = useState<Solicitud[]>([]);
   const [rejected, setRejected] = useState<Solicitud[]>([]);
+  const [rejectedByHeadquarters, setRejectedByHeadquarters] = useState<Solicitud[]>([]);
   const [loading, setLoading] = useState(false);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -64,31 +66,38 @@ export default function TabsSolicitudAdmin() {
   const loadRequests = () => {
     setLoading(true);
     const fetchData = async () => {
-      try {
-        let solicitudesData: Solicitud[] = [];
-        const cachedData = localStorage.getItem('solicitudesData');
-        if (cachedData) {
-          const data = JSON.parse(cachedData);
-          updateData(data);
-        } else {
-          if (userRole === 'supervisor') { // Verificar si el usuario es un supervisor
-            if (colaborador?.idColaborador) {
-              solicitudesData = await Service.getSolicitudesPorSupervisor(colaborador.idColaborador); // Obtener solicitudes del supervisor
+        try {
+            let solicitudesData: Solicitud[] = [];
+            const cachedData = localStorage.getItem('solicitudesData');
+            if (cachedData) {
+                const data = JSON.parse(cachedData);
+                if (userRole === 'supervisor' && data.role === 'supervisor') {
+                    solicitudesData = data.solicitudesData;
+                } else if (userRole !== 'supervisor' && data.role !== 'supervisor') {
+                    solicitudesData = data.solicitudesData;
+                }
             }
-          } else {
-            solicitudesData = await Service.getSolicitudes();
-          }
-          updateData(solicitudesData)
-          localStorage.setItem('solicitudesData', JSON.stringify(solicitudesData));
+            if (solicitudesData.length === 0) {
+                if (userRole === 'supervisor') {
+                    if (colaborador?.idColaborador) {
+                        solicitudesData = await Service.getSolicitudesPorSupervisor(colaborador.idColaborador);
+                    }
+                } else {
+                    solicitudesData = await Service.getSolicitudes();
+                }
+                localStorage.setItem('solicitudesData', JSON.stringify({ role: userRole, solicitudesData }));
+            }
+
+            updateData(solicitudesData);
+        } catch (error) {
+            message.error('Ocurrió un error al cargar las solicitudes');
+        } finally {
+            setLoading(false);
         }
-      } catch (error) {
-        message.error('Ocurrió un error al cargar las solicitudes');
-      } finally {
-        setLoading(false);
-      }
     };
     fetchData();
-  }
+}
+
 
   useEffect(() => {
     loadRequests();
@@ -98,23 +107,30 @@ export default function TabsSolicitudAdmin() {
   const setData = (solicitudes: Solicitud[]) => {
     let approvedStatus: string;
     let rejectedStatus: string;
-
+    let approvedStatusByHeadquarters= "AprobadoPorJefatura";
+    let rejectedStatusByHeadquarters= "RechazadoPorJefatura";
     if (userRole === "supervisor") {
-        approvedStatus = "AprobadoPorJefatura";
-        rejectedStatus = "RechazadoPorJefatura";
+        approvedStatus = approvedStatusByHeadquarters;
+        rejectedStatus = rejectedStatusByHeadquarters;
     } else {
         approvedStatus = "Aprobado";
-        rejectedStatus = "Rechazado";
+        rejectedStatus = "Rechazado";//validacion para reutlizar los filtros ya establecidas para utilizar la misma tabla para el supervisor
     }
 
     const approved = solicitudes.filter((solicitud) => solicitud.estado === approvedStatus);
     setApproved(approved);
+
+    const approvedByHeadquarters = solicitudes.filter((solicitud) => solicitud.estado === approvedStatusByHeadquarters);
+    setApprovedByHeadquarters(approvedByHeadquarters);
 
     const pendientes = solicitudes.filter((solicitud) => solicitud.estado === 'Pendiente');
     setPendings(pendientes);
 
     const rejected = solicitudes.filter((solicitud) => solicitud.estado === rejectedStatus);
     setRejected(rejected);
+
+    const rejectedByHeadquarters = solicitudes.filter((solicitud) => solicitud.estado === rejectedStatusByHeadquarters);
+    setRejectedByHeadquarters(rejectedByHeadquarters);
 }
 
 
@@ -128,6 +144,8 @@ export default function TabsSolicitudAdmin() {
           <Tab label="Aprobadas" {...a11yProps(1)} />
           <Tab label="Pendientes" {...a11yProps(2)} />
           <Tab label="Rechazadas" {...a11yProps(3)} />
+          <Tab label="AprobadasPorJefatura" {...a11yProps(4)} />
+          <Tab label="RechazadasPorJefatura" {...a11yProps(5)} />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
@@ -141,6 +159,12 @@ export default function TabsSolicitudAdmin() {
       </CustomTabPanel>
       <CustomTabPanel value={value} index={3}>
         <DataTable isLoading={loading} rows={rejected} load={loadRequests} />
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={4}>
+        <DataTable isLoading={loading} rows={approvedByHeadquarters} load={loadRequests} />
+      </CustomTabPanel>
+      <CustomTabPanel value={value} index={5}>
+        <DataTable isLoading={loading} rows={rejectedByHeadquarters} load={loadRequests} />
       </CustomTabPanel>
     </Box>
   );
