@@ -99,9 +99,7 @@ class UsuarioService {
 
   async actualizarUsuario(id: number, data: any): Promise<Usuario> {
     try {
-      console.log(data);
       const response = await this.axiosInstance.put(`/actualizar-usuario/${id}`, data);
-      console.log(response.data);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -114,6 +112,7 @@ class UsuarioService {
       throw error;
     }
   }
+  
    // esto debe de ser observado porque no se deberian eliminar
   async eliminarUsuario(id: number): Promise<void> {
     try {
