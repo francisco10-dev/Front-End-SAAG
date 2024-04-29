@@ -138,14 +138,14 @@ export default function TabsSolicitudAdmin() {
 
   return (
     <Box sx={{ width: '100%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', maxWidth: { xs: 320, sm: 480 } }}>
+      <Box sx={{ borderBottom: 1, borderColor: 'divider', maxWidth: { xs: 520, sm: 900 } }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
           <Tab label="Todas" {...a11yProps(0)} />
           <Tab label="Aprobadas" {...a11yProps(1)} />
           <Tab label="Pendientes" {...a11yProps(2)} />
           <Tab label="Rechazadas" {...a11yProps(3)} />
-          <Tab label="AprobadasPorJefatura" {...a11yProps(4)} />
-          <Tab label="RechazadasPorJefatura" {...a11yProps(5)} />
+          <Tab label="Aprobadas por jefatura" {...a11yProps(4)} />
+          <Tab label="Rechazadas por jefatura" {...a11yProps(5)} />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
