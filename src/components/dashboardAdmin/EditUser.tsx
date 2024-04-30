@@ -18,6 +18,7 @@ interface EditUsuarioModalProps {
 
 const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onClose, onUpdate }) => {
   const [nombreUsuario, setNombreUsuario] = useState('');
+  const [password, setPassword] = useState('');
   const [rol, setRol] = useState('empleado');
   const [idColaborador, setIdColaborador] = useState<number | null>(null);
   const service = new UsuarioService();
@@ -29,6 +30,7 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
     setUsuarioState(usuario);
     if (usuario) {
       setNombreUsuario(usuario.nombreUsuario || '');
+      setPassword(usuario ? usuario.password : '');
       setRol(usuario.rol || 'empleado');
       setIdColaborador(usuario.idColaborador || null);
     }
@@ -67,8 +69,10 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
     updatedUsuario.rol = rol;
     updatedUsuario.idColaborador = idColaborador;
 
+    updatedUsuario.password = password;
     if (usuario) {
       try {
+        console.log("uduario id:" + updatedUsuario.idColaborador + "password: "+ updatedUsuario.password);
         const response = await service.actualizarUsuario(usuario.idUsuario, updatedUsuario);
         toast.success('Usuario actualizado exitosamente' + response);
         setNombreUsuario('');
@@ -93,6 +97,9 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
         </Form.Item>
         <Form.Item label="ID de Colaborador">
           <AntSelect value={idColaborador} onChange={(value) => setIdColaborador(value)} options={colaboradores} />
+        </Form.Item>
+        <Form.Item label="Contraseña">
+          <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
