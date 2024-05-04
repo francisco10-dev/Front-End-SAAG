@@ -84,12 +84,14 @@ export default function TabsSolicitudAdmin() {
                     }
                 } else {
                     solicitudesData = await Service.getSolicitudes();
+                    console.log(solicitudesData)
                 }
                 localStorage.setItem('solicitudesData', JSON.stringify({ role: userRole, solicitudesData }));
             }
 
             updateData(solicitudesData);
         } catch (error) {
+            console.log(error)
             message.error('Ocurrió un error al cargar las solicitudes');
         } finally {
             setLoading(false);

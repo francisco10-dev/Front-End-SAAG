@@ -15,6 +15,8 @@ import { message } from 'antd';
 import { Fragment, useState } from 'react';
 import { useAuth } from '../../authProvider';
 import moment from 'moment';
+import ModalComprobanteComponent from './modalComprobante';
+
 
 interface Props {
     solicitud: Solicitud | null;
@@ -28,6 +30,15 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
     const [estado, setEstado] = useState<string | null>();
     const [comentario, setComentarios] = useState<string | null>();
     const { colaborador } = useAuth();
+    const [mostrarModal, setMostrarModal] = useState(false);
+
+    const handleModal = () => {
+        setMostrarModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setMostrarModal(false); // Cierra el modal
+      };
 
     const handleChange = (event: SelectChangeEvent) => {
         setEstado(event.target.value as string);
@@ -235,6 +246,16 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
                                     <Typography variant="body2" color="textSecondary">
                                         {solicitud.nombreSustituto ? solicitud.nombreSustituto : 'No indica'}
                                     </Typography>
+                                </Grid>
+                                <Grid item xs={6} sm={6} md={2} key="comprobante">
+                                    <Typography variant="body2">Comprobante</Typography>
+                                    <Button variant='contained' onClick={handleModal}>Mostrar</Button>
+                                    {mostrarModal && (
+                                        <ModalComprobanteComponent
+                                            idSolicitud={solicitud.idSolicitud} // Pasa el id de la solicitud al componente modal
+                                            onClose={handleCloseModal} // Pasa la función de cierre al componente modal
+                                        />
+                                    )}
                                 </Grid>
                                 {solicitud.estado != 'Pendiente' && (
                                     <Grid item xs={6} sm={6} md={2} key="estado" >

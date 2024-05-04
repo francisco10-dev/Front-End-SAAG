@@ -19,7 +19,8 @@ export interface Solicitud {
     nombreSustituto: string;
     estado: string;
     comentarioTalentoHumano: string;
-    idColaborador: number;
+    idColaborador: any;
+    comprobante:Blob;
     colaborador: Colaborador;
 }
 
@@ -30,11 +31,12 @@ class SolicitudService {
     this.axiosInstance = axiosApi;
   }
 
-  async agregarSolicitud(data: any): Promise<Solicitud> {
+  async agregarSolicitud(data: FormData): Promise<Solicitud> {
     try {
       const response = await this.axiosInstance.post('/agregar-solicitud/', data);
       return response.data;
     } catch (error) {
+      console.log(error)
       if (axios.isAxiosError(error)) {
         if (error.response) {
           throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
@@ -156,6 +158,18 @@ class SolicitudService {
       throw error;
     }
   }
+
+  async getComprobante(id: number): Promise<Blob> {
+    try {
+      const response = await this.axiosInstance.get(`/obtener-comprobante/${id}`, {
+        responseType: 'blob', // Configura el tipo de respuesta como blob para manejar datos binarios
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+  
   
 }
 

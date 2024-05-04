@@ -32,7 +32,7 @@
         this.axiosInstance = axiosApi;
     }
 
-    async agregarColaborador(data: any): Promise<AxiosResponse> {
+    async agregarColaborador(data: FormData): Promise<AxiosResponse> {
         try {
         const response = await this.axiosInstance.post('/agregar-colaborador/', data);
         return response;
