@@ -15,16 +15,34 @@ interface Props{
 
 const ExpedienteInfo = ({data}: Props) => {
 
-    if(!data){
-        return <div>No se encontró el expediente</div>
-    }
-
     const [isLoading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const service = new ColaboradorService();
-    const [expediente, setExpediente] = useState<Colaborador>(data);
+    const [expediente, setExpediente] = useState<Colaborador | null>(null);
     const [isEdit, setIsEdit] = useState(false);
    
+    useEffect(()=> {
+        setExpediente(data);
+    },[]);
+
+    useEffect(() => {
+        const loadImages = async () => {
+            if (expediente && expediente.fotoCarnet !== null) {
+                await loadImage();
+            } else {
+                setImageUrl(null);
+            }
+        };
+        loadImages();
+    }, [expediente]);
+
+    useEffect(() => {
+        setExpediente(data);
+    }, [data]);
+
+    if(!data){
+        return <div>No se encontró el expediente</div>
+    }
 
     const loadImage = async () => {
         if(expediente){
@@ -62,20 +80,6 @@ const ExpedienteInfo = ({data}: Props) => {
         }
     }
 
-    useEffect(() => {
-        const loadImages = async () => {
-            if (expediente && expediente.fotoCarnet !== null) {
-                await loadImage();
-            } else {
-                setImageUrl(null);
-            }
-        };
-        loadImages();
-    }, [expediente]);
-
-    useEffect(() => {
-        setExpediente(data);
-    }, [data]);
 
 
     const image  = () => {

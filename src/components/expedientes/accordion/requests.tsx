@@ -17,12 +17,15 @@ import { Solicitud } from '../../../services/solicitud.service';
 import { formatDate } from '../../solicitudes/utils';
 import Badge from '../../solicitudes/badge';
 import { TextField } from '@mui/material';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
 function Row(props: { row: Solicitud }) {
   
   const [open, setOpen] = useState(false);
-  //@ts-ignore
-  const [row, setRow] = useState<Solicitud>(props.row);
+  
+
+  const {row} = props;
 
   return (
     <Fragment>
@@ -100,14 +103,19 @@ export default function Requests({id}: Props) {
   const [idColaborador, setIdColaborador] = useState(id);
   const [filterText, setFilterText] = useState('');
   const [filteredRows, setFilteredRows] = useState(solicitudes); 
+  const [sort, setSort] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const loadData = async ()=> {
     try {
+        setLoading(true);
         const service = new ColaboradorService();
         const response = await service.obtenerSolicitudesPorColaborador(idColaborador);
         setSolicitudes(response);
     } catch (error) {
         setSolicitudes([]);
+    }finally{
+      setLoading(false);
     }
   }
 
@@ -145,47 +153,73 @@ export default function Requests({id}: Props) {
     loadData();
   },[idColaborador]);
 
+  useEffect(()=> {
+    handleChangeSort();
+  }, [sort]);
+
+  const handleChangeSort = () => {
+    
+    const newSolicitudes = [...solicitudes];
+
+    newSolicitudes.sort((a, b) => {
+      const dateA = new Date(a.fechaSolicitud);
+      const dateB = new Date(b.fechaSolicitud);
+
+      return sort ? dateB.getTime() - dateA.getTime() : dateA.getTime() - dateB.getTime();
+    });
+    setSolicitudes(newSolicitudes);
+  };
+
   return (
     <Box>
-      <Box ml={2}>
-          <TextField
-              id="outlined-basic" 
-              label="Buscar" 
-              variant="standard" 
-              sx={{marginBottom: 5,  marginRight: 2}}
-              value={filterText}
-              onChange={(e) => handleInputChange(e.target.value)}
-          />
-      </Box>
-
-      <Box>
-          {filteredRows.length > 0 ? 
-              <TableContainer component={Paper} sx={{maxHeight: 400}} >
-                  <Table aria-label="collapsible table">
-                  <TableHead>
-                      <TableRow>
-                      <TableCell />
-                      <TableCell>N# Solicitud</TableCell>
-                      <TableCell>Asunto</TableCell>
-                      <TableCell>Fecha Solicitud</TableCell>
-                      <TableCell>Encargado</TableCell>
-                      <TableCell align='center'>Estado</TableCell>
-                      </TableRow>
-                  </TableHead>
-                  <TableBody>
-                      {filteredRows.map((row) => (
-                      <Row key={row.idSolicitud} row={row} />
-                      ))}
-                  </TableBody>
-                  </Table>
-              </TableContainer>
-          : 
-          <Box>
-            <Typography variant='body2' sx={{textAlign: 'center', padding: 3}}>No hay solicitudes registradas</Typography>
+      {loading ? 
+        <Typography variant='body2' sx={{textAlign: 'center', padding: 3}}>
+          Cargando información...
+        </Typography> :
+        <Box>
+          <Box ml={2}>
+              <TextField
+                  id="outlined-basic" 
+                  label="Buscar" 
+                  variant="standard" 
+                  sx={{marginBottom: 5,  marginRight: 2}}
+                  value={filterText}
+                  onChange={(e) => handleInputChange(e.target.value)}
+              />
           </Box>
-          }
-      </Box>
+          <Box>
+              {filteredRows.length > 0 ? 
+                  <TableContainer component={Paper} sx={{maxHeight: 500}} >
+                      <Table aria-label="collapsible table">
+                      <TableHead>
+                          <TableRow>
+                          <TableCell />
+                          <TableCell>N# Solicitud</TableCell>
+                          <TableCell>Asunto</TableCell>
+                          <TableCell>
+                            Fecha Solicitud
+                            <IconButton onClick={() => setSort(!sort)}>
+                              {sort ? <ArrowDownwardIcon /> : <ArrowUpwardIcon />}
+                            </IconButton>
+                          </TableCell>
+                          <TableCell>Encargado</TableCell>
+                          <TableCell align='center'>Estado</TableCell>
+                          </TableRow>
+                      </TableHead>
+                      <TableBody>
+                          {filteredRows.map((row) => (
+                          <Row key={row.idSolicitud} row={row} />
+                          ))}
+                      </TableBody>
+                      </Table>
+                  </TableContainer>
+              : 
+              <Box>
+                <Typography variant='body2' sx={{textAlign: 'center', padding: 3}}>No hay solicitudes registradas</Typography>
+              </Box>
+              }
+          </Box>
+      </Box> }
     </Box>
-  
   );
 }

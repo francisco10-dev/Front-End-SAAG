@@ -16,25 +16,17 @@ import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import { saveAs } from  'file-saver';
 import type { UploadFile } from 'antd/lib/upload/interface';
 import UploadFiles from '../file/uploadFile';
-
-import ListItem from '@mui/material/ListItem';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemText from '@mui/material/ListItemText';
-import Avatar from '@mui/material/Avatar';
-import Grid from '@mui/material/Grid';
-import FolderIcon from '@mui/icons-material/Folder';
-import DeleteIcon from '@mui/icons-material/Delete';
-import List from '@mui/material/List';
 import PreviewPdf from '../file/previewDocument';
+import SelectedFiles from './selectedFiles';
 
 
-export default function Files(props: {idColaborador: number}) {
+export default function Files(props: { readonly idColaborador: number}) {
 
     const {idColaborador} = props;
     const [id, setId] = useState(idColaborador);
     const [files, setFiles] = useState<Documento[]>([]);
     const [loading, setLoading] = useState(false);
-    const [uploadingFiles, setUploading] = useState(false);
+    const [uploadingFiles, setUploadingFiles] = useState(false);
     const service = new ExpedienteService();
     const [selectedFiles, setSelectedFiles] = useState<UploadFile[]>([]);
     const [visible, setVisible] = useState(false);
@@ -125,7 +117,7 @@ export default function Files(props: {idColaborador: number}) {
         );
     }
 
-    const handleDeleteFile = (name: string) => {
+    const handleDeleteFile = (name?: string) => {
         const newFiles = selectedFiles.filter(file => file.name !== name);
         setSelectedFiles(newFiles);
     }
@@ -150,7 +142,7 @@ export default function Files(props: {idColaborador: number}) {
 
     const uploadFiles = async () => {
         try {
-            setUploading(true);
+            setUploadingFiles(true);
             const response = await service.registrarDocumento(createForm());
             if(response.status === 200){
                 message.success(response.data.message);
@@ -163,7 +155,7 @@ export default function Files(props: {idColaborador: number}) {
         } catch (error) {
             message.error('Ocurrió  un error al comunicarse con el servidor, por favor intente de nuevo más tarde.');
         }finally{
-            setUploading(false);
+            setUploadingFiles(false);
         }
     }
 
@@ -208,33 +200,6 @@ export default function Files(props: {idColaborador: number}) {
         background: 'white',
     };
 
-    const Files = () => {
-        return (
-        <Grid item xs={12} md={6}>
-            <List dense={true}>
-              {selectedFiles.map((file) => 
-                <ListItem
-                  secondaryAction={
-                    <IconButton edge="end" aria-label="delete" onClick={()=> handleDeleteFile(file.name)} color='error'>
-                      <DeleteIcon />
-                    </IconButton>
-                  }
-                >
-                  <ListItemAvatar>
-                    <Avatar>
-                      <FolderIcon />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={file.name}
-                  />
-                </ListItem>,
-              )}
-            </List>
-        </Grid>
-        );
-    }
-
   return (
     <Box>
         <Box sx={{backgroundColor: 'blue'}}>
@@ -263,7 +228,7 @@ export default function Files(props: {idColaborador: number}) {
                     <Spin size="large" />
                 </Box>
             )}
-            <Files/>
+            <SelectedFiles handleDeleteFile={handleDeleteFile} selectedFiles={selectedFiles} />
             <Box textAlign='right' mt={3}>
                 <Button size='small' variant='outlined' color='error' sx={{marginRight: 1}} onClick={onCancel}>
                     Cancelar
@@ -291,9 +256,6 @@ export default function Files(props: {idColaborador: number}) {
                     key={row.idDocumento}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                     >
-                   {/** <TableCell component="th" scope="row" align='center'>
-                        {row.idDocumento}
-                    </TableCell>*/} 
                     <TableCell>
                         <Typography 
                             variant='body2'
@@ -305,7 +267,7 @@ export default function Files(props: {idColaborador: number}) {
                             }} 
                             onClick={() => handleClick(row)}
                         >
-                            <img src={handleImageDoc(row.nombreArchivo).src} style={{ width: handleImageDoc(row.nombreArchivo).size, marginRight: 10, marginLeft: handleImageDoc(row.nombreArchivo).left }} />
+                            <img src={handleImageDoc(row.nombreArchivo).src} style={{ width: handleImageDoc(row.nombreArchivo).size, marginRight: 10, marginLeft: handleImageDoc(row.nombreArchivo).left }} alt='...' />
                             {row.nombreArchivo}
                         </Typography>
                     </TableCell>

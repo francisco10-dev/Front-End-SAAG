@@ -1,3 +1,4 @@
+import { message } from "antd";
 import axios from "axios";
 import {jwtDecode} from "jwt-decode";
 
@@ -23,6 +24,8 @@ const renewToken = async () =>{   // Función para renovar el token de acceso si
     return response.data.newToken;
     }
   } catch (error) {
+    localStorage.removeItem('accessToken');
+    window.location.reload();
     console.error("Error al renovar el token de acceso:", error);
     return null;
   }

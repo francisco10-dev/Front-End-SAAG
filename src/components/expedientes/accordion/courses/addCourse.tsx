@@ -13,6 +13,7 @@ import Grid from '@mui/material/Grid';
 import DeleteIcon from '@mui/icons-material/Delete';
 import List from '@mui/material/List';
 import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
+import SelectedFiles from '../selectedFiles';
 
 
 const { Option } = Select;
@@ -166,28 +167,7 @@ const Add = ({open, setOpen, reload, idColaborador}: Props) => {
                     <UploadFiles onFilesChange={handleFilesChange} isMultiple={false} message='Seleccione documento' />
                 )}
                 <Box>
-                <Grid item xs={12} md={6}>
-                    <List dense={true}>
-                    {selectedFile.map((file, index) => 
-                        <ListItem key={index}
-                        secondaryAction={
-                            <IconButton edge="end" aria-label="delete" onClick={reset} color='error'>
-                            <DeleteIcon />
-                            </IconButton>
-                        }
-                        >
-                        <ListItemAvatar>
-                            <Avatar>
-                            <AttachFileOutlinedIcon />
-                            </Avatar>
-                        </ListItemAvatar>
-                        <ListItemText
-                            primary={file.name}
-                        />
-                        </ListItem>,
-                    )}
-                    </List>
-                </Grid>
+                <SelectedFiles handleDeleteFile={reset} selectedFiles={selectedFile} />
                 </Box>
             </Box>
         </Box>

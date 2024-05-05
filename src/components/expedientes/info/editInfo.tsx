@@ -38,30 +38,28 @@ interface Props{
 
 const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData}: Props) => {
 
-  if(!colaborador){
-    return <div>No se encontró el expediente</div>
-  }
-
-  const [nombre, setNombre] = useState(colaborador.nombre);
-  const [identificacion, setIdentificacion] = useState(colaborador.identificacion);
-  const [correo, setCorreo] = useState(colaborador.correoElectronico);
-  const [domicilio, setDomicilio] = useState(colaborador.domicilio);
-  const [fechaNacimiento, setFechaNacimiento] = useState(colaborador.fechaNacimiento);
-  const [unidad, setUnidad] = useState(colaborador.unidad);
-  const [tipoJornada, setJornada] = useState(colaborador.tipoJornada);
-  const [equipo, setEquipo] = useState(colaborador.equipo);
-  const [estado, setEstado ] = useState(colaborador.estado); 
+  const [nombre, setNombre] = useState(colaborador?.nombre);
+  const [identificacion, setIdentificacion] = useState(colaborador?.identificacion);
+  const [correo, setCorreo] = useState(colaborador?.correoElectronico);
+  const [domicilio, setDomicilio] = useState(colaborador?.domicilio);
+  const [fechaNacimiento, setFechaNacimiento] = useState(colaborador?.fechaNacimiento);
+  const [unidad, setUnidad] = useState(colaborador?.unidad);
+  const [tipoJornada, setJornada] = useState(colaborador?.tipoJornada);
+  const [equipo, setEquipo] = useState(colaborador?.equipo);
+  const [estado, setEstado ] = useState(colaborador?.estado); 
   const [estadoRazon, setRazon] = useState<string | null>(null);
-  //@ts-ignore
-  const [puesto, setPuesto] = useState(colaborador.puesto);
-  const [idPuesto, setIdPuesto] = useState(colaborador.puesto?.idPuesto);
-  const [fechaIngreso, setFechaIngreso] = useState(colaborador.fechaIngreso);
-  const [fechaSalida, setFechaSalida] = useState<string | null>(colaborador.fechaSalida);
+  const [idPuesto, setIdPuesto] = useState(colaborador?.puesto?.idPuesto);
+  const [fechaIngreso, setFechaIngreso] = useState(colaborador?.fechaIngreso);
+  const [fechaSalida, setFechaSalida] = useState(colaborador?.fechaSalida);
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [form] = Form.useForm();
   const [puestos, setPuestos] = useState<Puesto[]>([]);
   const [openP, setOpenP] = useState(false);
+
+  if(!colaborador){
+    return <div>No se encontró el expediente</div>
+  }
 
   const onFinish = async () => {
     try {

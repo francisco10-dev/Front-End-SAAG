@@ -50,9 +50,9 @@ export default function TabsSolicitudAdmin() {
   const [rejected, setRejected] = useState<Solicitud[]>([]);
   const [loading, setLoading] = useState(false); 
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+
+  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
-    event
   };
 
   const updateData= (data: any) => {
