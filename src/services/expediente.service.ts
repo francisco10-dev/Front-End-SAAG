@@ -192,7 +192,25 @@ class ExpedienteService {
     }
   }
 
+  async getDocumentos(): Promise<Documento[]> {
+    try {
+      const response = await this.axiosInstance.get('/documentos/');
+     console.log(response.data)
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 403) {
+          throw new Error(error.response.data.message);
+        } else {
+          throw new Error('Error en la solicitud de red');
+        }
+      }
+      throw error;
+    }
+  }
+
   async updatePhoto(id: number, file: File):  Promise<AxiosResponse<any, any>> {
+    // eslint-disable-next-line no-useless-catch
     try {
       const form = new FormData();
       form.append('fotoCarnet', file);
@@ -205,6 +223,7 @@ class ExpedienteService {
   }
 
   async getPhoto(id: number): Promise<AxiosResponse<any, any>> {
+    // eslint-disable-next-line no-useless-catch
     try {
       const response = await this.axiosInstance.get(`/documentos/obtener-foto/${id}`);
       return response;
@@ -214,6 +233,7 @@ class ExpedienteService {
   }
 
   async getEmployeeNumbers(id: number): Promise<AxiosResponse<any, any>> {
+    // eslint-disable-next-line no-useless-catch
     try {
       const response = await this.axiosInstance.get(`/telefonos/obtener-por-colaborador/${id}`);
       return response.data;
@@ -223,6 +243,7 @@ class ExpedienteService {
   }
 
   async deletePhoneNumber(id: number): Promise<number> {
+    // eslint-disable-next-line no-useless-catch
     try {
       const response = await this.axiosInstance.delete(`/telefonos/eliminar-telefono/${id}`);
       return response.status;
@@ -232,6 +253,7 @@ class ExpedienteService {
   }
 
   async deleteDocument(id: number): Promise<number> {
+    // eslint-disable-next-line no-useless-catch
     try {
       const response = await this.axiosInstance.delete(`/eliminar-documento/${id}`);
       return response.status;
@@ -241,6 +263,7 @@ class ExpedienteService {
   }
 
   async getDocument(id: number): Promise<Blob> {
+    // eslint-disable-next-line no-useless-catch
     try {
       const response = await this.axiosInstance.get(`/obtener-documento/${id}`, {
         responseType: 'blob', // Configura el tipo de respuesta como arraybuffer para manejar datos binarios

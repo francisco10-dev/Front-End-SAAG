@@ -3,15 +3,16 @@ import { useEffect, useState} from 'react';
 import CustomBox from '../dashboard/boxes/customBox';
 import Footer from "./layout/footer";
 import CustomCard from "./cards/customCard";
-import Projects from "./tables/teams";
-import Orders from "./tables/timeLine";
+import Projects from "./content/table";
+import Orders from "./content/timeLine";
 import { getEmployeeData, getRequestData, getAbsenceData, getAuditData } from "./data/summary"
 import { useAuth } from '../../authProvider'; 
 import WeekendIcon from '@mui/icons-material/Weekend';
-import {getRequestsInfo} from "./data/chartData";
+import {getEmployyesByUnit, getRequestsInfo, getUltimaSolicitudInfo, getUltimoIngreso} from "./data/chartData";
 import PieCard from "./charts/pieChart";
 import LineCard from "./charts/lineChart";
 import BarCard from "./charts/barChart"
+import { getAbsenceIndicators } from "./data/data";
 import './styles/styles.css'
 
 
@@ -57,19 +58,23 @@ function Dashboard() {
   } | null>(null);
 
   const [chartData, setChartData] = useState<{ labels: string[], datasets: { label: string, data: number[] } }>({
-    labels: ["Dom", "Lun", "Mar", "Mi", "Jue", "Vie", "Sáb"],
+    labels: ["Lun", "Mar", "Mi", "Jue", "Vie", "Sáb", "Dom"],
     datasets: { label: "Solicitudes", data: [] }
   });
-  
-  const pieChartData = {
-    labels: ["TI", "R.R.H.H", "Admin"], // Etiquetas de los segmentos
-    data: [10, 15, 20], // Valores correspondientes a cada segmento
-  };
 
-  const lineChartData = {
-    labels: ["Dom", "Lun", "Mar", "Mi", "Jue", "Vie", "Sáb"], // Etiquetas de los segmentos
-    data: [100, 150, 200, 120, 90, 300, 400], // Valores correspondientes a cada segmento
-  };
+  const [requestInfo, setRequestInfo] = useState<string | null>(null);
+
+  const [employeeInfo, setemployeeInfo] = useState<string | null>(null);
+  
+  const [pieData, setPieData] = useState<{ labels: string[], data: number[] }>({
+    labels: ["TI", "R.R.H.H", "Admin"], 
+    data: [10, 15, 20],
+  });
+
+  const [lineChartData, setLineChartData] = useState<{ labels: string[], data: number[] }>({
+    labels: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Agos", "Set", "Oct", "Nov", "Dic"], 
+    data: [0, 0, 0, 0, 0, 0, 0, 0, 0 ,0, 0, 0 ],
+  });
 
 
 
@@ -115,7 +120,9 @@ function Dashboard() {
     async function fetchRequestsInfo() {
       try {
         const dataRequest = await getRequestsInfo();
-        const chartData = {labels: ["Dom", "Lun", "Mar", "Mi", "Jue", "Vie", "Sáb"],
+        const dateInfo =  await getUltimaSolicitudInfo();
+        setRequestInfo(dateInfo);
+        const chartData = {labels: ["Lun", "Mar", "Mi", "Jue", "Vie", "Sáb", "Dom"],
         datasets: { label: "Solicitudes", data: dataRequest}}
         setChartData(chartData);
       } catch (error) {
@@ -123,16 +130,54 @@ function Dashboard() {
       }
     }
 
+    async function fetchEmployeesByUnit() {
+      try {
+        const dataRequest = await getEmployyesByUnit();
+        const employeeInfo =  await getUltimoIngreso();
+        setemployeeInfo(employeeInfo);
+    
+       
+        if (Array.isArray(dataRequest)) {
+          console.error('Error: Unexpected data format received from server');
+          return;
+        }
+    
+        
+        const labels = dataRequest.labels;
+        const data = dataRequest.data;
+    
+        
+        setPieData({ labels, data });
+      } catch (error) {
+        console.error('Error fetching employee data:', error);
+      }
+    }
+    async function fetchAbsenceIndicators() {
+      const absenceIndicators = await getAbsenceIndicators();
+      if (absenceIndicators !== null) {
+   
+        setLineChartData(prevState => ({
+          ...prevState,
+          data: absenceIndicators,
+        }));
+      } else {
+        console.error('Los indicadores de ausentismo son nulos.');
+      
+      }
+    }
+    
 
      if (userRole == 'admin'){
-    // Llamar a la función para obtener los datos de los colaboradores
+
     fetchEmployeeData();
     fetchRequestData();
     fetchAuditData();
     fetchRequestsInfo();
     fetchAbsenceData();
+    fetchEmployeesByUnit();
+    fetchAbsenceIndicators();
     }
-  }, []);
+  }, [userRole]);
 
 
   return (
@@ -172,7 +217,7 @@ function Dashboard() {
                   color={absenceData?.color || defaultEmployeeData.color}
                   icon={absenceData?.icon || defaultEmployeeData.icon}
                   title={absenceData?.title || defaultEmployeeData.title}
-                  count={absenceData?.totalCount ? `${absenceData.totalCount}%` : `${defaultEmployeeData.totalCount}%`}
+                  count={absenceData?.totalCount || defaultEmployeeData.totalCount}
                   route = {'/ausencias'}
               />
           </Grid>
@@ -192,24 +237,27 @@ function Dashboard() {
                 <BarCard
                   color= "#758184"
                   title="Vista Solicitudes"
-                  description="Datos de la última semana"
+                  description="Datos de la semana anterior"
                   chart={chartData}
+                  info = {requestInfo || ""}
                 />
             </Grid>
             <Grid item xs={12} md={6} lg={4}>
                 <PieCard
                   color="#ffb74d"
                   title="Vista Empleados"
-                  description="Empleados por puesto"
-                  chart={pieChartData}
+                  description="Empleados por unidad"
+                  chart={pieData}
+                  info = {employeeInfo || ""}
                 />
             </Grid>
             <Grid item xs={12} md={6} lg={4}>
                 <LineCard
                   color="#516091"
-                  title="Vista Horas Extras"
-                  description="Datos de la última semana"
+                  title="Vista Ausentismo"
+                  description="Datos de los últimos meses"
                   chart={lineChartData}
+
                 />
             </Grid>
           </Grid>
