@@ -26,6 +26,7 @@ export interface Solicitud {
 class SolicitudService {
   private axiosInstance;
 
+
   constructor() {
     this.axiosInstance = axiosApi;
   }
@@ -33,6 +34,9 @@ class SolicitudService {
   async agregarSolicitud(data: any): Promise<Solicitud> {
     try {
       const response = await this.axiosInstance.post('/agregar-solicitud/', data);
+      if (response.status >= 200 && response.status < 300) {
+        this.incrementarContadorLocalStorage();
+      }
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -138,6 +142,13 @@ class SolicitudService {
     }
   }
   
+  incrementarContadorLocalStorage() {
+    const count = localStorage.getItem('requestsCount');
+    const newCount = count ? parseInt(count) + 1 : 1;
+    localStorage.setItem('requestsCount', newCount.toString());
+    const event = new Event('contadorActualizado');
+    document.dispatchEvent(event);
+  }
 }
 
 export default SolicitudService;

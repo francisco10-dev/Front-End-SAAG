@@ -61,6 +61,9 @@ const Login = () => {
   const saveTokens = (response: any) => {
     localStorage.setItem('accessToken', response.accessToken);
     localStorage.setItem('refreshToken', response.refreshToken);
+    localStorage.setItem('requestsCount', '0');
+    localStorage.setItem('employeesCount', '0');
+    localStorage.setItem('usersCount', '0');
   };
   
   const saveUserData = (response: any) => {

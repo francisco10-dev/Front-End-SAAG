@@ -16,6 +16,8 @@ import TimelineSeparator from '@mui/lab/TimelineSeparator';
 import TimelineConnector from '@mui/lab/TimelineConnector';
 import  Grid  from '@mui/material/Grid';
 import '../styles/styles.css'
+import  'moment-timezone';
+import moment from 'moment';
 
 
 
@@ -37,6 +39,11 @@ function Orders() {
 
     fetchAuditLogs();
   }, []);
+
+  function fechaFormateada(fecha: Date){
+    return moment(fecha).tz('America/Costa_Rica').format('YYYY-MM-DD HH:mm:ss')
+}
+
 
   return (
     <Card className="custom-card" sx={{ height: "100%"}}>
@@ -84,7 +91,7 @@ function Orders() {
                     {log.nombre}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    {log.fecha.toString()}
+                  {fechaFormateada(log.fecha)}
                   </Typography>
                 </Box>
               </Box>

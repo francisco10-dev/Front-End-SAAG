@@ -19,12 +19,12 @@ interface BarCardProps {
           label: string;
           data: number[];
         };
-      };// Cambia el tipo de datos según la biblioteca que utilices para el gráfico de barras
-
+      };
+    info: string;
 }
 
 
-function BarCard({color, title, description, chart }: BarCardProps) {
+function BarCard({color, title, description, chart, info }: BarCardProps) {
    
     return (
         <Card sx={{ height: "100%", overflow: "visible", overflowWrap: "break-word",position: "relative"}}>
@@ -39,16 +39,16 @@ function BarCard({color, title, description, chart }: BarCardProps) {
                             height={200}
                             borderRadius= "0.75rem"
                         >
-                            {/* Aquí puedes añadir tu gráfico de barras */}
+              
                             <BarChart
                                 dataset={chart.labels.map((label, index) => ({ label, value: chart.datasets.data[index] }))}
                                 xAxis={[{scaleType: "band", dataKey: 'label' }]}
-                                series={[{ dataKey: 'value', label: chart.datasets.label }]} // Ajuste aquí
-                                height={180} width={350}
+                                series={[{ dataKey: 'value', label: chart.datasets.label }]}
+                                height={200} width={350}
                             />
                         </Box>
                     ),
-                    [chart]
+                    [chart.datasets.data, chart.datasets.label, chart.labels, color]
                 )}
                 <Box pt={3} pb={1} px={1}>
                     <Typography variant="h6" textTransform="capitalize">
@@ -64,7 +64,7 @@ function BarCard({color, title, description, chart }: BarCardProps) {
                     </Icon>
                         <Typography fontSize="small" variant="button" color="gray" lineHeight={1} sx={{ mt: 1.15, mr: 0.5 }}>
                             
-                            Última solicitud hace 7 segundos
+                            {info}
                         </Typography>
                     </Box>
                 </Box>
@@ -84,6 +84,7 @@ BarCard.propTypes = {
           data: PropTypes.arrayOf(PropTypes.number.isRequired).isRequired ,
         }).isRequired,
       }).isRequired,
+    info: PropTypes.string.isRequired,
 };
 
 export default BarCard;
