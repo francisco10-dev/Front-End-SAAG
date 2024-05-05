@@ -16,19 +16,23 @@ class UsuarioService {
     this.axiosInstance = axiosApi;
   }
 
+  private async handleError(error: any) {
+    if (axios.isAxiosError(error)) {
+      if (error.response) {
+        throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
+      } else {
+        throw new Error('Error en la solicitud de red');
+      }
+    }
+    throw error;
+  }
+
   async login(data: any): Promise<any> {
     try { 
       const response = await this.axiosInstance.post('/login/', data);
       return response;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
-        } else {
-          throw new Error('Error en la solicitud de red');
-        }
-      }
-      throw error;
+      this.handleError(error);
     }
   }
 
@@ -37,14 +41,7 @@ class UsuarioService {
       const response = await this.axiosInstance.post(`/logout/${token}`);
       return response;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
-        } else {
-          throw new Error('Error en la solicitud de red');
-        }
-      }
-      throw error;
+      this.handleError(error);
     }
   }
 
@@ -53,31 +50,18 @@ class UsuarioService {
       const response = await this.axiosInstance.post('/agregar-usuario/', data);
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
-        } else {
-          throw new Error('Error en la solicitud de red');
-        }
-      }
-      throw error;
+      this.handleError(error);
+      throw error; // Agrega esta línea
     }
   }
 
   async obtenerUsuarios(): Promise<Usuario[]> {
     try {
       const response = await this.axiosInstance.get('/usuarios');
-      const usuarios = response.data; 
-      return usuarios;
+      return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
-        } else {
-          throw new Error('Error en la solicitud de red');
-        }
-      }
-      throw error;
+      this.handleError(error);
+      throw error; // Agrega esta línea
     }
   }
   
@@ -86,14 +70,8 @@ class UsuarioService {
       const response = await this.axiosInstance.get(`/usuario/${id}`);
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
-        } else {
-          throw new Error('Error en la solicitud de red');
-        }
-      }
-      throw error;
+      this.handleError(error);
+      throw error; // Agrega esta línea
     }
   }
 
@@ -102,35 +80,18 @@ class UsuarioService {
       const response = await this.axiosInstance.put(`/actualizar-usuario/${id}`, data);
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
-        } else {
-          throw new Error('Error en la solicitud de red');
-        }
-      }
-      throw error;
+      this.handleError(error);
+      throw error; // Agrega esta línea
     }
   }
   
-   // esto debe de ser observado porque no se deberian eliminar
   async eliminarUsuario(id: number): Promise<void> {
     try {
-      console.log(id);
       await this.axiosInstance.delete(`/eliminar-usuario/${id}`);
-      console.log(id);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
-        } else {
-          throw new Error('Error en la solicitud de red');
-        }
-      }
-      throw error;
+      this.handleError(error);
     }
   }
 }
 
 export default UsuarioService;
-
