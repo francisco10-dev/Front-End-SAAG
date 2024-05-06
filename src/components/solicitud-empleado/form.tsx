@@ -29,13 +29,12 @@ const Formulario = () => {
   const [unidadColaborador, setUnidadColaborador] = useState('');
   const [nombreEncargado, setNombreEncargado] = useState('');
   const [nombreJefaturaInmediata, setNombreJefaturaInmediata] = useState('');
-  const [fechaSolicitud, setFechaSolicitud] = useState(null);
   const [fechaRecibido, setFechaRecibido] = useState<any>(null);
-  const [fechaInicio, setFechaInicio] = useState<any>(null);
-  const [fechaFin, setFechaFin] = useState<any>(null);
+  let [fechaInicio, setFechaInicio] = useState<any>(null);
+  let [fechaFin, setFechaFin] = useState<any>(null);
   const [horaInicio, setHoraInicio] = useState<any>(null);
   const [horaFin, setHoraFin] = useState<any>(null);
-  const [esRangoHoras, setesRangoHoras] = useState<boolean>(false);
+  const [esRangoHoras, setEsRangoHoras] = useState<boolean>(false);
   const [sustitucion, setSustitucion] = useState('');
   const [nombreSustituto, setNombreSustituto] = useState('');
   const [estado, setEstado] = useState('');
@@ -49,6 +48,7 @@ const Formulario = () => {
   const [userSelect, setUserSelect] = useState<ColaboradorOption | null>(null);
   const [form] = Form.useForm();
   const dateFormat = 'DD/MM/YYYY';
+  const [userChoiceDocument, setUserChoiceDocument] = useState<string>('0'); // Cambiado a string
 
   useEffect(() => {
     if (userRole === "admin") {
@@ -65,6 +65,9 @@ const Formulario = () => {
     if (choice === 'solicitudPropia') {
       setFechaRecibido(moment().format('DD-MM-YYYY'));
       recuperarDatos();
+      if (colaborador) {
+        setNombreEncargado(colaborador.nombre);
+      }
     } else {
       setFechaRecibido(moment().format('DD-MM-YYYY'));
       if (colaborador) {
@@ -79,6 +82,10 @@ const Formulario = () => {
 
   const handleFechaInicioChange = (date: any) => {
     setFechaInicio(date);
+  };
+
+  const handleUserChoiceDocument = (value: string) => {
+    setUserChoiceDocument(value);
   };
 
   const handleFechaFinChange = (date: any) => {
@@ -99,7 +106,7 @@ const Formulario = () => {
   };
 
   const handleCheckboxChange = (e: any) => {
-    setesRangoHoras(e.target.checked);
+    setEsRangoHoras(e.target.checked);
   };
 
   const handleSustitucionChange = (value: any) => {
@@ -115,16 +122,20 @@ const Formulario = () => {
     }
   };
 
+  const handleButtonClick = () => {
+    setShowModal(true);
+  };
+
   const handleGoceChangeDisabled = (value: any) => {
     if (value === "Vacaciones" || value === "Licencias") {
-      setGoce("1"); 
+      setGoce("1");
       setGoceDisabled(true);
     } else {
       setGoceDisabled(false);
     }
-    
+
   }
-  
+
 
   const handleFilesChange = (files: UploadFile<any>[]) => {
     setSelectedFile(files);
@@ -147,24 +158,6 @@ const Formulario = () => {
       setNombreJefaturaInmediata(nameSupervisor ?? "");
     }
   }
-
-  const limpiarFormulario = () => {
-    setTipoSolicitud('');
-    setAsunto('');
-    setGoce('');
-    setNombreEncargado('');
-    setFechaSolicitud(null);
-    setFechaInicio(null);
-    setFechaFin(null);
-    setHoraInicio(null);
-    setHoraFin(null);
-    setesRangoHoras(false);
-    setSustitucion('');
-    setNombreSustituto('');
-    setEstado('');
-    setComentarioTalentoHumano('');
-    setMostrarProgress(false);
-  };
 
   const formatearFecha = (fecha: any) => {
     if (fecha) {
@@ -210,11 +203,7 @@ const Formulario = () => {
     setUserSelect(option);
     setNombreColaborador(option.colaborador.nombre);
     setUnidadColaborador(option.colaborador?.puesto?.nombrePuesto ?? 'Default Unidad');
-    if (option.usuario) {
-      setId(option.usuario.idUsuario.toString());
-    } else {
-      alerta('error', 'Error, este colaborador no tiene usuario en el sistema');
-    }
+    setId(option.colaborador?.idColaborador.toString());
     setNombreJefaturaInmediata(option.supervisor?.nombre ?? '');
   };
 
@@ -263,7 +252,7 @@ const Formulario = () => {
 
 
   const enviarSolicitud = async () => {
-    const fechaSolicitud = new Date(); // Esto creará un nuevo objeto Date con la fecha y hora actuales
+    const fechaSolicitud = new Date();
     const fechaSolicitudFormateada = moment(fechaSolicitud, "DD-MM-YYYY").format("YYYY-MM-DD");
     let fechaRecibidoFormateada;
     if (userRole == "admin") {
@@ -275,11 +264,18 @@ const Formulario = () => {
     } else {
       fechaRecibidoFormateada = null;
     }
-    const fechaInicioFormateada = formatearFecha(fechaInicio);
-    const fechaFinFormateada = formatearFecha(fechaFin);
-    const horaInicioFormateada = formatearHora(horaInicio); // Agrega segundos si son necesarios
-    const horaFinFormateada = formatearHora(horaFin); // Agrega segundos
-    const goceSalarialFormat = parseInt(goceSalarial); // Parsea la cadena "1" a un número
+    let fechaInicioFormateada;
+    let fechaFinFormateada;
+    if ((fechaInicio = !null) && (fechaFin != null)) {
+      fechaInicioFormateada = formatearFecha(fechaInicio);
+      fechaFinFormateada = formatearFecha(fechaFin);
+    } else {
+      fechaInicioFormateada = "2022-01-01";
+      fechaFinFormateada = "2022-03-02";
+    }
+    const horaInicioFormateada = horaInicio ? formatearHora(horaInicio) : null;
+    const horaFinFormateada = horaFin ? formatearHora(horaFin) : null;
+    const goceSalarialFormat = parseInt(goceSalarial);
     if (userRole != "admin") {
       setEstado("Pediente");
     }
@@ -314,7 +310,7 @@ const Formulario = () => {
       const response = await solicitudService.agregarSolicitud(formData);
       console.log(response);
       toast.success('La solicitud se ha procesado exitosamente.');
-      limpiarFormulario();
+      form.resetFields();
     } catch (error) {
       toast.error('La solicitud no se ha procesado correctamente.');
       console.error('Error al enviar la solicitud:', error);
@@ -330,7 +326,7 @@ const Formulario = () => {
             moment('01/01/2022', dateFormat),
             moment('02/03/2022', dateFormat),
           ],
-          goce_salarial:[
+          goce_salarial: [
             goceSalarial
           ]
         }}
@@ -341,10 +337,18 @@ const Formulario = () => {
         onFinish={enviarSolicitud}
         layout="vertical"
       >
+        <Button
+          className='button-modal'
+          style={{ marginTop: 8, marginBottom: 5 }}
+          onClick={handleButtonClick}
+        >
+          ¿Qué tipo de solicitud deseas agregar?
+        </Button>
         <div>
           {showModal && <ModalComponent onAdminChoice={handleAdminChoice} />}
         </div>
         <Alert severity="error"><Text className='text'>Solicitud debe hacerse minimo con 7 días de anticipación.</Text></Alert>
+        <img src="../../public/logoACIB.PNG" alt="Logo" style={{ height: 50, width: 200 }}></img>
         <div className="contenedor-campos">
           <div className="columna-1">
             {userChoice === 'solicitudEmpleado' && (
@@ -452,37 +456,51 @@ const Formulario = () => {
               <Text>Nombre supervisor</Text>
               <Input placeholder="Nombre supervisor" value={nombreJefaturaInmediata} onChange={(e) => setNombreJefaturaInmediata(e.target.value)} style={{ width: 290 }} disabled />
             </div>
-            <div className="campo campo-comprobante" style={{ marginTop: '1rem' }}>
-              <Box mb={2} >
-                {openUploader && (
-                  <UploadFiles onFilesChange={handleFilesChange} isMultiple={false} message='Seleccione un documento' />
-                )}
-                <Box>
-                  <Grid item xs={12} md={6}>
-                    <List dense={true}>
-                      {selectedFile.map((file, index) =>
-                        <ListItem key={index}
-                          secondaryAction={
-                            <IconButton edge="end" aria-label="delete" onClick={reset} color='error'>
-                              <DeleteIcon />
-                            </IconButton>
-                          }
-                        >
-                          <ListItemAvatar>
-                            <Avatar>
-                              <AttachFileOutlinedIcon />
-                            </Avatar>
-                          </ListItemAvatar>
-                          <ListItemText
-                            primary={file.name}
-                          />
-                        </ListItem>,
-                      )}
-                    </List>
-                  </Grid>
-                </Box>
-              </Box>
+            <div className="campo">
+              <Form.Item
+                name="subirComprobante"
+                label="¿Desea adjuntar comprobante?"
+                rules={[{ required: true, message: 'Seleccione' }]}
+              >
+                <Select placeholder="Seleccione" value={userChoiceDocument} onChange={handleUserChoiceDocument} style={{ width: 150 }}>
+                  <Option value="1">SI</Option>
+                  <Option value="0">NO</Option>
+                </Select>
+              </Form.Item>
             </div>
+            {userChoiceDocument === "1" && (
+              <div className="campo campo-comprobante" style={{ marginTop: '1rem' }}>
+                <Box mb={2} >
+                  {openUploader && (
+                    <UploadFiles onFilesChange={handleFilesChange} isMultiple={false} message='Seleccione un documento' />
+                  )}
+                  <Box>
+                    <Grid item xs={12} md={6}>
+                      <List dense={true}>
+                        {selectedFile.map((file, index) =>
+                          <ListItem key={index}
+                            secondaryAction={
+                              <IconButton edge="end" aria-label="delete" onClick={reset} color='error'>
+                                <DeleteIcon />
+                              </IconButton>
+                            }
+                          >
+                            <ListItemAvatar>
+                              <Avatar>
+                                <AttachFileOutlinedIcon />
+                              </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText
+                              primary={file.name}
+                            />
+                          </ListItem>,
+                        )}
+                      </List>
+                    </Grid>
+                  </Box>
+                </Box>
+              </div>
+            )}
           </div>
           <div className="columna-2">
             {userRole === 'admin' && (
