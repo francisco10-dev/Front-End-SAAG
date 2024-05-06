@@ -59,7 +59,7 @@ export default function EditDialog({solicitud, open, onClose, reload}: Props) {
             nombreSustituto: solicitud.nombreSustituto,
             comentarioTalentoHumano: comentario,
             nombreEncargado: colaborador?.nombre,
-            fechaRecibido: moment().format('DD-MM-YYYY HH:mm:ss')
+            fechaRecibido: moment().format('YYYY-MM-DD HH:mm:ss')
         }
         return data;
     }

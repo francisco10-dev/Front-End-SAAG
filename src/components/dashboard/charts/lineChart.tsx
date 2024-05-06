@@ -34,11 +34,15 @@ function LineCard({ color, title, description, chart }: LineCardProps) {
                         >
                             <LineChart
                                 xAxis={[{scaleType:"band", data: chart.labels }]}
+                                topAxis={{
+                                    
+                                    label: "ffgfgf"
+                                }}
                                 series={[
                                 {
-                                    data: chart.data,
+                                    data: chart.data, label: "porcentaje"
                                 },
-                            ]}height={180} width={350}
+                            ]}height={200} width={350}
                             />
                         </Box>
                     ),
@@ -57,7 +61,7 @@ function LineCard({ color, title, description, chart }: LineCardProps) {
                             <ErrorOutlineIcon/>
                         </Icon>
                         <Typography fontSize="small" variant="button" color="gray" lineHeight={1} sx={{ mt: 1.15, mr: 0.5 }}>
-                            Última solicitud hace 7 segundos
+                        Última actualización: {new Date().toLocaleTimeString()}
                         </Typography>
                     </Box>
                 </Box>

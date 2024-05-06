@@ -33,6 +33,9 @@
     async agregarColaborador(data: any): Promise<AxiosResponse> {
         try {
         const response = await this.axiosInstance.post('/agregar-colaborador/', data);
+        if (response.status >= 200 && response.status < 300) {
+          this.incrementarContadorLocalStorage();
+        }
         return response;
         } catch (error) {
         if (axios.isAxiosError(error)) {
@@ -214,7 +217,13 @@
       }
     }
       
-
+    incrementarContadorLocalStorage() {
+      const count = localStorage.getItem('employeesCount');
+      const newCount = count ? parseInt(count) + 1 : 1;
+      localStorage.setItem('employeesCount', newCount.toString());
+      const event = new Event('contadorActualizado');
+      document.dispatchEvent(event);
+    }
 }
 
 export default ColaboradorService;
