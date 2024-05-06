@@ -52,6 +52,10 @@ const calcularIndicadorAusentismoMes = (solicitudes: any[], colaboradores: any[]
     return fechaIngreso <= new Date(añoActual, mes + 1, 0) && fechaSalida >= new Date(añoActual, mes, 1);
   }).length;
 
+  if (colaboradoresActivosMes === 0) {
+    return 0;
+  }
+
   let horasNoTrabajadas = 0;
 
   solicitudesMes.forEach((solicitud: { tipoSolicitud: string; fechaInicio: string | number | Date; fechaFin: string | number | Date; horaInicio?: string | null; horaFin?: string | null }) => {

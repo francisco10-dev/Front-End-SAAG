@@ -29,7 +29,6 @@ function PieCard({ color, title, description, chart, info }: PieCardProps) {
                 display="flex"
                 bgcolor={color}
                 py={2}
-                pr={0.5}
                 mt={-4.6}
                 height={200}
                 borderRadius="0.75rem"
@@ -37,8 +36,12 @@ function PieCard({ color, title, description, chart, info }: PieCardProps) {
               >
                 <PieChart
                   series={[{ data: chart.labels.map((label, index) => ({ id: index, value: chart.data[index], label })) }]}
-                  height={170}
-                  width={350}
+                  height={240}
+                  width={270}
+                  legend={
+                  {hidden:true}
+                  }
+                  sx={{paddingLeft:"70px"}}
                 />
               </Box>
             ),
