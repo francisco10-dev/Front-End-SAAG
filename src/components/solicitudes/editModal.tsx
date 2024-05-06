@@ -249,7 +249,7 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
                                 </Grid>
                                 <Grid item xs={6} sm={6} md={2} key="comprobante">
                                     <Typography variant="body2">Comprobante</Typography>
-                                    <Button variant='contained' onClick={handleModal}>Mostrar</Button>
+                                    <Button variant='contained' onClick={handleModal} style={{width:'85px'}}>Mostrar</Button>
                                     {mostrarModal && (
                                         <ModalComprobanteComponent
                                             idSolicitud={solicitud.idSolicitud} // Pasa el id de la solicitud al componente modal

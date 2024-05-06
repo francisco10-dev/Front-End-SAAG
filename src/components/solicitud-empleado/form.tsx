@@ -12,6 +12,7 @@ import ColaboradorSelect, { ColaboradorOption } from './colaboradorSelect';
 import SolicitudService from '../../services/solicitud.service';
 import UploadFiles from '../expedientes/file/uploadFile';
 import type { UploadFile } from 'antd/lib/upload/interface';
+import ColaboradorNameSelect from './colaboradorSubstitute';
 const { Option } = Select;
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -22,8 +23,8 @@ const Formulario = () => {
   const [idUsuario, setId] = useState('');
   const [tipoSolicitud, setTipoSolicitud] = useState('');
   const [asunto, setAsunto] = useState('');
-  const [goceSalarial, setGoce] = useState('');
-  const [goceDisabled, setGoceDisabled] = useState<any>(null);
+  const [goceSalarial, setGoce] = useState('1');
+  const [goceDisabled, setGoceDisabled] = useState(false);
   const [nombreColaborador, setNombreColaborador] = useState('');
   const [unidadColaborador, setUnidadColaborador] = useState('');
   const [nombreEncargado, setNombreEncargado] = useState('');
@@ -34,7 +35,7 @@ const Formulario = () => {
   const [fechaFin, setFechaFin] = useState<any>(null);
   const [horaInicio, setHoraInicio] = useState<any>(null);
   const [horaFin, setHoraFin] = useState<any>(null);
-  const [esRangoDias, setEsRangoDias] = useState<boolean>(false);
+  const [esRangoHoras, setesRangoHoras] = useState<boolean>(false);
   const [sustitucion, setSustitucion] = useState('');
   const [nombreSustituto, setNombreSustituto] = useState('');
   const [estado, setEstado] = useState('');
@@ -76,10 +77,6 @@ const Formulario = () => {
     setTipoSolicitud(value);
   };
 
-  const handleFechaSolicitudChange = (date: any) => {
-    setFechaSolicitud(date);
-  };
-
   const handleFechaInicioChange = (date: any) => {
     setFechaInicio(date);
   };
@@ -102,7 +99,7 @@ const Formulario = () => {
   };
 
   const handleCheckboxChange = (e: any) => {
-    setEsRangoDias(e.target.checked);
+    setesRangoHoras(e.target.checked);
   };
 
   const handleSustitucionChange = (value: any) => {
@@ -120,12 +117,14 @@ const Formulario = () => {
 
   const handleGoceChangeDisabled = (value: any) => {
     if (value === "Vacaciones" || value === "Licencias") {
-      setGoce("1");
+      setGoce("1"); 
       setGoceDisabled(true);
     } else {
       setGoceDisabled(false);
     }
+    
   }
+  
 
   const handleFilesChange = (files: UploadFile<any>[]) => {
     setSelectedFile(files);
@@ -159,7 +158,7 @@ const Formulario = () => {
     setFechaFin(null);
     setHoraInicio(null);
     setHoraFin(null);
-    setEsRangoDias(false);
+    setesRangoHoras(false);
     setSustitucion('');
     setNombreSustituto('');
     setEstado('');
@@ -203,7 +202,7 @@ const Formulario = () => {
         }
       }
     } else {
-      alerta('success', 'Como administrador no tiene restrcciones en el ingreso de fechas')
+      alerta('success', 'Como administrador no tiene restricciones en el ingreso de fechas')
     }
   };
 
@@ -297,14 +296,14 @@ const Formulario = () => {
     formData.append('horaInicio', horaInicioFormateada?.toString() ?? '');
     formData.append('horaFin', horaFinFormateada?.toString() ?? '');
     formData.append('sustitucion', String(sustitucion)); // Convertido a cadena
-    formData.append('nombreSustituto', String(nombreSustituto)); // Convertido a cadena
+    formData.append('nombreSustituto', nombreSustituto); // Convertido a cadena
     formData.append('estado', String(estado)); // Convertido a cadena
     formData.append('comentarioTalentoHumano', String(comentarioTalentoHumano)); // Convertido a cadena
     if (selectedFile[0] && selectedFile[0].originFileObj) {
       formData.append('comprobante', selectedFile[0].originFileObj);
     } else if (selectedFile[0] instanceof File) {
       formData.append('comprobante', selectedFile[0]);
-    }    
+    }
     formData.append('idColaborador', String(idUsuario)); // Convertido a cadena
     try {
       estadoBtn();
@@ -321,277 +320,245 @@ const Formulario = () => {
       console.error('Error al enviar la solicitud:', error);
     }
   };
-  
 
-return (
-  <div className='box'>
-    <Form form={form}
-      action="/profile"
-      method="post"
-      encType="multipart/form-data"
-      name="basic"
-      initialValues={{
-        range_picker: [
-          moment('00/00/0001', dateFormat),
-          moment('00/00/0002', dateFormat),
-        ],
-      }}
-      onFinish={enviarSolicitud}
-      layout="vertical"
-    >
-      <div>
-        {showModal && <ModalComponent onAdminChoice={handleAdminChoice} />}
-      </div>
-      <Alert severity="error"><Text className='text'>Solicitud debe hacerse minimo con 7 días de anticipación.</Text></Alert>
-      <div className="contenedor-campos">
-        <div className="columna-1">
-          {userChoice === 'solicitudEmpleado' && (
-            <div className="campo">
-              <Form.Item
-                name="selectColaborador"
-                label="Seleccione el colaborador"
-                rules={[{ required: true, message: 'Debe seleccionar un colaborador' }]}
-              >
+
+  return (
+    <div className='box'>
+      <Form form={form}
+        initialValues={{
+          range_picker: [
+            moment('01/01/2022', dateFormat),
+            moment('02/03/2022', dateFormat),
+          ],
+          goce_salarial:[
+            goceSalarial
+          ]
+        }}
+        action="/profile"
+        method="post"
+        encType="multipart/form-data"
+        name="basic"
+        onFinish={enviarSolicitud}
+        layout="vertical"
+      >
+        <div>
+          {showModal && <ModalComponent onAdminChoice={handleAdminChoice} />}
+        </div>
+        <Alert severity="error"><Text className='text'>Solicitud debe hacerse minimo con 7 días de anticipación.</Text></Alert>
+        <div className="contenedor-campos">
+          <div className="columna-1">
+            {userChoice === 'solicitudEmpleado' && (
+              <div className="campo">
                 <ColaboradorSelect onSelect={handleSelect} />
-              </Form.Item>
-            </div>
-          )}
-          <div className="campo">
-            <Text>Nombre colaborador</Text>
-            <Input placeholder="Nombre colaborador" value={nombreColaborador} className="inputWidth" style={{ width: 290 }} disabled />
-          </div>
-          <div className="campo">
-            <Text>Unidad a la que pertenece</Text>
-            <Input placeholder="Unidad colaborador" value={unidadColaborador} className="inputWidth" style={{ width: 290 }} disabled />
-          </div>
-          <div className='campo campo-tipo'>
-            <Form.Item
-              name="tipo"
-              label="Tipo"
-              rules={[{ required: true, message: 'Seleccione el tipo' }]}
-            >
-              <Select showSearch placeholder="Tipo de solicitud" value={tipoSolicitud} onChange={(value) => {
-                handleTipoSolicitudChange(value);
-                handleGoceChangeDisabled(value);
-              }} style={{ width: 150 }}>
-                <Option value="Permisos">Permisos</Option>
-                <Option value="Licencias">Licencias</Option>
-                <Option value="Vacaciones">Vacaciones</Option>
-              </Select>
-            </Form.Item>
-          </div>
-          <div className="campo campo-goce">
-            <Form.Item
-              name="goceSalarial"
-              label="Goce salarial"
-              rules={[{ required: true, message: 'Seleccione' }]}
-            >
-              <Select placeholder="Con goce salarial" value={goceSalarial} onChange={handleGoceChange} disabled={goceDisabled} style={{ width: 150 }}>
-                <Option value="1">SI</Option>
-                <Option value="0">NO</Option>
-              </Select>
-            </Form.Item>
-          </div>
-          <div>
-            <div className="campo">
-              <Checkbox checked={esRangoDias} onChange={handleCheckboxChange}>
-                Rango de horas
-              </Checkbox>
-            </div>
-            {!esRangoDias ? (
-              <div>
-                <Form.Item
-                  name="range_picker"
-                  label="Seleccione las fechas"
-                  rules={[{ required: true, message: 'Seleccione las fechas' }]}
-                >
-                  {contextHolder}
-                  <RangePicker
-                    format={dateFormat}
-                    placeholder={['Fecha de inicio', 'Fecha de fin']}
-                    value={[fechaInicio, fechaFin]}
-                    onChange={(dates: any) => {
-                      handleFechaInicioChange(dates[0]);
-                      validarFecha(dates[0]);
-                      handleFechaFinChange(dates[1]);
-                    }}
-                  />
-                </Form.Item>
-              </div>
-            ) : (
-              <div className='hora'>
-                <Form.Item
-                  name="selectDate2"
-                  label="Seleccione las fechas"
-                  rules={[{ required: true, message: 'Seleccione las fechas' }]}
-                >
-                  {contextHolder}
-                  <RangePicker
-                    placeholder={['Fecha de inicio', 'Fecha de fin']}
-                    value={[fechaInicio, fechaFin]}
-                    onChange={(dates: any) => {
-                      handleFechaInicioChange(dates[0]);
-                      validarFecha(dates[0]);
-                      handleFechaFinChange(dates[1]);
-                    }}
-                  />
-                </Form.Item>
-                <div className='horas'>
-                  <Form.Item
-                    name="selectHoras"
-                    label="Seleccione la hora"
-                    rules={[{ required: true, message: 'Seleccione la horas' }]}
-                  >
-
-                    <TimePicker
-                      placeholder="Hora de inicio"
-                      value={horaInicio}
-                      onChange={handleHoraInicioChange}
-                      format="HH:mm"
-                      style={{ marginRight: '5px' }} />
-                  </Form.Item>
-                  <Form.Item
-                    name="selectHoras2"
-                    label="Seleccione la hora"
-                    rules={[{ required: true, message: 'Seleccione la hora' }]}
-                  >
-                    <TimePicker
-                      placeholder="Hora de fin"
-                      value={horaFin}
-                      onChange={handleHoraFinChange}
-                      format="HH:mm"
-                    />
-                  </Form.Item>
-                </div>
               </div>
             )}
-          </div>
-          <div className="campo campo-asunto">
-            <Text>Asunto</Text>
-            <TextArea placeholder="Asunto" value={asunto} onChange={(e) => setAsunto(e.target.value)} allowClear showCount maxLength={30} />
-          </div>
-          <div className="campo campo-jefaura">
-            <Text>Nombre supervisor</Text>
-            <Input placeholder="Nombre supervisor" value={nombreJefaturaInmediata} onChange={(e) => setNombreJefaturaInmediata(e.target.value)} style={{ width: 290 }} disabled />
-          </div>
-          <div className="campo campo-comprobante" style={{ marginTop: '1rem' }}>
-            <Box mb={2} >
-              {openUploader && (
-                <UploadFiles onFilesChange={handleFilesChange} isMultiple={false} message='Seleccione un documento' />
-              )}
-              <Box>
-                <Grid item xs={12} md={6}>
-                  <List dense={true}>
-                    {selectedFile.map((file, index) =>
-                      <ListItem key={index}
-                        secondaryAction={
-                          <IconButton edge="end" aria-label="delete" onClick={reset} color='error'>
-                            <DeleteIcon />
-                          </IconButton>
-                        }
-                      >
-                        <ListItemAvatar>
-                          <Avatar>
-                            <AttachFileOutlinedIcon />
-                          </Avatar>
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={file.name}
-                        />
-                      </ListItem>,
-                    )}
-                  </List>
-                </Grid>
-              </Box>
-            </Box>
-          </div>
-        </div>
-        <div className="columna-2">
-          {userRole === 'admin' && (
-            <>
-              <div className="box-sustituto">
-                <div className="campo campo-nombre-sustituto">
-                  <Form.Item
-                    name="selectSustituto"
-                    label="Requiere sustituto"
-                    rules={[{ required: true, message: 'Seleccione una opcion' }]}
-                  >
-                    <Select
-                      placeholder="Sustitución"
-                      value={sustitucion}
-                      onChange={handleSustitucionChange}
-                      style={{ width: 100 }}
-                    >
-                      <Option value="SI">SI</Option>
-                      <Option value="NO">NO</Option>
-                    </Select>
-                  </Form.Item>
-                </div>
-                <div className="progress-bar">
-                  {mostrarProgress && <Progress percent={100} status="active" style={{ width: '290px' }} />}
-                </div>
-                {sustitucion === 'SI' && !mostrarProgress && (
-                  <div className="campo">
+            <div className="campo">
+              <Text>Nombre colaborador</Text>
+              <Input placeholder="Nombre colaborador" value={nombreColaborador} className="inputWidth" style={{ width: 290 }} disabled />
+            </div>
+            <div className="campo">
+              <Text>Unidad a la que pertenece</Text>
+              <Input placeholder="Unidad colaborador" value={unidadColaborador} className="inputWidth" style={{ width: 290 }} disabled />
+            </div>
+            <div className='campo campo-tipo'>
+              <Form.Item
+                name="tipo"
+                label="Tipo"
+                rules={[{ required: true, message: 'Seleccione el tipo' }]}
+              >
+                <Select showSearch placeholder="Tipo de solicitud" value={tipoSolicitud} onChange={(value) => {
+                  handleTipoSolicitudChange(value);
+                  handleGoceChangeDisabled(value);
+                }} style={{ width: 150 }}>
+                  <Option value="Permisos">Permisos</Option>
+                  <Option value="Licencias">Licencias</Option>
+                  <Option value="Vacaciones">Vacaciones</Option>
+                </Select>
+              </Form.Item>
+            </div>
+            <div className="campo campo-goce">
+              <Form.Item
+                name="goce_salarial"
+                label="Goce salarial"
+                rules={[{ required: true, message: 'Seleccione' }]}
+              >
+                <Select placeholder="Con goce salarial" value={goceSalarial} onChange={handleGoceChange} disabled={goceDisabled} style={{ width: 150 }}>
+                  <Option value="1">SI</Option>
+                  <Option value="0">NO</Option>
+                </Select>
+              </Form.Item>
+            </div>
+            <div className='campo'>
+              {contextHolder}
+              <Form.Item
+                name="range_picker"
+                label="Seleccione las fechas"
+                rules={[{ required: true, message: 'Seleccione las fechas' }]}
+              >
+                <RangePicker
+                  format={dateFormat}
+                  placeholder={['Fecha de inicio', 'Fecha de fin']}
+                  value={[fechaInicio, fechaFin]}
+                  onChange={(dates: any) => {
+                    handleFechaInicioChange(dates[0]);
+                    validarFecha(dates[0]);
+                    handleFechaFinChange(dates[1]);
+                  }}
+                />
+              </Form.Item>
+            </div>
+            <div>
+              <div className="campo">
+                <Checkbox checked={esRangoHoras} onChange={handleCheckboxChange}>
+                  Rango de horas
+                </Checkbox>
+              </div>
+              {esRangoHoras && (
+                <div className='hora'>
+                  <div className='horas'>
                     <Form.Item
-                      name="inputName"
-                      label="Nombre del sustituto"
-                      rules={[{ required: true, message: 'Seleccione el susutito' }]}
+                      name="selectHoras"
+                      label="Seleccione la hora"
+                      rules={[{ required: true, message: 'Seleccione la horas' }]}
                     >
-                      <Input
-                        placeholder="Nombre del sustituto"
-                        value={nombreSustituto}
-                        onChange={(e) => setNombreSustituto(e.target.value)}
-                        style={{ width: 290 }}
+                      <TimePicker
+                        placeholder="Hora de inicio"
+                        value={horaInicio}
+                        onChange={handleHoraInicioChange}
+                        format="HH:mm"
+                        style={{ marginRight: '5px' }} />
+                    </Form.Item>
+                    <Form.Item
+                      name="selectHoras2"
+                      label="Seleccione la hora"
+                      rules={[{ required: true, message: 'Seleccione la hora' }]}
+                    >
+                      <TimePicker
+                        placeholder="Hora de fin"
+                        value={horaFin}
+                        onChange={handleHoraFinChange}
+                        format="HH:mm"
                       />
                     </Form.Item>
                   </div>
+                </div>
+              )}
+            </div>
+            <div className="campo campo-asunto">
+              <Text>Asunto</Text>
+              <TextArea placeholder="Asunto" value={asunto} onChange={(e) => setAsunto(e.target.value)} allowClear showCount maxLength={30} />
+            </div>
+            <div className="campo campo-jefaura">
+              <Text>Nombre supervisor</Text>
+              <Input placeholder="Nombre supervisor" value={nombreJefaturaInmediata} onChange={(e) => setNombreJefaturaInmediata(e.target.value)} style={{ width: 290 }} disabled />
+            </div>
+            <div className="campo campo-comprobante" style={{ marginTop: '1rem' }}>
+              <Box mb={2} >
+                {openUploader && (
+                  <UploadFiles onFilesChange={handleFilesChange} isMultiple={false} message='Seleccione un documento' />
                 )}
-              </div>
-              <div className="campo campo-tramitado">
-                <Text>Tramitado por</Text>
-                <Input placeholder="Tramitado por" value={nombreEncargado} style={{ width: 290 }} disabled />
-              </div>
-              <div className="campo campo-fecha-recibido">
-                <Text>Fecha recibido</Text>
-                <Input placeholder="Fecha recibido" value={fechaRecibido} style={{ width: 290 }} disabled />
-              </div>
-              <div className="campo campo-comentario">
-                <Text>Comentario</Text>
-                <TextArea placeholder="Comentario de Talento Humano" value={comentarioTalentoHumano} onChange={(e) => setComentarioTalentoHumano(e.target.value)} allowClear showCount maxLength={150} />
-              </div>
-              <div className="campo campo-estado">
-                <Form.Item
-                  name="selectEstado"
-                  label="Seleccione un estado"
-                  rules={[{ required: true, message: 'Seleccione un estado' }]}
-                >
-                  <Select placeholder="Estado" value={estado} onChange={handleEstadoChange} style={{ width: 110 }}>
-                    <Option value="Aprobado">Aprobado</Option>
-                    <Option value="Rechazado">Rechazada</Option>
-                    <Option value="Pendiente">Pendiente</Option>
-                  </Select>
-                </Form.Item>
-              </div>
-            </>
-          )}
+                <Box>
+                  <Grid item xs={12} md={6}>
+                    <List dense={true}>
+                      {selectedFile.map((file, index) =>
+                        <ListItem key={index}
+                          secondaryAction={
+                            <IconButton edge="end" aria-label="delete" onClick={reset} color='error'>
+                              <DeleteIcon />
+                            </IconButton>
+                          }
+                        >
+                          <ListItemAvatar>
+                            <Avatar>
+                              <AttachFileOutlinedIcon />
+                            </Avatar>
+                          </ListItemAvatar>
+                          <ListItemText
+                            primary={file.name}
+                          />
+                        </ListItem>,
+                      )}
+                    </List>
+                  </Grid>
+                </Box>
+              </Box>
+            </div>
+          </div>
+          <div className="columna-2">
+            {userRole === 'admin' && (
+              <>
+                <div className="box-sustituto">
+                  <div className="campo campo-nombre-sustituto">
+                    <Form.Item
+                      name="selectSustitucion"
+                      label="Requiere sustituto"
+                      rules={[{ required: true, message: 'Seleccione una opcion' }]}
+                    >
+                      <Select
+                        placeholder="Sustitución"
+                        value={sustitucion}
+                        onChange={handleSustitucionChange}
+                        style={{ width: 100 }}
+                      >
+                        <Option value="SI">SI</Option>
+                        <Option value="NO">NO</Option>
+                      </Select>
+                    </Form.Item>
+                  </div>
+                  <div className="progress-bar">
+                    {mostrarProgress && <Progress percent={100} status="active" style={{ width: '290px' }} />}
+                  </div>
+                  {sustitucion === 'SI' && !mostrarProgress && (
+                    <div className="campo">
+                      <ColaboradorNameSelect onSelect={(name) => setNombreSustituto(name)} />
+                    </div>
+                  )}
+                </div>
+                <div className="campo campo-tramitado">
+                  <Text>Tramitado por</Text>
+                  <Input placeholder="Tramitado por" value={nombreEncargado} style={{ width: 290 }} disabled />
+                </div>
+                <div className="campo campo-fecha-recibido">
+                  <Text>Fecha recibido</Text>
+                  <Input placeholder="Fecha recibido" value={fechaRecibido} style={{ width: 290 }} disabled />
+                </div>
+                <div className="campo campo-comentario">
+                  <Text>Comentario</Text>
+                  <TextArea placeholder="Comentario de Talento Humano" value={comentarioTalentoHumano} onChange={(e) => setComentarioTalentoHumano(e.target.value)} allowClear showCount maxLength={150} />
+                </div>
+                <div className="campo campo-estado">
+                  <Form.Item
+                    name="selectEstado"
+                    label="Seleccione un estado"
+                    rules={[{ required: true, message: 'Seleccione un estado' }]}
+                  >
+                    <Select placeholder="Estado" value={estado} onChange={handleEstadoChange} style={{ width: 110 }}>
+                      <Option value="Aprobado">Aprobado</Option>
+                      <Option value="Rechazado">Rechazada</Option>
+                      <Option value="Pendiente">Pendiente</Option>
+                    </Select>
+                  </Form.Item>
+                </div>
+              </>
+            )}
+          </div>
+          <Form.Item>
+            <Button
+              className='button-submit'
+              type="primary"
+              htmlType="submit"
+              style={{ marginTop: 8 }}
+              loading={enviandoSolicitud.loading}
+              disabled={enviandoSolicitud.isDisabled}
+            >
+              {enviandoSolicitud.buttonText}
+            </Button>
+          </Form.Item>
         </div>
-        <Form.Item>
-          <Button
-            className='button-submit'
-            type="primary"
-            htmlType="submit"
-            style={{ marginTop: 8 }}
-            loading={enviandoSolicitud.loading}
-            disabled={enviandoSolicitud.isDisabled}
-          >
-            {enviandoSolicitud.buttonText}
-          </Button>
-        </Form.Item>
-      </div>
-    </Form>
-  </div>
+      </Form>
+    </div>
 
-);
+  );
 }
 
 export default Formulario;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Select } from 'antd';
+import { Select, Form } from 'antd';
 import ColaboradorService, { Colaborador } from '../../services/colaborador.service';
 import { Usuario } from '../../services/usuario.service';
 
@@ -7,7 +7,7 @@ export interface ColaboradorOption {
   value: string;
   label: string;
   colaborador: Colaborador;
-  usuario:Usuario;
+  usuario: Usuario;
   supervisor: { nombre: string } | null;
 }
 
@@ -26,7 +26,7 @@ const ColaboradorSelect: React.FC<{ onSelect: (option: ColaboradorOption) => voi
           usuario: usuario,
           supervisor: colaborador.supervisor || null
         }));
-        
+
         setColaboradores(colaboradoresOptions);
       } catch (error) {
         console.error('Error al cargar colaboradores:', error);
@@ -37,17 +37,23 @@ const ColaboradorSelect: React.FC<{ onSelect: (option: ColaboradorOption) => voi
   }, []);
 
   return (
-    <Select
-      showSearch
-      placeholder="Selecciona un colaborador"
-      optionFilterProp="children"
-      filterOption={(input: string, option?: { label: string; value: string }) =>
-        (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
-      }
-      options={colaboradores}
-      onSelect={(value, option) => onSelect(option as ColaboradorOption)}
-      style={{ width: 200 }}
-    />
+    <Form.Item
+      name="selectColab"
+      label="Seleccione el colaborador"
+      rules={[{ required: true, message: 'Debe seleccionar un colaborador' }]}
+    >
+      <Select
+        showSearch
+        placeholder="Selecciona un colaborador"
+        optionFilterProp="children"
+        filterOption={(input: string, option?: { label: string; value: string }) =>
+          (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+        }
+        options={colaboradores}
+        onSelect={(value,option) => onSelect(option as ColaboradorOption)}
+        style={{ width: 200 }}
+      />
+    </Form.Item>
   );
 };
 
