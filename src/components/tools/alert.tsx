@@ -119,7 +119,7 @@ export default function AlertPopover() {
   const settings = [
     { icon: <EngineeringIcon sx={{ marginRight: 1 }} />, text: 'Ver nuevos empleados', onClick: handleEmployeeItemClick, role: 'admin', count: employeesCount },
     { icon: <RequestPageIcon sx={{ marginRight: 1 }} />, text: 'Ver nuevas solicitudes', onClick: handleRequestItemClick, role: 'admin', count: requestsCount },
-    { icon: <AccountCircleIcon sx={{ marginRight: 1 }} />, text: 'Ver nuevas usuarios', onClick: handleUserItemClick, role: 'admin', count: usersCount },
+    { icon: <AccountCircleIcon sx={{ marginRight: 1 }} />, text: 'Ver nuevos usuarios', onClick: handleUserItemClick, role: 'admin', count: usersCount },
   ];
 
   const filteredSettings = settings.filter(setting => !setting.role || setting.role === userRole);

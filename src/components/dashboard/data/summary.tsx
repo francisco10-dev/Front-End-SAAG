@@ -1,9 +1,9 @@
 import ColaboradorService from '../../../services/colaborador.service';
 import SolicitudService from '../../../services/solicitud.service';
-import Person4Icon from '@mui/icons-material/Person4';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import RequestPageIcon from '@mui/icons-material/RequestPage';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import GppBadIcon from '@mui/icons-material/GppBad';
 
 
 export async function getEmployeeData() {
@@ -13,9 +13,9 @@ export async function getEmployeeData() {
       const employees = await employeeService.obtenerColaboradores();
       const data = {
          totalCount : employees.length,
-         color : "#EEF3AD",
+         color : "rgb(244, 161, 0)",
          title : "Total Empleados",
-         icon : <Person4Icon />,
+         icon : <AssignmentIndIcon />,
       }
       
       return data;
@@ -33,7 +33,7 @@ export async function getEmployeeData() {
       const solicitudesPendientes = solicitudes.filter(solicitud => solicitud.estado === "Pendiente");
       const data = {
         totalCount : solicitudesPendientes.length,
-        color : "#A9ECA2",
+        color : "rgb(73, 163, 241)",
         title : "Solicitudes Pendientes",
         icon : <RequestPageIcon />
       }
@@ -55,9 +55,9 @@ export async function getEmployeeData() {
   
       const data = {
         totalCount : ausencias.length,
-        color : "#74BEC1",
+        color : "rgb(102, 187, 106)",
         title : "Empleados Ausentes",
-        icon : <WatchLaterIcon />
+        icon : <GppBadIcon/>
       }
   
       return data;
@@ -67,7 +67,7 @@ export async function getEmployeeData() {
     }
   }
 
-  export async function getAuditData() {
+  export async function getFutureAbsenceData() {
     const solicitudService = new SolicitudService();
   
     try {
@@ -77,9 +77,9 @@ export async function getEmployeeData() {
 
       const data = {
         totalCount : proximasAusencias.length,
-        color : "#F5C8BD",
+        color : "rgb(236, 64, 122)",
         title : "Próximas Ausencias",
-        icon : <VerifiedUserIcon />
+        icon : <WatchLaterIcon  />
       }
   
   

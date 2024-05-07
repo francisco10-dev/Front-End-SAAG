@@ -71,6 +71,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
               localStorage.removeItem('refreshToken');
               sessionStorage.removeItem('Welcome');
               localStorage.removeItem('photo');
+              localStorage.removeItem('requestsCount');
+              localStorage.removeItem('employeesCount');
+              localStorage.removeItem('usersCount');
+              localStorage.removeItem('expedientesData');
+              localStorage.removeItem('solicitudesData');
+              localStorage.removeItem('employee');
+              localStorage.removeItem('selectedKey');
               setPhoto(null);
               setLoggedIn(false);
               navigate('/');
