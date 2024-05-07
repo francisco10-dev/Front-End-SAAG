@@ -38,6 +38,7 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
     const [selectedFile, setSelectedFile] = useState<UploadFile[]>([]);
     const [openUploader, setOpenUploader] = useState(true);
     const [nombreSustituto, setNombreSustituto] = useState('');
+    const [requiereSustituto, setRequiereSustituto] = useState('');
 
     const handleFilesChange = (files: UploadFile<any>[]) => {
         setSelectedFile(files);
@@ -55,7 +56,6 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
 
     const handleCloseModal = () => {
         setMostrarModal(false); // Cierra el modal
-        // setEstadoComprobante('NO');
     };
 
     const handleChange = (event: SelectChangeEvent) => {
@@ -70,9 +70,14 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
 
     const handleClose = () => {
         onClose();
+        setRequiereSustituto("NO");
         setEstado(null);
         setEstadoComprobante(null);
     }
+
+    const handleChangeSelectSub = (event: SelectChangeEvent<string>) => {
+        setRequiereSustituto(event.target.value);
+    };
 
     const renderMenuItems = () => {
         const menuItems = {
@@ -108,11 +113,12 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
             conGoceSalarial: solicitud.conGoceSalarial,
             asunto: solicitud.asunto,
             estado: estado,
-            sustitucion: solicitud.sustitucion,
-            nombreSustituto: solicitud.nombreSustituto,
+            sustitucion: requiereSustituto ? requiereSustituto : null,
+            nombreSustituto: nombreSustituto ? nombreSustituto : null,
             comentarioTalentoHumano: comentario ? comentario : null, // Si comentario es truthy, se usa comentario, de lo contrario se usa null
             nombreEncargado: colaborador?.nombre,
-            fechaRecibido: moment().format('YYYY-MM-DD')
+            fechaRecibido: moment().format('YYYY-MM-DD'),
+            comprobante: selectedFile ? selectedFile : null
         }
         return data;
     }
@@ -148,6 +154,7 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
                 maxWidth='lg'
                 open={open}
                 onClose={onClose}
+                style={{ zIndex: 20 }}
             >
 
                 <DialogTitle>
@@ -257,7 +264,7 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
                                         Requiere Sustitución
                                     </Typography>
                                     <Typography variant="body2" color="textSecondary">
-                                        {solicitud.sustitucion ? 'SÍ' : 'No indica'}
+                                    {solicitud.sustitucion === '' ? 'No indica' : solicitud.sustitucion}
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={6} sm={6} md={2} key="sustituto" >
@@ -313,19 +320,41 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
                     </Box>
                     <Box mt={3} sx={{ display: { sm: 'block', md: 'block' } }} gap={2} >
                         <FormControl >
-                            <InputLabel id="demo-simple-select-label">{solicitud.estado != 'Pendiente' ? 'Indicar otro estado' : 'Estado'} </InputLabel>
+                            <InputLabel id="demo-simple-select-label-1">{solicitud.estado != 'Pendiente' ? 'Indicar otro estado' : 'Estado'} </InputLabel>
                             <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
+                                labelId="demo-simple-select-label-1"
+                                id="demo-simple-select-1"
                                 style={{ borderRadius: 10 }}
                                 value={estado ? estado : ''}
                                 label={solicitud.estado === 'Aprobado' ? 'Indicar otro estado' : 'Estado'}
                                 onChange={handleChange}
-                                sx={{ width: 200 }}
+                                sx={{ width: 200, marginBottom: 3 }}
                             >
                                 {renderMenuItems()}
                             </Select>
-                        </FormControl> <br />
+                        </FormControl>
+                        <br />
+                        {userRole === "supervisor" && (
+                            <>
+                                <FormControl>
+                                    <InputLabel id="demo-simple-select-label">Requiere sustituto?</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={requiereSustituto}
+                                        onChange={handleChangeSelectSub}
+                                        style={{ borderRadius: 10, width: 200, marginBottom: 20 }}
+                                        label="Requiere sustituto?"
+                                    >
+                                        <MenuItem value="SI">Si</MenuItem>
+                                        <MenuItem value="NO">No</MenuItem>
+                                    </Select>
+                                </FormControl>
+                                {requiereSustituto === "SI" && (
+                                    <ColaboradorNameSelect onSelect={(name) => setNombreSustituto(name)} />
+                                )}
+                            </>
+                        )}
                         {userRole !== "supervisor" && (
                             <>
                                 <TextField
@@ -335,9 +364,8 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
                                     margin='normal'
                                     maxRows={4}
                                     variant='standard'
-                                    sx={{ width: { sm: 350, md: 600 }, marginBottom: 3 }}
-                                />
-                                <Box mb={2}>
+                                    sx={{ width: { sm: 350, md: 600 } }}
+                                />                                <Box mb={2}>
                                     <FormControl>
                                         <InputLabel id="comprobante" style={{ marginBottom: 50 }}>Adjuntar el comprobante</InputLabel>
                                         <Select
@@ -385,7 +413,6 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
                                         </Box>
                                     </Box>
                                 )}
-                                <ColaboradorNameSelect onSelect={(name) => setNombreSustituto(name)} />
                             </>
                         )}
                     </Box>
