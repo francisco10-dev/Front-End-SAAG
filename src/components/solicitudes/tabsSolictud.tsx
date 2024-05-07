@@ -135,9 +135,6 @@ export default function TabsSolicitudAdmin() {
     setRejectedByHeadquarters(rejectedByHeadquarters);
   }
 
-
-
-
   return (
     <>
       {userRole != "supervisor" && (
