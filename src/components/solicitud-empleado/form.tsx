@@ -160,15 +160,16 @@ const Formulario = () => {
   }
 
   const formatearFecha = (fecha: any) => {
-    if (fecha) {
+    if (fecha && fecha.$y && fecha.$M && fecha.$D) {
       const anio = fecha.$y;
       const mes = (fecha.$M + 1).toString().padStart(2, '0');
       const dia = fecha.$D.toString().padStart(2, '0');
       return `${anio}-${mes}-${dia}`;
     } else {
-      return null
+      return null;
     }
   };
+
 
   let alerta = (type: "success" | "error" | undefined, content: string) => {
     messageApi.open({
@@ -210,10 +211,9 @@ const Formulario = () => {
 
   const formatearHora = (horas: any) => {
     if (horas) {
-      console.log('estas son', horas);
       const hora = horas.$H.toString().padStart(2, '0');;
       const min = horas.$m.toString().padStart(2, '0');
-      const mili = horas.$ms.toString().padStart(2, '0');
+      const mili = horas.$s.toString().padStart(2, '0');
       return `${hora}:${min}:${mili}`;
     } else {
       return null;
@@ -264,17 +264,22 @@ const Formulario = () => {
     } else {
       fechaRecibidoFormateada = null;
     }
+    console.log(fechaRecibidoFormateada)
     let fechaInicioFormateada;
     let fechaFinFormateada;
-    if ((fechaInicio = !null) && (fechaFin != null)) {
+    if (fechaInicio != null) {
       fechaInicioFormateada = formatearFecha(fechaInicio);
-      fechaFinFormateada = formatearFecha(fechaFin);
     } else {
       fechaInicioFormateada = "2022-01-01";
+    }
+    console.log(`fecha formateada de inicio:${fechaInicioFormateada}`);
+    if (fechaFin != null) {
+      fechaFinFormateada = formatearFecha(fechaFin);
+    } else {
       fechaFinFormateada = "2022-03-02";
     }
-    const horaInicioFormateada = horaInicio ? formatearHora(horaInicio) : null;
-    const horaFinFormateada = horaFin ? formatearHora(horaFin) : null;
+    let horaInicioFormateada = formatearHora(horaInicio);
+    let horaFinFormateada = formatearHora(horaFin);
     const goceSalarialFormat = parseInt(goceSalarial);
     if (userRole != "admin") {
       setEstado("Pediente");
@@ -288,7 +293,9 @@ const Formulario = () => {
     formData.append('fechaSolicitud', fechaSolicitudFormateada);
     formData.append('fechaInicio', fechaInicioFormateada?.toString() ?? '');
     formData.append('fechaFin', fechaFinFormateada?.toString() ?? '');
-    formData.append('fechaRecibido', fechaRecibidoFormateada?.toString() ?? '');
+    if (userRole === "admin") {
+      formData.append('fechaRecibido', fechaRecibidoFormateada?.toString() ?? '');
+    }
     formData.append('horaInicio', horaInicioFormateada?.toString() ?? '');
     formData.append('horaFin', horaFinFormateada?.toString() ?? '');
     formData.append('sustitucion', String(sustitucion)); // Convertido a cadena
@@ -337,13 +344,17 @@ const Formulario = () => {
         onFinish={enviarSolicitud}
         layout="vertical"
       >
-        <Button
-          className='button-modal'
-          style={{ marginTop: 8, marginBottom: 5 }}
-          onClick={handleButtonClick}
-        >
-          ¿Qué tipo de solicitud deseas agregar?
-        </Button>
+        {userRole === "admin" && (
+          <>
+            <Button
+              className='button-modal'
+              style={{ marginTop: 8, marginBottom: 5 }}
+              onClick={handleButtonClick}
+            >
+              ¿Qué tipo de solicitud deseas agregar?
+            </Button>
+          </>
+        )}
         <div>
           {showModal && <ModalComponent onAdminChoice={handleAdminChoice} />}
         </div>
