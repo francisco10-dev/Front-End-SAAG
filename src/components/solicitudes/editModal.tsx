@@ -4,10 +4,12 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Solicitud } from '../../services/solicitud.service';
-import { Alert, Box, Grid, TextField, Typography } from '@mui/material';
+import { Alert, Box, Grid, TextField, Typography, List, ListItem, IconButton, Avatar, ListItemAvatar, ListItemText } from '@mui/material';
+import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
 import { formatDate } from './utils';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
+import DeleteIcon from '@mui/icons-material/Delete';
 import FormControl from '@mui/material/FormControl';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import SolicitudService from '../../services/solicitud.service';
@@ -16,8 +18,9 @@ import { Fragment, useState } from 'react';
 import { useAuth } from '../../authProvider';
 import moment from 'moment';
 import ModalComprobanteComponent from './modalComprobante';
-
-
+import UploadFiles from '../expedientes/file/uploadFile';
+import type { UploadFile } from 'antd/lib/upload/interface';
+import ColaboradorNameSelect from '../solicitud-empleado/colaboradorSubstitute';
 interface Props {
     solicitud: Solicitud | null;
     open: boolean;
@@ -28,9 +31,23 @@ interface Props {
 export default function EditDialog({ solicitud, open, onClose, reload }: Props) {
     const { userRole } = useAuth();
     const [estado, setEstado] = useState<string | null>();
+    const [estadoComprobante, setEstadoComprobante] = useState<string | null>('');
     const [comentario, setComentarios] = useState<string | null>();
     const { colaborador } = useAuth();
     const [mostrarModal, setMostrarModal] = useState(false);
+    const [selectedFile, setSelectedFile] = useState<UploadFile[]>([]);
+    const [openUploader, setOpenUploader] = useState(true);
+    const [nombreSustituto, setNombreSustituto] = useState('');
+
+    const handleFilesChange = (files: UploadFile<any>[]) => {
+        setSelectedFile(files);
+        setOpenUploader(false);
+    };
+
+    const reset = () => {
+        setOpenUploader(true);
+        setSelectedFile([]);
+    }
 
     const handleModal = () => {
         setMostrarModal(true);
@@ -38,12 +55,15 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
 
     const handleCloseModal = () => {
         setMostrarModal(false); // Cierra el modal
-      };
+        // setEstadoComprobante('NO');
+    };
 
     const handleChange = (event: SelectChangeEvent) => {
         setEstado(event.target.value as string);
     };
-
+    const handleChangeSelect = (event: SelectChangeEvent) => {
+        setEstadoComprobante(event.target.value as string);
+    };
     if (!solicitud) {
         return <div></div>
     }
@@ -51,6 +71,7 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
     const handleClose = () => {
         onClose();
         setEstado(null);
+        setEstadoComprobante(null);
     }
 
     const renderMenuItems = () => {
@@ -249,7 +270,7 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
                                 </Grid>
                                 <Grid item xs={6} sm={6} md={2} key="comprobante">
                                     <Typography variant="body2">Comprobante</Typography>
-                                    <Button variant='contained' onClick={handleModal} style={{width:'85px'}}>Mostrar</Button>
+                                    <Button variant='contained' onClick={handleModal} style={{ width: '85px' }}>Mostrar</Button>
                                     {mostrarModal && (
                                         <ModalComprobanteComponent
                                             idSolicitud={solicitud.idSolicitud} // Pasa el id de la solicitud al componente modal
@@ -290,12 +311,13 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
                             )}
                         </Box>
                     </Box>
-                    <Box mt={3} sx={{ display: { sm: 'block', md: 'flex' } }} gap={2} >
+                    <Box mt={3} sx={{ display: { sm: 'block', md: 'block' } }} gap={2} >
                         <FormControl >
-                            <InputLabel id="demo-simple-select-label">{solicitud.estado != 'Pendiente' ? 'Indicar otro estado' : 'Estado'}</InputLabel>
+                            <InputLabel id="demo-simple-select-label">{solicitud.estado != 'Pendiente' ? 'Indicar otro estado' : 'Estado'} </InputLabel>
                             <Select
                                 labelId="demo-simple-select-label"
                                 id="demo-simple-select"
+                                style={{ borderRadius: 10 }}
                                 value={estado ? estado : ''}
                                 label={solicitud.estado === 'Aprobado' ? 'Indicar otro estado' : 'Estado'}
                                 onChange={handleChange}
@@ -305,15 +327,66 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
                             </Select>
                         </FormControl> <br />
                         {userRole !== "supervisor" && (
-                            <TextField
-                                label="Dejar comentarios..."
-                                value={comentario}
-                                onChange={(e) => setComentarios(e.target.value)}
-                                margin='normal'
-                                maxRows={4}
-                                variant='standard'
-                                sx={{ width: { sm: 350, md: 600 } }}
-                            />
+                            <>
+                                <TextField
+                                    label="Dejar comentarios..."
+                                    value={comentario}
+                                    onChange={(e) => setComentarios(e.target.value)}
+                                    margin='normal'
+                                    maxRows={4}
+                                    variant='standard'
+                                    sx={{ width: { sm: 350, md: 600 }, marginBottom: 3 }}
+                                />
+                                <Box mb={2}>
+                                    <FormControl>
+                                        <InputLabel id="comprobante" style={{ marginBottom: 50 }}>Adjuntar el comprobante</InputLabel>
+                                        <Select
+                                            labelId="comprobante"
+                                            id="demo-simple-select"
+                                            label={estadoComprobante}
+                                            value={estadoComprobante ?? 'NO'}
+                                            onChange={handleChangeSelect}
+                                            sx={{ width: 200, marginTop: 2 }}
+                                        >
+                                            <MenuItem value="SI">SI</MenuItem>
+                                            <MenuItem value="NO">NO</MenuItem>
+                                        </Select>
+                                    </FormControl>
+                                </Box>
+                                {estadoComprobante === "SI" && (
+                                    <Box mb={2} >
+                                        {openUploader && (
+                                            <div style={{ width: '25%', height: '100%' }}> {/* Establece el tamaño deseado */}
+                                                <UploadFiles onFilesChange={handleFilesChange} isMultiple={false} message='Seleccione un documento' />
+                                            </div>)}
+                                        <Box>
+                                            <Grid item xs={12} md={6}>
+                                                <List dense={true}>
+                                                    {selectedFile.map((file, index) =>
+                                                        <ListItem key={index}
+                                                            secondaryAction={
+                                                                <IconButton edge="end" aria-label="delete" onClick={reset} color='error'>
+                                                                    <DeleteIcon />
+                                                                </IconButton>
+                                                            }
+                                                        >
+                                                            <ListItemAvatar>
+                                                                <Avatar>
+                                                                    <AttachFileOutlinedIcon />
+                                                                </Avatar>
+                                                            </ListItemAvatar>
+                                                            <ListItemText
+                                                                primary={file.name}
+                                                            />
+                                                        </ListItem>,
+                                                    )}
+                                                </List>
+                                            </Grid>
+                                        </Box>
+                                    </Box>
+                                )}
+                                <ColaboradorNameSelect onSelect={(name) => setNombreSustituto(name)} />
+                            </>
                         )}
                     </Box>
                 </DialogContent>
