@@ -51,7 +51,7 @@ function Orders() {
         <Grid container spacing={3}>
           {/* Contenedor arriba */}
           <Grid item xs={12} >
-            <Typography variant="h6" fontWeight="medium">
+            <Typography variant="h6" fontWeight="400" fontFamily= 'Gotham'>
               Actividad Reciente
             </Typography>
           </Grid>

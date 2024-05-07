@@ -11,8 +11,8 @@ export async function getAbsenceIndicators() {
     const solicitudes = await solicitudService.getSolicitudes();
     
 
-    const ausencias = solicitudes.filter(solicitud => solicitud.estado === "Aprobado");
-
+    const ausencias = 
+solicitudes.filter(solicitud => solicitud.estado === "Aprobado");
     const indicadoresMeses: number[] = [];
 
 

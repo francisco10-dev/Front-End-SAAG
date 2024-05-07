@@ -34,10 +34,10 @@ function CustomCard({ color, title, count, icon, route }: { color: string, title
           </Icon>
         </Box>
         <Box textAlign="right" lineHeight={1.25} mb={3}>
-          <Typography variant="button"  fontWeight="light" color="grey">
+          <Typography variant="button"  fontWeight="bolder" color="grey" fontSize="10px" fontFamily= 'Gotham' >
             {title}
           </Typography>
-          <Typography variant="h4">{count}</Typography>
+          <Typography variant="h4" >{count}</Typography>
         </Box>
       </Box>
       <Divider />
@@ -53,7 +53,7 @@ function CustomCard({ color, title, count, icon, route }: { color: string, title
             variant="button"
             fontWeight="bold" 
           >
-             <Link to={route} style={{textDecoration: 'none', color: 'primary' }}>
+             <Link to={route} style={{textDecoration: 'none', color: 'primary', fontFamily: 'Gotham'  }}>
               Ver más
              </Link>
           </Typography>

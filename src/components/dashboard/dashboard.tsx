@@ -135,7 +135,7 @@ function Dashboard() {
         const dataRequest = await getEmployyesByUnit();
         const employeeInfo =  await getUltimoIngreso();
         setemployeeInfo(employeeInfo);
-    
+        
        
         if (Array.isArray(dataRequest)) {
           console.error('Error: Unexpected data format received from server');

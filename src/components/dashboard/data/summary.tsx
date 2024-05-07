@@ -1,6 +1,5 @@
 import ColaboradorService from '../../../services/colaborador.service';
 import SolicitudService from '../../../services/solicitud.service';
-import AuditService from '../../../services/auditoria.service';
 import Person4Icon from '@mui/icons-material/Person4';
 import RequestPageIcon from '@mui/icons-material/RequestPage';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
@@ -15,7 +14,7 @@ export async function getEmployeeData() {
       const data = {
          totalCount : employees.length,
          color : "#EEF3AD",
-         title : "Empleados",
+         title : "Total Empleados",
          icon : <Person4Icon />,
       }
       
@@ -31,10 +30,11 @@ export async function getEmployeeData() {
   
     try {
       const solicitudes = await requestService.getSolicitudes();
+      const solicitudesPendientes = solicitudes.filter(solicitud => solicitud.estado === "Pendiente");
       const data = {
-        totalCount : solicitudes.length,
+        totalCount : solicitudesPendientes.length,
         color : "#A9ECA2",
-        title : "Solicitudes",
+        title : "Solicitudes Pendientes",
         icon : <RequestPageIcon />
       }
   
@@ -51,12 +51,12 @@ export async function getEmployeeData() {
     try {
       const solicitudes= await solicitudService.getSolicitudes();
       const ausencias = solicitudes.filter(solicitud =>
-        solicitud.estado === 'Aprobado');
+        solicitud.estado === 'Aprobado' && new Date(solicitud.fechaInicio ?? "") <= new Date() && new Date(solicitud.fechaFin ?? "") > new Date());
   
       const data = {
         totalCount : ausencias.length,
         color : "#74BEC1",
-        title : "Ausencias",
+        title : "Empleados Ausentes",
         icon : <WatchLaterIcon />
       }
   
@@ -68,14 +68,17 @@ export async function getEmployeeData() {
   }
 
   export async function getAuditData() {
-    const auditService = new AuditService();
+    const solicitudService = new SolicitudService();
   
     try {
-      const audits = await auditService.getAuditorias();
+      const solicitudes= await solicitudService.getSolicitudes();
+      const proximasAusencias = solicitudes.filter(solicitud =>
+        solicitud.estado === 'Aprobado' && new Date(solicitud.fechaInicio ?? "") > new Date());
+
       const data = {
-        totalCount : audits.length,
+        totalCount : proximasAusencias.length,
         color : "#F5C8BD",
-        title : "Auditorías",
+        title : "Próximas Ausencias",
         icon : <VerifiedUserIcon />
       }
   
