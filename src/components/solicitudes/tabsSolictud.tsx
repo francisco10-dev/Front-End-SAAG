@@ -47,7 +47,7 @@ export default function TabsSolicitudAdmin() {
   const [value, setValue] = useState(0);
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
   const [approved, setApproved] = useState<Solicitud[]>([]);
-  const [approvedByHeadquarters , setApprovedByHeadquarters ] = useState<Solicitud[]>([]);
+  const [approvedByHeadquarters, setApprovedByHeadquarters] = useState<Solicitud[]>([]);
   const [pendings, setPendings] = useState<Solicitud[]>([]);
   const [rejected, setRejected] = useState<Solicitud[]>([]);
   const [rejectedByHeadquarters, setRejectedByHeadquarters] = useState<Solicitud[]>([]);
@@ -66,39 +66,39 @@ export default function TabsSolicitudAdmin() {
   const loadRequests = () => {
     setLoading(true);
     const fetchData = async () => {
-        try {
-            let solicitudesData: Solicitud[] = [];
-            const cachedData = localStorage.getItem('solicitudesData');
-            if (cachedData) {
-                const data = JSON.parse(cachedData);
-                if (userRole === 'supervisor' && data.role === 'supervisor') {
-                    solicitudesData = data.solicitudesData;
-                } else if (userRole !== 'supervisor' && data.role !== 'supervisor') {
-                    solicitudesData = data.solicitudesData;
-                }
-            }
-            if (solicitudesData.length === 0) {
-                if (userRole === 'supervisor') {
-                    if (colaborador?.idColaborador) {
-                        solicitudesData = await Service.getSolicitudesPorSupervisor(colaborador.idColaborador);
-                    }
-                } else {
-                    solicitudesData = await Service.getSolicitudes();
-                    console.log(solicitudesData)
-                }
-                localStorage.setItem('solicitudesData', JSON.stringify({ role: userRole, solicitudesData }));
-            }
-
-            updateData(solicitudesData);
-        } catch (error) {
-            console.log(error)
-            message.error('Ocurrió un error al cargar las solicitudes');
-        } finally {
-            setLoading(false);
+      try {
+        let solicitudesData: Solicitud[] = [];
+        const cachedData = localStorage.getItem('solicitudesData');
+        if (cachedData) {
+          const data = JSON.parse(cachedData);
+          if (userRole === 'supervisor' && data.role === 'supervisor') {
+            solicitudesData = data.solicitudesData;
+          } else if (userRole !== 'supervisor' && data.role !== 'supervisor') {
+            solicitudesData = data.solicitudesData;
+          }
         }
+        if (solicitudesData.length === 0) {
+          if (userRole === 'supervisor') {
+            if (colaborador?.idColaborador) {
+              solicitudesData = await Service.getSolicitudesPorSupervisor(colaborador.idColaborador);
+            }
+          } else {
+            solicitudesData = await Service.getSolicitudes();
+            console.log(solicitudesData)
+          }
+          localStorage.setItem('solicitudesData', JSON.stringify({ role: userRole, solicitudesData }));
+        }
+
+        updateData(solicitudesData);
+      } catch (error) {
+        console.log(error)
+        message.error('Ocurrió un error al cargar las solicitudes');
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
-}
+  }
 
 
   useEffect(() => {
@@ -109,14 +109,14 @@ export default function TabsSolicitudAdmin() {
   const setData = (solicitudes: Solicitud[]) => {
     let approvedStatus: string;
     let rejectedStatus: string;
-    let approvedStatusByHeadquarters= "AprobadoPorJefatura";
-    let rejectedStatusByHeadquarters= "RechazadoPorJefatura";
+    let approvedStatusByHeadquarters = "AprobadoPorJefatura";
+    let rejectedStatusByHeadquarters = "RechazadoPorJefatura";
     if (userRole === "supervisor") {
-        approvedStatus = approvedStatusByHeadquarters;
-        rejectedStatus = rejectedStatusByHeadquarters;
+      approvedStatus = approvedStatusByHeadquarters;
+      rejectedStatus = rejectedStatusByHeadquarters;
     } else {
-        approvedStatus = "Aprobado";
-        rejectedStatus = "Rechazado";//validacion para reutlizar los filtros ya establecidas para utilizar la misma tabla para el supervisor
+      approvedStatus = "Aprobado";
+      rejectedStatus = "Rechazado";//validacion para reutlizar los filtros ya establecidas para utilizar la misma tabla para el supervisor
     }
 
     const approved = solicitudes.filter((solicitud) => solicitud.estado === approvedStatus);
@@ -133,41 +133,69 @@ export default function TabsSolicitudAdmin() {
 
     const rejectedByHeadquarters = solicitudes.filter((solicitud) => solicitud.estado === rejectedStatusByHeadquarters);
     setRejectedByHeadquarters(rejectedByHeadquarters);
-}
+  }
 
 
 
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', maxWidth: { xs: 520, sm: 900 } }}>
-        <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Todas" {...a11yProps(0)} />
-          <Tab label="Aprobadas" {...a11yProps(1)} />
-          <Tab label="Pendientes" {...a11yProps(2)} />
-          <Tab label="Rechazadas" {...a11yProps(3)} />
-          <Tab label="Aprobadas por jefatura" {...a11yProps(4)} />
-          <Tab label="Rechazadas por jefatura" {...a11yProps(5)} />
-        </Tabs>
+    <>
+      {userRole != "supervisor" && (
+        <Box sx={{ width: '100%' }}>
+          <Box sx={{ borderBottom: 1, borderColor: 'divider', maxWidth: { xs: 520, sm: 900 } }}>
+            <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+              <Tab label="Todas" {...a11yProps(0)} />
+              <Tab label="Aprobadas" {...a11yProps(1)} />
+              <Tab label="Pendientes" {...a11yProps(2)} />
+              <Tab label="Rechazadas" {...a11yProps(3)} />
+              <Tab label="Aprobadas por jefatura" {...a11yProps(4)} />
+              <Tab label="Rechazadas por jefatura" {...a11yProps(5)} />
+            </Tabs>
+          </Box>
+          <CustomTabPanel value={value} index={0}>
+            <DataTable isLoading={loading} rows={solicitudes} load={loadRequests} />
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={1}>
+            <DataTable isLoading={loading} rows={approved} load={loadRequests} />
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={2}>
+            <DataTable isLoading={loading} rows={pendings} load={loadRequests} />
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={3}>
+            <DataTable isLoading={loading} rows={rejected} load={loadRequests} />
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={4}>
+            <DataTable isLoading={loading} rows={approvedByHeadquarters} load={loadRequests} />
+          </CustomTabPanel>
+          <CustomTabPanel value={value} index={5}>
+            <DataTable isLoading={loading} rows={rejectedByHeadquarters} load={loadRequests} />
+          </CustomTabPanel>
+        </Box>
+      )
+      }
+      <Box sx={{ width: '100%' }}>
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', maxWidth: { xs: 520, sm: 900 } }}>
+          <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+            <Tab label="Todas" {...a11yProps(0)} />
+            <Tab label="Pendientes" {...a11yProps(1)} />
+            <Tab label="Aprobadas por jefatura" {...a11yProps(2)} />
+            <Tab label="Rechazadas por jefatura" {...a11yProps(3)} />
+          </Tabs>
+        </Box>
+        <CustomTabPanel value={value} index={0}>
+          <DataTable isLoading={loading} rows={solicitudes} load={loadRequests} />
+        </CustomTabPanel>
+        <CustomTabPanel value={value} index={1}>
+          <DataTable isLoading={loading} rows={pendings} load={loadRequests} />
+        </CustomTabPanel>
+        <CustomTabPanel value={value} index={2}>
+          <DataTable isLoading={loading} rows={approvedByHeadquarters} load={loadRequests} />
+        </CustomTabPanel>
+        <CustomTabPanel value={value} index={3}>
+          <DataTable isLoading={loading} rows={rejectedByHeadquarters} load={loadRequests} />
+        </CustomTabPanel>
       </Box>
-      <CustomTabPanel value={value} index={0}>
-        <DataTable isLoading={loading} rows={solicitudes} load={loadRequests} />
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={1}>
-        <DataTable isLoading={loading} rows={approved} load={loadRequests} />
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={2}>
-        <DataTable isLoading={loading} rows={pendings} load={loadRequests} />
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={3}>
-        <DataTable isLoading={loading} rows={rejected} load={loadRequests} />
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={4}>
-        <DataTable isLoading={loading} rows={approvedByHeadquarters} load={loadRequests} />
-      </CustomTabPanel>
-      <CustomTabPanel value={value} index={5}>
-        <DataTable isLoading={loading} rows={rejectedByHeadquarters} load={loadRequests} />
-      </CustomTabPanel>
-    </Box>
+
+    </>
   );
 }
