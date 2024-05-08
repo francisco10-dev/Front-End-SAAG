@@ -5,7 +5,6 @@ import { Alert, Box, Grid, List, ListItem, IconButton, Avatar, ListItemAvatar, L
 import DeleteIcon from '@mui/icons-material/Delete';
 import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
 import { useAuth } from '../../authProvider';
-import { toast } from 'react-toastify';
 import moment from 'moment';
 import ModalComponent from './modal';
 import ColaboradorSelect, { ColaboradorOption } from './colaboradorSelect';
@@ -291,6 +290,7 @@ const Formulario = () => {
     formData.append('nombreColaborador', String(nombreColaborador)); // Convertido a cadena
     formData.append('nombreEncargado', String(nombreEncargado)); // Convertido a cadena
     formData.append('fechaSolicitud', fechaSolicitudFormateada);
+    console.log(fechaInicioFormateada);
     formData.append('fechaInicio', fechaInicioFormateada?.toString() ?? '');
     formData.append('fechaFin', fechaFinFormateada?.toString() ?? '');
     if (userRole === "admin") {
@@ -316,10 +316,11 @@ const Formulario = () => {
       const solicitudService = new SolicitudService();
       const response = await solicitudService.agregarSolicitud(formData);
       console.log(response);
-      toast.success('La solicitud se ha procesado exitosamente.');
+      alerta('success','La solicitud se ha procesado exitosamente.')
       form.resetFields();
+      reset();
     } catch (error) {
-      toast.error('La solicitud no se ha procesado correctamente.');
+      alerta('error','La solicitud no se ha procesado correctamente.')
       console.error('Error al enviar la solicitud:', error);
     }
   };

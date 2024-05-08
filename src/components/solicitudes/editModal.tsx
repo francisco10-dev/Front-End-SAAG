@@ -39,6 +39,7 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
     const [openUploader, setOpenUploader] = useState(true);
     const [nombreSustituto, setNombreSustituto] = useState('');
     const [requiereSustituto, setRequiereSustituto] = useState('');
+    const [requiereActualizarComentario, setRequiereActualizarComentario] = useState('');
 
     const handleFilesChange = (files: UploadFile<any>[]) => {
         setSelectedFile(files);
@@ -73,10 +74,16 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
         setRequiereSustituto("NO");
         setEstado(null);
         setEstadoComprobante(null);
+        setRequiereActualizarComentario('');
     }
 
     const handleChangeSelectSub = (event: SelectChangeEvent<string>) => {
         setRequiereSustituto(event.target.value);
+    };
+
+
+    const handleChangeSelectUpdateComment = (event: SelectChangeEvent<string>) => {
+        setRequiereActualizarComentario(event.target.value);
     };
 
     const renderMenuItems = () => {
@@ -102,36 +109,48 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
 
 
     const prepareData = () => {
-        const data = {
-            idSolicitud: solicitud.idSolicitud,
-            fechaSolicitud: solicitud.fechaSolicitud,
-            nombreColaborador: solicitud.nombreColaborador,
-            fechaFin: solicitud.fechaFin,
-            fechaInicio: solicitud.fechaInicio,
-            horaInicio: solicitud.horaInicio,
-            horaFin: solicitud.horaFin,
-            conGoceSalarial: solicitud.conGoceSalarial,
-            asunto: solicitud.asunto,
-            estado: estado,
-            sustitucion: requiereSustituto ? requiereSustituto : null,
-            nombreSustituto: nombreSustituto ? nombreSustituto : null,
-            comentarioTalentoHumano: comentario ? comentario : null, // Si comentario es truthy, se usa comentario, de lo contrario se usa null
-            nombreEncargado: colaborador?.nombre,
-            fechaRecibido: moment().format('YYYY-MM-DD'),
-            comprobante: selectedFile ? selectedFile : null
+        const formData = new FormData();
+
+        formData.append('idSolicitud', solicitud.idSolicitud.toString());
+        formData.append('fechaSolicitud', solicitud.fechaSolicitud);
+        formData.append('nombreColaborador', solicitud.nombreColaborador);
+        formData.append('fechaFin', solicitud.fechaFin?.toString() ?? '');
+        formData.append('fechaInicio', solicitud.fechaInicio?.toString() ?? '');
+        formData.append('horaInicio', solicitud.horaInicio?.toString() ?? '');
+        formData.append('horaFin', solicitud.horaFin?.toString() ?? '');
+        formData.append('conGoceSalarial', solicitud.conGoceSalarial.toString());
+        formData.append('asunto', solicitud.asunto);
+        formData.append('estado', estado?.toString() ?? '');
+        formData.append('sustitucion', requiereSustituto ? requiereSustituto : ''); // Si es null, asigna un string vacío para que no sea null en FormData
+        formData.append('nombreSustituto', nombreSustituto ? nombreSustituto : '');
+        // Si el comentario no es nulo y ha cambiado, lo agrega al formulario
+        if (comentario !== null && comentario !== solicitud.comentarioTalentoHumano) {
+            formData.append('comentarioTalentoHumano', comentario?.toString() ?? '');
         }
-        return data;
+        formData.append('nombreEncargado', colaborador?.nombre || ''); // Si colaborador es null, asigna un string vacío para que no sea null en FormData
+        formData.append('fechaRecibido', moment().format('YYYY-MM-DD'));
+        if (selectedFile[0] !== null && selectedFile[0] !== undefined) {
+            // Verifica si originFileObj no es nulo
+            if (selectedFile[0].originFileObj !== null && selectedFile[0].originFileObj !== undefined) {
+                formData.append('comprobante', selectedFile[0].originFileObj);
+            } else if (selectedFile[0] instanceof File) {
+                formData.append('comprobante', selectedFile[0]);
+            }
+        }
+        return formData;
     }
 
     const handleSave = async () => {
-        const data = prepareData();
+        const formData = prepareData();
         const service = new SolicitudService();
         let hideLoadingMessage;
 
         try {
             hideLoadingMessage = message.loading('Cargando', 0);
-            console.log(data);
-            const response = await service.actualizarSolicitud(solicitud.idSolicitud, data);
+            formData.forEach((value, key) => {
+                console.log(key, value);
+            });
+            const response = await service.actualizarSolicitud(solicitud.idSolicitud, formData);
             if (response) {
                 message.success('Solicitud procesada exitosamente');
                 reload();
@@ -264,7 +283,7 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
                                         Requiere Sustitución
                                     </Typography>
                                     <Typography variant="body2" color="textSecondary">
-                                    {solicitud.sustitucion === '' ? 'No indica' : solicitud.sustitucion}
+                                        {solicitud.sustitucion === '' ? 'No indica' : solicitud.sustitucion}
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={6} sm={6} md={2} key="sustituto" >
@@ -356,16 +375,33 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
                             </>
                         )}
                         {userRole !== "supervisor" && (
-                            <>
-                                <TextField
-                                    label="Dejar comentarios..."
-                                    value={comentario}
-                                    onChange={(e) => setComentarios(e.target.value)}
-                                    margin='normal'
-                                    maxRows={4}
-                                    variant='standard'
-                                    sx={{ width: { sm: 350, md: 600 } }}
-                                />                                <Box mb={2}>
+                            <div style={{ display: 'flex', flexDirection: 'column' }}>
+                                <FormControl>
+                                    <InputLabel id="demo-simple-select-label-3">Requiere actualizar el comentario?</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label-3"
+                                        id="demo-simple-select"
+                                        value={requiereActualizarComentario}
+                                        onChange={handleChangeSelectUpdateComment}
+                                        style={{ borderRadius: 10, width: 290, marginBottom: 20 }}
+                                        label="Requiere actualizar el comentario?"
+                                    >
+                                        <MenuItem value="SI">SI</MenuItem>
+                                        <MenuItem value="NO">NO</MenuItem>
+                                    </Select>
+                                </FormControl>
+                                {requiereActualizarComentario === "SI" && (
+                                    <TextField
+                                        label="Dejar comentarios..."
+                                        value={comentario}
+                                        onChange={(e) => setComentarios(e.target.value)}
+                                        margin='normal'
+                                        maxRows={4}
+                                        variant='standard'
+                                        sx={{ width: { sm: 350, md: 600 }, marginBottom: 5 }}
+                                    />
+                                )}
+                                <Box mb={2}>
                                     <FormControl>
                                         <InputLabel id="comprobante" style={{ marginBottom: 50 }}>Adjuntar el comprobante</InputLabel>
                                         <Select
@@ -388,7 +424,7 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
                                                 <UploadFiles onFilesChange={handleFilesChange} isMultiple={false} message='Seleccione un documento' />
                                             </div>)}
                                         <Box>
-                                            <Grid item xs={12} md={6}>
+                                            <Grid item xs={12} md={6} maxWidth={200}>
                                                 <List dense={true}>
                                                     {selectedFile.map((file, index) =>
                                                         <ListItem key={index}
@@ -413,8 +449,9 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
                                         </Box>
                                     </Box>
                                 )}
-                            </>
+                            </div>
                         )}
+
                     </Box>
                 </DialogContent>
                 <DialogActions>

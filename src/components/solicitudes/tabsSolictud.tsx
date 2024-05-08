@@ -107,18 +107,11 @@ export default function TabsSolicitudAdmin() {
 
 
   const setData = (solicitudes: Solicitud[]) => {
-    let approvedStatus: string;
-    let rejectedStatus: string;
+    let approvedStatus="Aprobado";
+    let rejectedStatus = "Rechazado";
     let approvedStatusByHeadquarters = "AprobadoPorJefatura";
     let rejectedStatusByHeadquarters = "RechazadoPorJefatura";
-    if (userRole === "supervisor") {
-      approvedStatus = approvedStatusByHeadquarters;
-      rejectedStatus = rejectedStatusByHeadquarters;
-    } else {
-      approvedStatus = "Aprobado";
-      rejectedStatus = "Rechazado";//validacion para reutlizar los filtros ya establecidas para utilizar la misma tabla para el supervisor
-    }
-
+    
     const approved = solicitudes.filter((solicitud) => solicitud.estado === approvedStatus);
     setApproved(approved);
 
@@ -137,7 +130,7 @@ export default function TabsSolicitudAdmin() {
 
   return (
     <>
-      {userRole != "supervisor" && (
+      {/* {userRole != "supervisor" && ( */}
         <Box sx={{ width: '100%' }}>
           <Box sx={{ borderBottom: 1, borderColor: 'divider', maxWidth: { xs: 520, sm: 900 } }}>
             <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
@@ -168,31 +161,6 @@ export default function TabsSolicitudAdmin() {
             <DataTable isLoading={loading} rows={rejectedByHeadquarters} load={loadRequests} />
           </CustomTabPanel>
         </Box>
-      )
-      }
-      <Box sx={{ width: '100%' }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider', maxWidth: { xs: 520, sm: 900 } }}>
-          <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-            <Tab label="Todas" {...a11yProps(0)} />
-            <Tab label="Pendientes" {...a11yProps(1)} />
-            <Tab label="Aprobadas por jefatura" {...a11yProps(2)} />
-            <Tab label="Rechazadas por jefatura" {...a11yProps(3)} />
-          </Tabs>
-        </Box>
-        <CustomTabPanel value={value} index={0}>
-          <DataTable isLoading={loading} rows={solicitudes} load={loadRequests} />
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={1}>
-          <DataTable isLoading={loading} rows={pendings} load={loadRequests} />
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={2}>
-          <DataTable isLoading={loading} rows={approvedByHeadquarters} load={loadRequests} />
-        </CustomTabPanel>
-        <CustomTabPanel value={value} index={3}>
-          <DataTable isLoading={loading} rows={rejectedByHeadquarters} load={loadRequests} />
-        </CustomTabPanel>
-      </Box>
-
     </>
   );
 }

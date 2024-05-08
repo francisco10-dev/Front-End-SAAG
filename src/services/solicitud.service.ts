@@ -97,7 +97,7 @@ class SolicitudService {
     }
   }
 
-  async actualizarSolicitud(id: number, data: any): Promise<Solicitud> {
+  async actualizarSolicitud(id: number, data: FormData): Promise<Solicitud> {
     try {
       const response = await this.axiosInstance.put(`/actualizar-solicitud/${id}`, data);
       return response.data.solicitud;
