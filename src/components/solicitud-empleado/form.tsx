@@ -1,65 +1,100 @@
 import './form.css';
 import { useState, useEffect } from 'react';
-import { Input, Select, DatePicker, Typography, Progress, Checkbox, TimePicker } from 'antd';
-import Button from '@mui/material/Button';
+import { Input, Select, DatePicker, Typography, Progress, Checkbox, TimePicker, message, Form, Button } from 'antd';
+import { Alert, Box, Grid, List, ListItem, IconButton, Avatar, ListItemAvatar, ListItemText } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
 import { useAuth } from '../../authProvider';
-import { toast } from 'react-toastify';
 import moment from 'moment';
+import ModalComponent from './modal';
+import ColaboradorSelect, { ColaboradorOption } from './colaboradorSelect';
 import SolicitudService from '../../services/solicitud.service';
+import UploadFiles from '../expedientes/file/uploadFile';
+import type { UploadFile } from 'antd/lib/upload/interface';
+import ColaboradorNameSelect from './colaboradorSubstitute';
 const { Option } = Select;
 const { TextArea } = Input;
 const { Text } = Typography;
 const { RangePicker } = DatePicker;
 
-const Form = () => {
-  const { userRole, colaborador } = useAuth();
+const Formulario = () => {
+  const { userRole, colaborador, nameSupervisor } = useAuth();
   const [idUsuario, setId] = useState('');
   const [tipoSolicitud, setTipoSolicitud] = useState('');
   const [asunto, setAsunto] = useState('');
-  const [goceSalarial, setGoce] = useState('');
-  const [goceDisabled, setGoceDisabled] = useState<any>(null);
+  const [goceSalarial, setGoce] = useState('1');
+  const [goceDisabled, setGoceDisabled] = useState(false);
   const [nombreColaborador, setNombreColaborador] = useState('');
   const [unidadColaborador, setUnidadColaborador] = useState('');
   const [nombreEncargado, setNombreEncargado] = useState('');
-  //@ts-ignore
-  const [fechaSolicitud, setFechaSolicitud] = useState(null);
-  const [fechaInicio, setFechaInicio] = useState<any>(null);
-  const [fechaFin, setFechaFin] = useState<any>(null);
+  const [nombreJefaturaInmediata, setNombreJefaturaInmediata] = useState('');
+  const [fechaRecibido, setFechaRecibido] = useState<any>(null);
+  let [fechaInicio, setFechaInicio] = useState<any>(null);
+  let [fechaFin, setFechaFin] = useState<any>(null);
   const [horaInicio, setHoraInicio] = useState<any>(null);
   const [horaFin, setHoraFin] = useState<any>(null);
-  const [esRangoDias, setEsRangoDias] = useState<boolean>(false);
+  const [esRangoHoras, setEsRangoHoras] = useState<boolean>(false);
   const [sustitucion, setSustitucion] = useState('');
   const [nombreSustituto, setNombreSustituto] = useState('');
   const [estado, setEstado] = useState('');
   const [comentarioTalentoHumano, setComentarioTalentoHumano] = useState('');
   const [mostrarProgress, setMostrarProgress] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
+  const [selectedFile, setSelectedFile] = useState<UploadFile[]>([]);
+  const [openUploader, setOpenUploader] = useState(true);
+  const [showModal, setShowModal] = useState(false); // Estado para controlar la visibilidad del modal
+  const [userChoice, setUserChoice] = useState<string | null>(null); // Estado para almacenar la elección del usuario
+  const [userSelect, setUserSelect] = useState<ColaboradorOption | null>(null);
+  const [form] = Form.useForm();
+  const dateFormat = 'DD/MM/YYYY';
+  const [userChoiceDocument, setUserChoiceDocument] = useState<string>('0'); // Cambiado a string
 
   useEffect(() => {
-    // Lógica para recuperar los datos y establecer el nombre del colaborador
-    recuperarDatos();
+    if (userRole === "admin") {
+      setShowModal(true);
+    } else {
+      recuperarDatos();
+    }
+    console.log(userChoice)
   }, []); // El segundo argumento del useEffect es un array vacío para que se ejecute solo una vez al montar el componente
 
- //@ts-ignore
-  const handleChange = (event: any) => {
-    // Lógica para manejar cambios en el input si es necesario
-    setNombreColaborador(event.target.value);
+  const handleAdminChoice = (choice: string | null) => {
+    setShowModal(false);
+    setUserChoice(choice);
+    if (choice === 'solicitudPropia') {
+      setFechaRecibido(moment().format('DD-MM-YYYY'));
+      recuperarDatos();
+      if (colaborador) {
+        setNombreEncargado(colaborador.nombre);
+      }
+    } else {
+      setFechaRecibido(moment().format('DD-MM-YYYY'));
+      if (colaborador) {
+        setNombreEncargado(colaborador.nombre);
+      }
+    }
   };
 
   const handleTipoSolicitudChange = (value: any) => {
     setTipoSolicitud(value);
-  };
-  //@ts-ignore
-  const handleFechaSolicitudChange = (date: any) => {
-    setFechaSolicitud(date);
   };
 
   const handleFechaInicioChange = (date: any) => {
     setFechaInicio(date);
   };
 
+  const handleUserChoiceDocument = (value: string) => {
+    setUserChoiceDocument(value);
+  };
+
   const handleFechaFinChange = (date: any) => {
     setFechaFin(date);
   };
+
+  const reset = () => {
+    setOpenUploader(true);
+    setSelectedFile([]);
+  }
 
   const handleHoraInicioChange = (time: any) => {
     setHoraInicio(time);
@@ -70,7 +105,7 @@ const Form = () => {
   };
 
   const handleCheckboxChange = (e: any) => {
-    setEsRangoDias(e.target.checked);
+    setEsRangoHoras(e.target.checked);
   };
 
   const handleSustitucionChange = (value: any) => {
@@ -79,11 +114,15 @@ const Form = () => {
       setTimeout(() => {
         setSustitucion(value);
         setMostrarProgress(false);
-      }, 350); // Cambiado a 500 milisegundos
+      }, 350);
     } else {
       setSustitucion(value);
       setNombreSustituto('');
     }
+  };
+
+  const handleButtonClick = () => {
+    setShowModal(true);
   };
 
   const handleGoceChangeDisabled = (value: any) => {
@@ -93,8 +132,14 @@ const Form = () => {
     } else {
       setGoceDisabled(false);
     }
+
   }
 
+
+  const handleFilesChange = (files: UploadFile<any>[]) => {
+    setSelectedFile(files);
+    setOpenUploader(false);
+  };
 
   const handleGoceChange = (value: any) => {
     setGoce(value);
@@ -109,251 +154,441 @@ const Form = () => {
       setId(colaborador?.idColaborador.toString());
       setNombreColaborador(colaborador.nombre);
       setUnidadColaborador(colaborador?.unidad ?? "");
+      setNombreJefaturaInmediata(nameSupervisor ?? "");
     }
   }
 
-  const limpiarFormulario = () => {
-    setTipoSolicitud('');
-    setAsunto('');
-    setGoce('');
-    setNombreEncargado('');
-    setFechaSolicitud(null);
-    setFechaInicio(null);
-    setFechaFin(null);
-    setHoraInicio(null);
-    setHoraFin(null);
-    setEsRangoDias(false);
-    setSustitucion('');
-    setNombreSustituto('');
-    setEstado('');
-    setComentarioTalentoHumano('');
-    setMostrarProgress(false);
-  };
-
   const formatearFecha = (fecha: any) => {
-    if (fecha) {
+    if (fecha && fecha.$y && fecha.$M && fecha.$D) {
       const anio = fecha.$y;
       const mes = (fecha.$M + 1).toString().padStart(2, '0');
       const dia = fecha.$D.toString().padStart(2, '0');
       return `${anio}-${mes}-${dia}`;
     } else {
-      return null
+      return null;
     }
   };
 
+
+  let alerta = (type: "success" | "error" | undefined, content: string) => {
+    messageApi.open({
+      type: type,
+      content: content,
+    });
+    return null;
+  }
+
+  const validarFecha = (fecha: any) => {
+    console.log(fecha);
+    if (userRole !== "admin") {
+      if (fecha) {
+        const a = moment();
+        const b = formatearFecha(fecha);
+
+        const diferencia = a.diff(b, 'days'); // Calcular la diferencia en días
+        console.log(`diferencia ${diferencia}`);
+
+        if (diferencia >= 7) {
+          alerta('success', 'La fecha es válida  (cumple con el minimo de 7 días de anticipación)');
+        } else {
+          alerta('error', 'La fecha no es válida (solicitud debe hacerse minimo con 7 días de anticipación)');
+        }
+      }
+    } else {
+      alerta('success', 'Como administrador no tiene restricciones en el ingreso de fechas')
+    }
+  };
+
+  const handleSelect = (option: ColaboradorOption) => {
+    setUserSelect(option);
+    setNombreColaborador(option.colaborador.nombre);
+    setUnidadColaborador(option.colaborador?.puesto?.nombrePuesto ?? 'Default Unidad');
+    setId(option.colaborador?.idColaborador.toString());
+    setNombreJefaturaInmediata(option.supervisor?.nombre ?? '');
+  };
+
+
   const formatearHora = (horas: any) => {
     if (horas) {
-      console.log('estas son', horas);
       const hora = horas.$H.toString().padStart(2, '0');;
       const min = horas.$m.toString().padStart(2, '0');
-      const mili = horas.$ms.toString().padStart(2, '0');
+      const mili = horas.$s.toString().padStart(2, '0');
       return `${hora}:${min}:${mili}`;
     } else {
       return null;
     }
   };
 
-  const [enviandoSolicitud, setEnviandoSolicitud] = useState(false); // Nuevo estado para el estado de envío de la solicitud
+  const [enviandoSolicitud, setEnviandoSolicitud] = useState(
+    {
+      loading: false,
+      buttonText: "Enviar",
+      isDisabled: false
+    }
+  ); // Nuevo estado para el estado de envío de la solicitud
+
+  const estadoBtn = () => {
+    setEnviandoSolicitud(prevState => ({
+      ...prevState,
+      loading: true
+    }));
+    setTimeout(() => {
+      setEnviandoSolicitud({
+        buttonText: "Enviado",
+        isDisabled: true,
+        loading: false
+      });
+
+      setTimeout(() => {
+        setEnviandoSolicitud({
+          buttonText: "Enviar",
+          isDisabled: false,
+          loading: false
+        });
+      }, 2000);
+    }, 2000);
+  };
+
 
   const enviarSolicitud = async () => {
-    const fechaSolicitud = new Date(); // Esto creará un nuevo objeto Date con la fecha y hora actuales
+    const fechaSolicitud = new Date();
     const fechaSolicitudFormateada = moment(fechaSolicitud, "DD-MM-YYYY").format("YYYY-MM-DD");
-    const fechaInicioFormateada = formatearFecha(fechaInicio);
-    const fechaFinFormateada = formatearFecha(fechaFin);
-    const horaInicioFormateada = formatearHora(horaInicio); // Agrega segundos si son necesarios
-    const horaFinFormateada = formatearHora(horaFin); // Agrega segundos
-    const goceSalarialFormat = parseInt(goceSalarial); // Parsea la cadena "1" a un número
-    setEnviandoSolicitud(true); // Establecer el estado de envío a true
-    const nuevaSolicitud = {
-      // Crear objeto de solicitud con los datos del formulario
-      idSolicitud: null, // Esto podría ser un valor predeterminado o nulo, dependiendo de cómo manejes las solicitudes nuevas
-      conGoceSalarial: goceSalarialFormat,
-      tipoSolicitud: tipoSolicitud,
-      asunto: asunto,
-      nombreColaborador: nombreColaborador,
-      nombreEncargado: nombreEncargado,
-      fechaSolicitud: fechaSolicitudFormateada,
-      fechaInicio: fechaInicioFormateada,
-      fechaFin: fechaFinFormateada,
-      horaInicio: horaInicioFormateada,
-      horaFin: horaFinFormateada,
-      sustitucion: sustitucion,
-      nombreSustituto: nombreSustituto,
-      estado: estado,
-      comentarioTalentoHumano: comentarioTalentoHumano,
-      idColaborador: idUsuario // Asegúrate de proporcionar el id del colaborador aquí
-    };
-
+    let fechaRecibidoFormateada;
+    if (userRole == "admin") {
+      if (moment(fechaRecibido, 'DD-MM-YYYY', true).isValid()) {
+        fechaRecibidoFormateada = moment(fechaRecibido, 'DD-MM-YYYY').format("YYYY-MM-DD");
+      } else {
+        console.error('La fecha recibida no es válida');
+      }
+    } else {
+      fechaRecibidoFormateada = null;
+    }
+    console.log(fechaRecibidoFormateada)
+    let fechaInicioFormateada;
+    let fechaFinFormateada;
+    if (fechaInicio != null) {
+      fechaInicioFormateada = formatearFecha(fechaInicio);
+    } else {
+      fechaInicioFormateada = "2022-01-01";
+    }
+    console.log(`fecha formateada de inicio:${fechaInicioFormateada}`);
+    if (fechaFin != null) {
+      fechaFinFormateada = formatearFecha(fechaFin);
+    } else {
+      fechaFinFormateada = "2022-03-02";
+    }
+    let horaInicioFormateada = formatearHora(horaInicio);
+    let horaFinFormateada = formatearHora(horaFin);
+    const goceSalarialFormat = parseInt(goceSalarial);
+    if (userRole != "admin") {
+      setEstado("Pediente");
+    }
+    const formData = new FormData();
+    formData.append('conGoceSalarial', goceSalarialFormat.toString());
+    formData.append('tipoSolicitud', String(tipoSolicitud)); // Convertido a cadena
+    formData.append('asunto', String(asunto)); // Convertido a cadena
+    formData.append('nombreColaborador', String(nombreColaborador)); // Convertido a cadena
+    formData.append('nombreEncargado', String(nombreEncargado)); // Convertido a cadena
+    formData.append('fechaSolicitud', fechaSolicitudFormateada);
+    console.log(fechaInicioFormateada);
+    formData.append('fechaInicio', fechaInicioFormateada?.toString() ?? '');
+    formData.append('fechaFin', fechaFinFormateada?.toString() ?? '');
+    if (userRole === "admin") {
+      formData.append('fechaRecibido', fechaRecibidoFormateada?.toString() ?? '');
+    }
+    formData.append('horaInicio', horaInicioFormateada?.toString() ?? '');
+    formData.append('horaFin', horaFinFormateada?.toString() ?? '');
+    formData.append('sustitucion', String(sustitucion)); // Convertido a cadena
+    formData.append('nombreSustituto', nombreSustituto); // Convertido a cadena
+    formData.append('estado', String(estado)); // Convertido a cadena
+    formData.append('comentarioTalentoHumano', String(comentarioTalentoHumano)); // Convertido a cadena
+    if (selectedFile[0] && selectedFile[0].originFileObj) {
+      formData.append('comprobante', selectedFile[0].originFileObj);
+    } else if (selectedFile[0] instanceof File) {
+      formData.append('comprobante', selectedFile[0]);
+    }
+    formData.append('idColaborador', String(idUsuario)); // Convertido a cadena
     try {
-      // Llamar al método de envío de solicitud de tu servicio de solicitud
-      console.log(nuevaSolicitud);
+      estadoBtn();
+      formData.forEach((value, key) => {
+        console.log(key, value);
+      });
       const solicitudService = new SolicitudService();
-      const response = await solicitudService.agregarSolicitud(nuevaSolicitud);
+      const response = await solicitudService.agregarSolicitud(formData);
       console.log(response);
-      toast.success('La solicitud se ha procesado exitosamente.');
-      limpiarFormulario();
-      // Manejar el éxito (p. ej., limpiar el formulario)
-      setEnviandoSolicitud(false); // Establecer el estado de envío a false
-      // Limpia el formulario, muestra una notificación, redirige, etc.
+      alerta('success','La solicitud se ha procesado exitosamente.')
+      form.resetFields();
+      reset();
     } catch (error) {
-      // Manejar el error (p. ej., mostrar un mensaje de error)
+      alerta('error','La solicitud no se ha procesado correctamente.')
       console.error('Error al enviar la solicitud:', error);
-      setEnviandoSolicitud(false); // Establecer el estado de envío a false
-      // Muestra una notificación de error, etc.
     }
   };
 
 
   return (
     <div className='box'>
-      <div className="contenedor-campos">
-        <div className="columna-1">
-          <div className="campo">
-            <Text>Nombre colaborador</Text>
-            <Input placeholder="Nombre colaborador" value={nombreColaborador} className="inputWidth" style={{ width: 290 }} disabled />
-          </div>
-          <div className="campo">
-            <Text>Unidad a la que pertenece</Text>
-            <Input placeholder="Unidad colaborador" value={unidadColaborador} className="inputWidth" style={{ width: 290 }} disabled />
-          </div>
-          <div className='campo campo-tipo'>
-            <Text>Tipo</Text>
-            <Select showSearch placeholder="Tipo de solicitud" value={tipoSolicitud} onChange={(value) => {
-              handleTipoSolicitudChange(value);
-              handleGoceChangeDisabled(value);
-            }} style={{ width: 150 }}>
-              <Option value="Permisos">Permisos</Option>
-              <Option value="Licencias">Licencias</Option>
-              <Option value="Vacaciones">Vacaciones</Option>
-            </Select>
-          </div>
-          <div className="campo campo-goce">
-            <Text>Goce salarial</Text>
-            <Select placeholder="Con goce salarial" value={goceSalarial} onChange={handleGoceChange} disabled={goceDisabled} style={{ width: 100 }}>
-              <Option value="1">SI</Option>
-              <Option value="0">NO</Option>
-            </Select>
-          </div>
-          <div>
-            <div className="campo">
-              <Checkbox checked={esRangoDias} onChange={handleCheckboxChange}>
-                Rango de horas
-              </Checkbox>
-            </div>
-            {!esRangoDias ? (
-              <div>
-                <RangePicker
-                  placeholder={['Fecha de inicio', 'Fecha de fin']}
-                  value={[fechaInicio, fechaFin]}
-                  onChange={(dates: any) => {
-                    handleFechaInicioChange(dates[0]);
-                    handleFechaFinChange(dates[1]);
-                  }}
-                />
-              </div>
-            ) : (
-              <div className='hora'>
-                <RangePicker
-                  placeholder={['Fecha de inicio', 'Fecha de fin']}
-                  value={[fechaInicio, fechaFin]}
-                  onChange={(dates: any) => {
-                    handleFechaInicioChange(dates[0]);
-                    handleFechaFinChange(dates[1]);
-                  }}
-                />
-                <div className='horas'>
-                  <TimePicker
-                    placeholder="Hora de inicio"
-                    value={horaInicio}
-                    onChange={handleHoraInicioChange}
-                    format="HH:mm"
-                    style={{ marginRight: '5px' }} />
-                  <TimePicker
-                    placeholder="Hora de fin"
-                    value={horaFin}
-                    onChange={handleHoraFinChange}
-                    format="HH:mm"
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-          <div className="campo campo-asunto">
-            <Text>Asunto</Text>
-            <TextArea placeholder="Asunto" value={asunto} onChange={(e) => setAsunto(e.target.value)} allowClear />
-          </div>
+      <Form form={form}
+        initialValues={{
+          range_picker: [
+            moment('01/01/2022', dateFormat),
+            moment('02/03/2022', dateFormat),
+          ],
+          goce_salarial: [
+            goceSalarial
+          ]
+        }}
+        action="/profile"
+        method="post"
+        encType="multipart/form-data"
+        name="basic"
+        onFinish={enviarSolicitud}
+        layout="vertical"
+      >
+        {userRole === "admin" && (
+          <>
+            <Button
+              className='button-modal'
+              style={{ marginTop: 8, marginBottom: 5 }}
+              onClick={handleButtonClick}
+            >
+              ¿Qué tipo de solicitud deseas agregar?
+            </Button>
+          </>
+        )}
+        <div>
+          {showModal && <ModalComponent onAdminChoice={handleAdminChoice} />}
         </div>
-        <div className="columna-2">
-          <div className="campo campo-encargado">
-            <Text>Nombre encargado</Text>
-            <Input placeholder="Nombre encargado" value={nombreEncargado} onChange={(e) => setNombreEncargado(e.target.value)} style={{ width: 290 }} />
-          </div>
-          <div className="box-sustituto">
-            <div className="campo campo-nombre-sustituto">
-              <Text>Requiere sustituto</Text>
-              <Select
-                placeholder="Sustitución"
-                value={sustitucion}
-                onChange={handleSustitucionChange}
-                style={{ width: 100 }}
-              >
-                <Option value="SI">SI</Option>
-                <Option value="NO">NO</Option>
-              </Select>
-            </div>
-            <div className="progress-bar">
-              {mostrarProgress && <Progress percent={100} status="active" style={{ width: '290px' }} />}
-            </div>
-            {sustitucion === 'SI' && !mostrarProgress && (
+        <Alert severity="error"><Text className='text'>Solicitud debe hacerse minimo con 7 días de anticipación.</Text></Alert>
+        <img src="../../public/logoACIB.PNG" alt="Logo" style={{ height: 50, width: 200 }}></img>
+        <div className="contenedor-campos">
+          <div className="columna-1">
+            {userChoice === 'solicitudEmpleado' && (
               <div className="campo">
-                <Text>Nombre del sustituto</Text>
-                <Input
-                  placeholder="Nombre del sustituto"
-                  value={nombreSustituto}
-                  onChange={(e) => setNombreSustituto(e.target.value)}
-                  style={{ width: 290 }}
+                <ColaboradorSelect onSelect={handleSelect} />
+              </div>
+            )}
+            <div className="campo">
+              <Text>Nombre colaborador</Text>
+              <Input placeholder="Nombre colaborador" value={nombreColaborador} className="inputWidth" style={{ width: 290 }} disabled />
+            </div>
+            <div className="campo">
+              <Text>Unidad a la que pertenece</Text>
+              <Input placeholder="Unidad colaborador" value={unidadColaborador} className="inputWidth" style={{ width: 290 }} disabled />
+            </div>
+            <div className='campo campo-tipo'>
+              <Form.Item
+                name="tipo"
+                label="Tipo"
+                rules={[{ required: true, message: 'Seleccione el tipo' }]}
+              >
+                <Select showSearch placeholder="Tipo de solicitud" value={tipoSolicitud} onChange={(value) => {
+                  handleTipoSolicitudChange(value);
+                  handleGoceChangeDisabled(value);
+                }} style={{ width: 150 }}>
+                  <Option value="Permisos">Permisos</Option>
+                  <Option value="Licencias">Licencias</Option>
+                  <Option value="Vacaciones">Vacaciones</Option>
+                </Select>
+              </Form.Item>
+            </div>
+            <div className="campo campo-goce">
+              <Form.Item
+                name="goce_salarial"
+                label="Goce salarial"
+                rules={[{ required: true, message: 'Seleccione' }]}
+              >
+                <Select placeholder="Con goce salarial" value={goceSalarial} onChange={handleGoceChange} disabled={goceDisabled} style={{ width: 150 }}>
+                  <Option value="1">SI</Option>
+                  <Option value="0">NO</Option>
+                </Select>
+              </Form.Item>
+            </div>
+            <div className='campo'>
+              {contextHolder}
+              <Form.Item
+                name="range_picker"
+                label="Seleccione las fechas"
+                rules={[{ required: true, message: 'Seleccione las fechas' }]}
+              >
+                <RangePicker
+                  format={dateFormat}
+                  placeholder={['Fecha de inicio', 'Fecha de fin']}
+                  value={[fechaInicio, fechaFin]}
+                  onChange={(dates: any) => {
+                    handleFechaInicioChange(dates[0]);
+                    validarFecha(dates[0]);
+                    handleFechaFinChange(dates[1]);
+                  }}
                 />
+              </Form.Item>
+            </div>
+            <div>
+              <div className="campo">
+                <Checkbox checked={esRangoHoras} onChange={handleCheckboxChange}>
+                  Rango de horas
+                </Checkbox>
+              </div>
+              {esRangoHoras && (
+                <div className='hora'>
+                  <div className='horas'>
+                    <Form.Item
+                      name="selectHoras"
+                      label="Seleccione la hora"
+                      rules={[{ required: true, message: 'Seleccione la horas' }]}
+                    >
+                      <TimePicker
+                        placeholder="Hora de inicio"
+                        value={horaInicio}
+                        onChange={handleHoraInicioChange}
+                        format="HH:mm"
+                        style={{ marginRight: '5px' }} />
+                    </Form.Item>
+                    <Form.Item
+                      name="selectHoras2"
+                      label="Seleccione la hora"
+                      rules={[{ required: true, message: 'Seleccione la hora' }]}
+                    >
+                      <TimePicker
+                        placeholder="Hora de fin"
+                        value={horaFin}
+                        onChange={handleHoraFinChange}
+                        format="HH:mm"
+                      />
+                    </Form.Item>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="campo campo-asunto">
+              <Text>Asunto</Text>
+              <TextArea placeholder="Asunto" value={asunto} onChange={(e) => setAsunto(e.target.value)} allowClear showCount maxLength={30} />
+            </div>
+            <div className="campo campo-jefaura">
+              <Text>Nombre supervisor</Text>
+              <Input placeholder="Nombre supervisor" value={nombreJefaturaInmediata} onChange={(e) => setNombreJefaturaInmediata(e.target.value)} style={{ width: 290 }} disabled />
+            </div>
+            <div className="campo">
+              <Form.Item
+                name="subirComprobante"
+                label="¿Desea adjuntar comprobante?"
+                rules={[{ required: true, message: 'Seleccione' }]}
+              >
+                <Select placeholder="Seleccione" value={userChoiceDocument} onChange={handleUserChoiceDocument} style={{ width: 150 }}>
+                  <Option value="1">SI</Option>
+                  <Option value="0">NO</Option>
+                </Select>
+              </Form.Item>
+            </div>
+            {userChoiceDocument === "1" && (
+              <div className="campo campo-comprobante" style={{ marginTop: '1rem' }}>
+                <Box mb={2} >
+                  {openUploader && (
+                    <UploadFiles onFilesChange={handleFilesChange} isMultiple={false} message='Seleccione un documento' />
+                  )}
+                  <Box>
+                    <Grid item xs={12} md={6}>
+                      <List dense={true}>
+                        {selectedFile.map((file, index) =>
+                          <ListItem key={index}
+                            secondaryAction={
+                              <IconButton edge="end" aria-label="delete" onClick={reset} color='error'>
+                                <DeleteIcon />
+                              </IconButton>
+                            }
+                          >
+                            <ListItemAvatar>
+                              <Avatar>
+                                <AttachFileOutlinedIcon />
+                              </Avatar>
+                            </ListItemAvatar>
+                            <ListItemText
+                              primary={file.name}
+                            />
+                          </ListItem>,
+                        )}
+                      </List>
+                    </Grid>
+                  </Box>
+                </Box>
               </div>
             )}
           </div>
-          <div className="campo campo-estado">
-            <Text>Estado</Text>
-            <Select placeholder="Estado" value={estado} onChange={handleEstadoChange} style={{ width: 110 }}>
-              <Option value="Aprobado">Aprobado</Option> {/*el admin es el unico que puede aprobar solicitudes */}
-              {/*<Option value="Pendiente">Aprobar</Option> */}  {/*el supervisor aprueba una solicud para enviarla a admin */}
-              <Option value="Rechazado">Rechazada</Option> {/* Rezachazada se muestra para seleccionar a admin y supervisor */}
-            </Select>
+          <div className="columna-2">
+            {userRole === 'admin' && (
+              <>
+                <div className="box-sustituto">
+                  <div className="campo campo-nombre-sustituto">
+                    <Form.Item
+                      name="selectSustitucion"
+                      label="Requiere sustituto"
+                      rules={[{ required: true, message: 'Seleccione una opcion' }]}
+                    >
+                      <Select
+                        placeholder="Sustitución"
+                        value={sustitucion}
+                        onChange={handleSustitucionChange}
+                        style={{ width: 100 }}
+                      >
+                        <Option value="SI">SI</Option>
+                        <Option value="NO">NO</Option>
+                      </Select>
+                    </Form.Item>
+                  </div>
+                  <div className="progress-bar">
+                    {mostrarProgress && <Progress percent={100} status="active" style={{ width: '290px' }} />}
+                  </div>
+                  {sustitucion === 'SI' && !mostrarProgress && (
+                    <div className="campo">
+                      <ColaboradorNameSelect onSelect={(name) => setNombreSustituto(name)} />
+                    </div>
+                  )}
+                </div>
+                <div className="campo campo-tramitado">
+                  <Text>Tramitado por</Text>
+                  <Input placeholder="Tramitado por" value={nombreEncargado} style={{ width: 290 }} disabled />
+                </div>
+                <div className="campo campo-fecha-recibido">
+                  <Text>Fecha recibido</Text>
+                  <Input placeholder="Fecha recibido" value={fechaRecibido} style={{ width: 290 }} disabled />
+                </div>
+                <div className="campo campo-comentario">
+                  <Text>Comentario</Text>
+                  <TextArea placeholder="Comentario de Talento Humano" value={comentarioTalentoHumano} onChange={(e) => setComentarioTalentoHumano(e.target.value)} allowClear showCount maxLength={150} />
+                </div>
+                <div className="campo campo-estado">
+                  <Form.Item
+                    name="selectEstado"
+                    label="Seleccione un estado"
+                    rules={[{ required: true, message: 'Seleccione un estado' }]}
+                  >
+                    <Select placeholder="Estado" value={estado} onChange={handleEstadoChange} style={{ width: 110 }}>
+                      <Option value="Aprobado">Aprobado</Option>
+                      <Option value="Rechazado">Rechazada</Option>
+                      <Option value="Pendiente">Pendiente</Option>
+                    </Select>
+                  </Form.Item>
+                </div>
+              </>
+            )}
           </div>
-          {userRole === 'admin' && (
-            <>
-              <div className="campo campo-tramitado">
-                <Text>Tramitado por</Text>
-                <Input placeholder="Tramitado por" value={unidadColaborador} style={{ width: 290 }} disabled />
-              </div>
-              <div className="campo campo-fecha-recibido">
-                <Text>Fecha recibido</Text>
-                <Input placeholder="Fecha recibido" value={unidadColaborador} style={{ width: 290 }} disabled />
-              </div>
-              <div className="campo campo-comentario">
-                <Text>Comentario</Text>
-                <TextArea placeholder="Comentario de Talento Humano" value={comentarioTalentoHumano} onChange={(e) => setComentarioTalentoHumano(e.target.value)} allowClear />
-              </div>
-            </>
-          )}
+          <Form.Item>
+            <Button
+              className='button-submit'
+              type="primary"
+              htmlType="submit"
+              style={{ marginTop: 8 }}
+              loading={enviandoSolicitud.loading}
+              disabled={enviandoSolicitud.isDisabled}
+            >
+              {enviandoSolicitud.buttonText}
+            </Button>
+          </Form.Item>
         </div>
-        <Button
-          className='button-submit'
-          variant="contained"
-          color="success"
-          style={{ marginTop: 8 }}
-          onClick={enviarSolicitud} // Llama a la función enviarSolicitud cuando se hace clic en el botón
-          disabled={enviandoSolicitud} // Deshabilita el botón mientras se está enviando la solicitud
-        >
-          <Text className='text'>Enviar</Text>
-        </Button>
-      </div>
+      </Form>
     </div>
+
   );
 }
 
-export default Form;
+export default Formulario;

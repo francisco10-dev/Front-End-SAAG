@@ -10,6 +10,8 @@ interface AuthContextType {
   loggedIn: boolean;
   setLoggedIn: (loggedIn: boolean) => void;
   userRole: string | null;
+  nameSupervisor: string | null;
+  setNameSupervisor: (nameSupervisor: string) => void;
   setUserRole: (userRole: string) => void;
   logout: () => void;
   colaborador: Colaborador | null;
@@ -25,17 +27,17 @@ interface AuthProviderProps {
 }
 
 const decodeToken = () => {
-  
-  try{
+
+  try {
     const token = localStorage.getItem('accessToken');
-    if(token){
+    if (token) {
       const decodedToken: any = jwtDecode(token);
       return decodedToken.rol || null;
     }
-    else{
+    else {
       return null;
     }
-  }catch(error){
+  } catch (error) {
     console.error('Error al decodificar el token: ', error);
     return null;
   }
@@ -43,7 +45,7 @@ const decodeToken = () => {
 
 const StoredData = () => {
   const data = localStorage.getItem('employee');
-  if(data){
+  if (data) {
     const colaborador = JSON.parse(data);
     return colaborador;
   }
@@ -55,11 +57,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem('accessToken'));
   const [userRole, setUserRole] = useState<string | null>(decodeToken());
   const [colaborador, setColaborador] = useState<Colaborador | null>(StoredData());
+  const [nameSupervisor, setNameSupervisor] = useState<string | null>(() => {
+    const storedColaborador = StoredData();
+    if (storedColaborador && storedColaborador.supervisor) {
+      return storedColaborador.supervisor.nombre;
+    } else {
+      return null;
+    }
+  });
   const [photo, setPhoto] = useState<string | null>(localStorage.getItem('photo'));
   const navigate = useNavigate();
   const usuarioService = new UsuarioService();
 
-   const logout = async() => {
+  const logout = async() => {
   
     const token = localStorage.getItem('refreshToken');
           if (token) {
@@ -106,8 +116,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUserRole,
     logout,
     colaborador,
-    setColaborador
-  }), [loadPhoto, photo, loggedIn, userRole, colaborador]);
+    setColaborador,
+    nameSupervisor,
+    setNameSupervisor
+  }), [loadPhoto, photo, loggedIn, userRole, colaborador, nameSupervisor]);
 
 
   return (

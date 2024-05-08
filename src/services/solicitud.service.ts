@@ -19,7 +19,8 @@ export interface Solicitud {
     nombreSustituto: string;
     estado: string;
     comentarioTalentoHumano: string;
-    idColaborador: number;
+    idColaborador: any;
+    comprobante:Blob;
     colaborador: Colaborador;
 }
 
@@ -31,7 +32,7 @@ class SolicitudService {
     this.axiosInstance = axiosApi;
   }
 
-  async agregarSolicitud(data: any): Promise<Solicitud> {
+  async agregarSolicitud(data: FormData): Promise<Solicitud> {
     try {
       const response = await this.axiosInstance.post('/agregar-solicitud/', data);
       if (response.status >= 200 && response.status < 300) {
@@ -39,6 +40,7 @@ class SolicitudService {
       }
       return response.data;
     } catch (error) {
+      console.log(error)
       if (axios.isAxiosError(error)) {
         if (error.response) {
           throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
@@ -66,6 +68,24 @@ class SolicitudService {
     }
   }
 
+  async getSolicitudesPorSupervisor(idSupervisor: number): Promise<Solicitud[]> {
+    try {
+      const response = await this.axiosInstance.get(`/solicitudes-por-supervisor/${idSupervisor}`);
+      console.log(response.data);
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 403) {
+          throw new Error(error.response.data.message);
+        } else {
+          throw new Error('Error en la solicitud de red');
+        }
+      }
+      throw error;
+    }
+  }
+  
+
   async getSolicitudPorId(id: number): Promise<Solicitud | null> {
     try {
       const response = await this.axiosInstance.get(`/solicitud/${id}`);
@@ -81,13 +101,14 @@ class SolicitudService {
     }
   }
 
-  async actualizarSolicitud(id: number, data: any): Promise<Solicitud> {
+  async actualizarSolicitud(id: number, data: FormData): Promise<Solicitud> {
     try {
       const response = await this.axiosInstance.put(`/actualizar-solicitud/${id}`, data);
       return response.data.solicitud;
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
+          console.log(error.response);
           throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
         } else {
           throw new Error('Error en la solicitud de red');
@@ -141,6 +162,18 @@ class SolicitudService {
       throw error;
     }
   }
+
+  async getComprobante(id: number): Promise<Blob> {
+    try {
+      const response = await this.axiosInstance.get(`/obtener-comprobante/${id}`, {
+        responseType: 'blob', // Configura el tipo de respuesta como blob para manejar datos binarios
+      });
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+  
   
   incrementarContadorLocalStorage() {
     const count = localStorage.getItem('requestsCount');
