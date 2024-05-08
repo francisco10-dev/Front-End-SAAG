@@ -12,6 +12,7 @@ import SolicitudService from '../../services/solicitud.service';
 import UploadFiles from '../expedientes/file/uploadFile';
 import type { UploadFile } from 'antd/lib/upload/interface';
 import ColaboradorNameSelect from './colaboradorSubstitute';
+import days from 'dayjs';
 const { Option } = Select;
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -22,7 +23,7 @@ const Formulario = () => {
   const [idUsuario, setId] = useState('');
   const [tipoSolicitud, setTipoSolicitud] = useState('');
   const [asunto, setAsunto] = useState('');
-  const [goceSalarial, setGoce] = useState('1');
+  const [goceSalarial, setGoce] = useState("1");
   const [goceDisabled, setGoceDisabled] = useState(false);
   const [nombreColaborador, setNombreColaborador] = useState('');
   const [unidadColaborador, setUnidadColaborador] = useState('');
@@ -48,6 +49,7 @@ const Formulario = () => {
   const [form] = Form.useForm();
   const dateFormat = 'DD/MM/YYYY';
   const [userChoiceDocument, setUserChoiceDocument] = useState<string>('0'); // Cambiado a string
+  const now = days();
 
   useEffect(() => {
     if (userRole === "admin") {
@@ -73,10 +75,6 @@ const Formulario = () => {
         setNombreEncargado(colaborador.nombre);
       }
     }
-  };
-
-  const handleTipoSolicitudChange = (value: any) => {
-    setTipoSolicitud(value);
   };
 
   const handleFechaInicioChange = (date: any) => {
@@ -125,16 +123,24 @@ const Formulario = () => {
     setShowModal(true);
   };
 
+  const handleTipoSolicitudChange = (value:any) => {
+    setTipoSolicitud(value);
+    handleGoceChangeDisabled(value);
+  };
+
   const handleGoceChangeDisabled = (value: any) => {
-    if (value === "Vacaciones" || value === "Licencias") {
+    if (value === "Vacaciones" || value === "Licencias" || value === "Incapacidad") {
+      form.setFieldsValue({ goce_salarial: "1" });
       setGoce("1");
-      setGoceDisabled(true);
+      setGoceDisabled(false); 
+    } else if (value === "Injustificada") {
+      setGoce("0");
+      setGoceDisabled(true); 
+      form.setFieldsValue({ goce_salarial: "0" });
     } else {
-      setGoceDisabled(false);
+      setGoceDisabled(false); 
     }
-
   }
-
 
   const handleFilesChange = (files: UploadFile<any>[]) => {
     setSelectedFile(files);
@@ -143,6 +149,7 @@ const Formulario = () => {
 
   const handleGoceChange = (value: any) => {
     setGoce(value);
+    console.log(value);
   };
 
   const handleEstadoChange = (value: any) => {
@@ -269,13 +276,13 @@ const Formulario = () => {
     if (fechaInicio != null) {
       fechaInicioFormateada = formatearFecha(fechaInicio);
     } else {
-      fechaInicioFormateada = "2022-01-01";
+      fechaInicioFormateada = now.format('YYYY-MM-DD');
     }
     console.log(`fecha formateada de inicio:${fechaInicioFormateada}`);
     if (fechaFin != null) {
       fechaFinFormateada = formatearFecha(fechaFin);
     } else {
-      fechaFinFormateada = "2022-03-02";
+      fechaFinFormateada = now.format('YYYY-MM-DD');
     }
     let horaInicioFormateada = formatearHora(horaInicio);
     let horaFinFormateada = formatearHora(horaFin);
@@ -326,13 +333,15 @@ const Formulario = () => {
   };
 
 
+  
+
   return (
     <div className='box'>
       <Form form={form}
         initialValues={{
           range_picker: [
-            moment('01/01/2022', dateFormat),
-            moment('02/03/2022', dateFormat),
+            now,
+            now,
           ],
           goce_salarial: [
             goceSalarial
@@ -382,13 +391,17 @@ const Formulario = () => {
                 label="Tipo"
                 rules={[{ required: true, message: 'Seleccione el tipo' }]}
               >
-                <Select showSearch placeholder="Tipo de solicitud" value={tipoSolicitud} onChange={(value) => {
-                  handleTipoSolicitudChange(value);
-                  handleGoceChangeDisabled(value);
+                <Select showSearch placeholder="Tipo de solicitud" value={tipoSolicitud} onChange={(value) => {                 
+                  handleTipoSolicitudChange(value)
+                  handleGoceChangeDisabled(value)
                 }} style={{ width: 150 }}>
                   <Option value="Permisos">Permisos</Option>
                   <Option value="Licencias">Licencias</Option>
                   <Option value="Vacaciones">Vacaciones</Option>
+                  <Option value="Incapacidad">Incapacidad</Option>
+                  { userRole === 'admin' && (
+                     <Option value="Injustificada">Injustificada</Option>
+                  )}
                 </Select>
               </Form.Item>
             </div>
@@ -398,9 +411,16 @@ const Formulario = () => {
                 label="Goce salarial"
                 rules={[{ required: true, message: 'Seleccione' }]}
               >
-                <Select placeholder="Con goce salarial" value={goceSalarial} onChange={handleGoceChange} disabled={goceDisabled} style={{ width: 150 }}>
-                  <Option value="1">SI</Option>
-                  <Option value="0">NO</Option>
+                <Select placeholder="Con goce salarial" 
+                  value={goceSalarial} onChange={handleGoceChange} disabled={goceDisabled} style={{ width: 150 }}>
+                  {tipoSolicitud === "Injustificada" ? (
+                      <Option value="0" disabled={true}>NO</Option>
+                    ) : (
+                      <>
+                        <Option value="1">SI</Option>
+                        <Option value="0">NO</Option>
+                      </>
+                    )}
                 </Select>
               </Form.Item>
             </div>
@@ -462,7 +482,16 @@ const Formulario = () => {
             </div>
             <div className="campo campo-asunto">
               <Text>Asunto</Text>
-              <TextArea placeholder="Asunto" value={asunto} onChange={(e) => setAsunto(e.target.value)} allowClear showCount maxLength={30} />
+              <TextArea 
+                placeholder="Asunto" 
+                value={asunto} 
+                onChange={(e) => setAsunto(e.target.value)} 
+                allowClear 
+                showCount 
+                maxLength={30} 
+                autoSize={{ minRows: 2, maxRows: 6 }}
+                style={{zIndex: 0}}
+              />
             </div>
             <div className="campo campo-jefaura">
               <Text>Nombre supervisor</Text>
@@ -554,7 +583,16 @@ const Formulario = () => {
                 </div>
                 <div className="campo campo-comentario">
                   <Text>Comentario</Text>
-                  <TextArea placeholder="Comentario de Talento Humano" value={comentarioTalentoHumano} onChange={(e) => setComentarioTalentoHumano(e.target.value)} allowClear showCount maxLength={150} />
+                  <TextArea 
+                    placeholder="Comentario de Talento Humano" 
+                    value={comentarioTalentoHumano} 
+                    onChange={(e) => setComentarioTalentoHumano(e.target.value)} 
+                    allowClear 
+                    showCount 
+                    maxLength={150}
+                    autoSize={{ minRows: 2, maxRows: 6 }}
+                    style={{zIndex: 0}}
+                  />
                 </div>
                 <div className="campo campo-estado">
                   <Form.Item

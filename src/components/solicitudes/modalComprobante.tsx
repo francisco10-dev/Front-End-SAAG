@@ -1,7 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Typography } from '@mui/material';
+import { Modal, Typography } from '@mui/material';
 import { message} from 'antd';
 import SolicitudService from '../../services/solicitud.service';
+import CloseIcon from '@mui/icons-material/Close';
+import Button from '@mui/material/Button';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
+
 
 interface ModalComponentProps {
   idSolicitud: number;
@@ -39,21 +57,46 @@ const ModalComprobanteComponent: React.FC<ModalComponentProps> = ({ idSolicitud,
   };
   
   return (
-    <Modal open={true} onClose={onClose}>
-      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', backgroundColor: 'white', boxShadow: '24px 24px 48px rgba(0, 0, 0, 0.15)', padding: 4, maxHeight: '80vh', overflowY: 'auto', borderRadius: '5px' }}>
+    <React.Fragment>
+      <BootstrapDialog
+        onClose={onClose}
+        aria-labelledby="customized-dialog-title"
+        open={true}
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+          Comprobante
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent dividers>
         {comprobante === null &&
           <>
             {contextHolder}
           </>
         }
-        <Button variant="contained" color="error" onClick={onClose}>Cerrar</Button>
         {loading && <Typography>Cargando...</Typography>}
         {comprobante && <img src={URL.createObjectURL(comprobante)}
           alt="Comprobante"
           style={{ maxWidth: '100%', objectFit: 'contain', marginTop: '5px' }} // Estilos para ajustar la imagen
         />}
-      </div>
-    </Modal>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={onClose}  color='error' >
+           Cerrar
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
+    </React.Fragment>
   );
 };
 
