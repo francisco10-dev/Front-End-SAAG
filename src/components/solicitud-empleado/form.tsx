@@ -132,7 +132,7 @@ const Formulario = () => {
     if (value === "Vacaciones" || value === "Licencias" || value === "Incapacidad") {
       form.setFieldsValue({ goce_salarial: "1" });
       setGoce("1");
-      setGoceDisabled(false); 
+      setGoceDisabled(true); 
     } else if (value === "Injustificada") {
       setGoce("0");
       setGoceDisabled(true); 
