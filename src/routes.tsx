@@ -10,6 +10,7 @@ import Form from './components/solicitud-empleado/form';
 import { useAuth } from './authProvider'; 
 import Administrador from './components/dashboardAdmin/admin';
 import Panel from './components/expedientes/panel';
+import Info from './components/informacionEmpleado/info';
 
 const Rutas = () => {
     const { loggedIn, userRole } = useAuth();
@@ -17,10 +18,11 @@ const Rutas = () => {
     return (
         <Routes>
             <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard />} isAuthenticated={loggedIn }/>} />
-            <Route path="/solicitudes" element={<ProtectedRoute element={<TabsSolicitudAdmin />} isAuthenticated={loggedIn && userRole === 'admin'}  />} />
-            <Route path="/solicitud-form" element={<ProtectedRoute element={<Form />} isAuthenticated={loggedIn && userRole === 'admin'}  />} />
+            <Route path="/solicitudes" element={<ProtectedRoute element={<TabsSolicitudAdmin />} isAuthenticated={loggedIn && userRole === 'admin'||userRole==='supervisor'}  />} />
+            <Route path="/solicitud-form" element={<ProtectedRoute element={<Form />} isAuthenticated={loggedIn}  />} />
             <Route path="/ausencias" element={<ProtectedRoute element={<TabsAusenciaAdmin />} isAuthenticated={loggedIn  && userRole === 'admin'} />} />
             <Route path="/graficos" element={<ProtectedRoute element={<TabsAusenciaGraficoAdmin />} isAuthenticated={loggedIn  && userRole === 'admin'} />} />
+            <Route path="/mi-informacion" element={<ProtectedRoute element={<Info/>} isAuthenticated={loggedIn} />}/>
             <Route path="/administrador" element={<ProtectedRoute element={<Administrador/>} isAuthenticated={loggedIn  && userRole === 'admin'} />}/>
             <Route path="/auditorias" element={<ProtectedRoute element={<TabsAuditoria/>} isAuthenticated={loggedIn  && userRole === 'admin'} />}/>
             <Route path="/auditorias-login" element={<ProtectedRoute element={<TabsAuditoriaLogin/>} isAuthenticated={loggedIn  && userRole === 'admin'} />}/>

@@ -1,7 +1,6 @@
 import PropTypes from "prop-types";
 import Card from "@mui/material/Card";
 import Divider from "@mui/material/Divider";
-import Icon from "@mui/material/Icon";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { Link } from 'react-router-dom';
@@ -22,22 +21,19 @@ function CustomCard({ color, title, count, icon, route }: { color: string, title
             width: "4.5rem",
             height: "4.5rem",
             mt: -4,
-            fontSize: "4rem",
             lineHeight: 1.625,
             borderRadius: "0.75rem",
             boxShadow: "rgba(0, 0, 0, 0.14) 0rem 0.25rem 1.25rem 0rem, rgba(64, 64, 64, 0.4) 0rem 0.4375rem 0.625rem -0.3125rem",
-            
           }}
         >
-          <Icon color="success" sx={{height:"40px"}}>
             {icon}
-          </Icon>
+
         </Box>
         <Box textAlign="right" lineHeight={1.25} mb={3}>
-          <Typography variant="button"  fontWeight="light" color="grey">
+          <Typography variant="button"  fontWeight="bolder" color="grey" fontSize="10px" fontFamily= 'Gotham' >
             {title}
           </Typography>
-          <Typography variant="h4">{count}</Typography>
+          <Typography variant="h4" >{count}</Typography>
         </Box>
       </Box>
       <Divider />
@@ -53,7 +49,7 @@ function CustomCard({ color, title, count, icon, route }: { color: string, title
             variant="button"
             fontWeight="bold" 
           >
-             <Link to={route} style={{textDecoration: 'none', color: 'primary' }}>
+             <Link to={route} style={{textDecoration: 'none', color: 'primary', fontFamily: 'Gotham'  }}>
               Ver más
              </Link>
           </Typography>

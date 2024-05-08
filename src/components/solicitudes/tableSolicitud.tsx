@@ -19,12 +19,11 @@ export default function DataTable({rows, isLoading, load}: DataTableProps) {
 
   const [filterText, setFilterText] = useState('');
   const [filteredRows, setFilteredRows] = useState(rows); 
-  const [selectedRow ,setSelectedRow] = useState<Solicitud | null>(null);
   const getRowId = (row: Solicitud) => row.idSolicitud;
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedSolicitud, setSelectedSolicitud] = useState<Solicitud | null>(null);
-  selectedRow
+
 
   const columns: GridColDef[] = [
     { field: 'idSolicitud', headerName: 'ID', width: 60, disableColumnMenu: true },
@@ -115,9 +114,7 @@ export default function DataTable({rows, isLoading, load}: DataTableProps) {
     applyFilters();
   },[filterText, rows]);
 
-  const handleRowClick = (params: { row: Solicitud }) => {
-    setSelectedRow(params.row);
-  };
+
 
   const handleSelectionChange = (selection: GridRowSelectionModel) => {
     setSelectedIds(selection as number[]);
@@ -147,7 +144,6 @@ export default function DataTable({rows, isLoading, load}: DataTableProps) {
         pageSizeOptions={[5, 10, 20, 30, 50]}
         checkboxSelection
         className="custom-data-grid"
-        onRowClick={handleRowClick}
         onRowSelectionModelChange={handleSelectionChange}
         slots={{
           toolbar: tools.CustomToolbar

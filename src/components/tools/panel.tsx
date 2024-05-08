@@ -4,7 +4,6 @@ import '../../index.css';9
 import Rutas from '../../routes';
 import { useNavigate } from 'react-router-dom';
 import CurrentNavigation from './navigation';
-import SettingPopover from './settings';
 import AccountPopover from './account';
 import AlertPopover from './alert';
 import { Box } from '@mui/material';
@@ -154,7 +153,6 @@ const Main: React.FC = () => {
                   <CurrentNavigation />
                 </div>
                 <div style={{ display: 'flex', gap: '1px', justifyContent: 'flex-end', alignItems: 'flex-end',  }}>
-                  <SettingPopover/>
                   <AlertPopover/>
                   <AccountPopover/>
                 </div>

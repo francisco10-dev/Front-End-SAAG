@@ -31,7 +31,7 @@ interface Props{
 }
 
 const AddPuesto = ({open, setOpen, reload, existentes}: Props) => {
-  const [nombresPuestos, setNombrePuesto] = useState<string[]>([]);
+  const [nombresPuestos, setNombresPuestos] = useState<string[]>([]);
   const service = new PuestoService();
   const [loading, setLoading] = useState(false);
   const puestos: string[] = posiblesOpciones.filter(puesto => !existentes.some(p => p.label === puesto));
@@ -56,7 +56,7 @@ const AddPuesto = ({open, setOpen, reload, existentes}: Props) => {
         reload();
         if (statuses.every(value => value === 200)) {
             setOpen(false);
-            setNombrePuesto([]);
+            setNombresPuestos([]);
             message.success('Operación exitosa!')
         }
     }
@@ -67,7 +67,7 @@ const AddPuesto = ({open, setOpen, reload, existentes}: Props) => {
   };
 
   const handleChange = (value: string[]) => {
-    setNombrePuesto(value);
+    setNombresPuestos(value);
   };
 
   return (

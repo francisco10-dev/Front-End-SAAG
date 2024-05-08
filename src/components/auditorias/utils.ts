@@ -1,5 +1,7 @@
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
+import  'moment-timezone';
+import moment from 'moment';
 
 
 export async function showConfirmation(): Promise<boolean> {
@@ -55,13 +57,7 @@ export function closeLoad(){
 export const formatDate = (dateString: string) => {
   if(dateString !== null){
     const date = new Date(dateString);
-    const day = String(date.getUTCDate()).padStart(2, '0');
-    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-    const year = String(date.getUTCFullYear());
-    const hour = String(date.getUTCHours()).padStart(2, '0');
-    const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-    const seconds = String(date.getUTCSeconds()).padStart(2, '0');
-    return `${day}-${month}-${year} ${hour}:${minutes}:${seconds}`;
+    return moment(date).tz('America/Costa_Rica').format('YYYY-MM-DD HH:mm:ss');
   }
   else
     return "--";

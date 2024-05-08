@@ -11,8 +11,8 @@ export async function getAbsenceIndicators() {
     const solicitudes = await solicitudService.getSolicitudes();
     
 
-    const ausencias = solicitudes.filter(solicitud => solicitud.estado === "Aprobado");
-
+    const ausencias = 
+solicitudes.filter(solicitud => solicitud.estado === "Aprobado");
     const indicadoresMeses: number[] = [];
 
 
@@ -51,6 +51,10 @@ const calcularIndicadorAusentismoMes = (solicitudes: any[], colaboradores: any[]
 
     return fechaIngreso <= new Date(añoActual, mes + 1, 0) && fechaSalida >= new Date(añoActual, mes, 1);
   }).length;
+
+  if (colaboradoresActivosMes === 0) {
+    return 0;
+  }
 
   let horasNoTrabajadas = 0;
 

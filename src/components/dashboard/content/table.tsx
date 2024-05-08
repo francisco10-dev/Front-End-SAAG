@@ -10,12 +10,12 @@ import Typography from "@mui/material/Typography";
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import ExpedienteService from '../../../services/expediente.service';
 import ColaboradorService from '../../../services/colaborador.service';
-import { isBefore, isAfter, addDays, parseISO } from 'date-fns';
+import { isBefore,isAfter, parseISO } from 'date-fns';
 import '../styles/styles.css';
 
 interface Documento {
   idColaborador: number;
-  idDocumento: number;
+  nombreColaborador: string;
   licencia: string | null;
   curso: string | null;
   nombreArchivo: string;
@@ -36,73 +36,70 @@ function Teams() {
   const Service2 = new ColaboradorService();
   const [menu, setMenu] = useState<null | HTMLElement>(null);
   const [dataSourceDocuments, setDataSourceDocuments] = useState<Documento[]>([]);
-  const [daysToExpire, setDaysToExpire] = useState<number>(5);
   const [filteredDocuments, setFilteredDocuments] = useState<Documento[]>([]);
+  const [daysToExpire, setDaysToExpire] = useState<number>(5);
   const [employeeType, setEmployeeType] = useState<'entrada' | 'salida'>('entrada');
+  const [documentType, setDocumentType] = useState<'vencidos' | 'proximos'>('vencidos');
   const [filteredEmployees, setFilteredEmployees] = useState<Colaborador[]>([]);
   const [dataSourceEmployees, setDataSourceEmployees] = useState<Colaborador[]>([]);
   const [selectedMenu, setSelectedMenu] = useState<string>("Documentos");
 
-
-
-  
   const { Option } = Select;
 
   const loadDocuments = async () => {
     try {
       const documentsData = await Service.getDocumentos();
-      console.log(documentsData)
       const filteredData = documentsData.filter(
-        documento => (documento.licencia !== null || documento.curso !== null) &&
-                     isAfter(parseISO(documento.fechaVencimiento), new Date())
+        documento => (documento.licencia !== null || documento.curso !== null) 
       );
-  
-      const dataFilter = filteredData.map(documento => ({
-        idDocumento: documento.idDocumento,
+
+      const dataFilter = await Promise.all(filteredData.map(async documento => ({
         idColaborador: documento.idColaborador,
+        nombreColaborador: (await Service2.obtenerColaboradorPorId(documento.idColaborador)).nombre,
         nombreArchivo: documento.nombreArchivo,
         fechaVencimiento: documento.fechaVencimiento,
         licencia: documento.licencia,
         curso: documento.curso,
         tipo: documento.licencia ? documento.licencia : documento.curso,
-      }));
-  
-      // Ordenar los documentos por fecha de vencimiento
+      })));
+
       dataFilter.sort((a, b) => {
         const dateA = parseISO(a.fechaVencimiento);
         const dateB = parseISO(b.fechaVencimiento);
         return dateA.getTime() - dateB.getTime();
       });
-  
+
       setDataSourceDocuments(dataFilter);
     } catch (error) {
       console.error("Error en la petición:", error);
     }
   };
 
-  const handleChangeDaysToExpire = (value: number) => {
-    setDaysToExpire(value);
-    filterDocumentsByDays(value);
-  };
-
-
   const filterDocumentsByDays = (days: number) => {
     const currentDate = new Date();
-    const expirationDate = addDays(currentDate, days);
+    const expirationDate = new Date(currentDate.getTime() + days * 24 * 60 * 60 * 1000); // Suma días en milisegundos
+    
     const filtered = dataSourceDocuments.filter((document) => {
       const dateToCheck = parseISO(document.fechaVencimiento);
-      return isBefore(dateToCheck, expirationDate);
+      return isBefore(dateToCheck, expirationDate) && isAfter(dateToCheck, currentDate);
     });
-
+  
     setFilteredDocuments(filtered);
   };
+  
 
+  const filterExpiredDocuments = () => {
+    const filtered = dataSourceDocuments.filter((document) => {
+    const dateToCheck = parseISO(document.fechaVencimiento);
+        return isBefore(dateToCheck, new Date());
+    });
+    setFilteredDocuments(filtered);
+  };
 
   const loadEmployees = async () => {
     try {
       const employeesData = await Service2.obtenerColaboradores();
   
-      // Ordenar los colaboradores por fecha de ingreso
       employeesData.sort((a, b) => {
         const dateA = parseISO(a.fechaIngreso);
         const dateB = parseISO(b.fechaIngreso);
@@ -110,7 +107,6 @@ function Teams() {
       });
   
       setDataSourceEmployees(employeesData);
-      filterEmployeesByTypeAndDays(employeeType, daysToExpire); // Filtra los colaboradores al cargar
     } catch (error) {
       console.error("Error en la petición:", error);
     }
@@ -118,21 +114,25 @@ function Teams() {
 
   const handleChangeEmployeeType = (value: 'entrada' | 'salida') => {
     setEmployeeType(value);
-    filterEmployeesByTypeAndDays(value, daysToExpire);
   };
 
-  // ...
+  const handleChangeDocuments = (value: 'vencidos' | 'proximos') => {
+    setDocumentType(value);
+  };
+  
+  const handleChangeDaysToExpire = (value: number) => {
+    setDaysToExpire(value);
+  };
 
   const filterEmployeesByTypeAndDays = (type: 'entrada' | 'salida', days: number) => {
     const currentDate = new Date();
-    const targetDate = addDays(currentDate, days);
+    const targetDate = new Date(currentDate.getTime() + days * 24 * 60 * 60 * 1000);
     
     const filtered = dataSourceEmployees.filter((employee) => {
       const dateToCheckRaw = type === 'entrada' 
         ? employee.fechaIngreso 
         : employee.fechaSalida;
   
-      // Si no hay fecha de ingreso o es anterior a la fecha actual, descartar el colaborador
       if (!dateToCheckRaw || isBefore(parseISO(dateToCheckRaw), new Date())) {
         return false;
       }
@@ -148,44 +148,33 @@ function Teams() {
   
     setFilteredEmployees(filtered);
   };
-  
-
 
   useEffect(() => {
     const fetchData = async () => {
       await loadDocuments();
+      await loadEmployees();
     };
   
     fetchData();
   }, []);
-  
+
   useEffect(() => {
-    if (dataSourceDocuments.length > 0) {
-      filterDocumentsByDays(5); // Filtrar documentos con 5 días de proximidad al cargar
+  if (dataSourceDocuments.length > 0) {
+    if(documentType === "proximos"){
+      filterDocumentsByDays(daysToExpire);
+    }else{
+      filterExpiredDocuments();
     }
-  }, [dataSourceDocuments]);
-  
-  
-  
-
-useEffect(() => {
-  if (selectedMenu === "Colaboradores") {
-    loadEmployees();
-  } else {
-    filterDocumentsByDays(daysToExpire);
   }
-}, [selectedMenu]);
-
-// Agregar este useEffect para filtrar empleados cuando cambia dataSourceEmployees
-useEffect(() => {
-  if (dataSourceEmployees.length > 0) {
-    filterEmployeesByTypeAndDays(employeeType, daysToExpire); // Filtra empleados con 5 días de proximidad al cargar
-  }
-}, [dataSourceEmployees, employeeType, daysToExpire]);
+}, [dataSourceDocuments, documentType, daysToExpire]);
 
 
+  useEffect(() => {
+    if (dataSourceEmployees.length > 0) {
+      filterEmployeesByTypeAndDays(employeeType, daysToExpire);
+    }
+  }, [dataSourceEmployees, employeeType, daysToExpire]);
 
-  
   const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     const menuText = event.currentTarget.textContent;
   
@@ -196,11 +185,9 @@ useEffect(() => {
     }
     setMenu(null);
   };
-  
 
   const openMenu = ({ currentTarget }: React.MouseEvent<HTMLElement>) => setMenu(currentTarget);
   const closeMenu = () => setMenu(null);
-
 
   const renderMenu = (
     <Menu
@@ -222,16 +209,17 @@ useEffect(() => {
     </Menu>
   );
 
+
   const documentColumns = [
-    {
-      title: 'Id',
-      dataIndex: 'idDocumento',
-      key: 'Id',
-    },
     {
       title: 'IdColaborador',
       dataIndex: 'idColaborador',
       key: 'IdColaborador',
+    },
+    {
+      title: 'NombreColaborador',
+      dataIndex: 'nombreColaborador',
+      key: 'NombreColaborador',
     },
     {
       title: 'NombreArchivo',
@@ -277,41 +265,53 @@ useEffect(() => {
       key: 'FechaSalida',
     }
   ];
-  
-  
 
   return (
     <Card className="custom-card">
       <Box display="flex" justifyContent="space-between" alignItems="center" p={3}>
-        <Box>
-          <Typography variant="h6" gutterBottom>
-            Próximos Vencimientos y Movilidad Laboral
+        <Box sx={{width:"800px"}}>
+          <Typography variant="h6" gutterBottom fontFamily="Gotham" fontWeight="400">
+            {selectedMenu === "Documentos" ? "Vencimiento de Documentos" : "Movilidad Laboral"}
           </Typography>
-              <Box mt={3} width={450}>
-                <Select
-                  defaultValue={5}
-                  style={{ width: '40%', marginBottom: 10 }}
-                  onChange={handleChangeDaysToExpire}
-                  value={daysToExpire}
-                >
-                  <Option value={20}>20 días de proximidad</Option>
-                  <Option value={15}>15 días de proximidad</Option>
-                  <Option value={7}>7 días de proximidad</Option>
-                  <Option value={5}>5 días de proximidad</Option>
-                </Select>
-                
-                {selectedMenu === "Colaboradores" && (
-                <Select 
-                  defaultValue="entrada"
-                  style={{ width: '40%', marginBottom: 10, marginLeft: 10}}
-                  onChange={handleChangeEmployeeType}
-                  value={employeeType}
-                >
-                  <Option value="entrada">Próximos Ingresos</Option>
-                  <Option value="salida">Próximas Salidas</Option>
-                </Select>
-                )}
-          </Box>
+
+          {selectedMenu === "Documentos" && (
+            <Select 
+              defaultValue="vencidos"
+              style={{ width: '40%', marginTop:2, marginBottom: 6, marginLeft: 10 }}
+              onChange={handleChangeDocuments}
+              value={documentType}
+            >
+              <Option value="vencidos">Vencidos</Option>
+              <Option value="proximos">Próximos a vencer</Option>
+            </Select>
+          )}
+          
+          {selectedMenu === "Colaboradores" && (
+            <Select 
+              defaultValue="entrada"
+              style={{ width: '40%', marginTop:2, marginBottom: 6, marginLeft: 10 }}
+              onChange={handleChangeEmployeeType}
+              value={employeeType}
+            >
+              <Option value="entrada">Próximos Ingresos</Option>
+              <Option value="salida">Próximas Salidas</Option>
+            </Select>
+          )}
+
+          {(documentType === "proximos" || selectedMenu === "Colaboradores") && (
+            <Select
+              defaultValue={5}
+              style={{ width: '40%',marginTop:2, marginBottom: 6, marginLeft: 10 }}
+              onChange={handleChangeDaysToExpire}
+              value={daysToExpire}
+            >
+              <Option value={20}>20 días de proximidad</Option>
+              <Option value={15}>15 días de proximidad</Option>
+              <Option value={7}>7 días de proximidad</Option>
+              <Option value={5}>5 días de proximidad</Option>
+            </Select>
+          )}
+          
         </Box>
         <Box color="text" px={2}>
           <Icon sx={{ cursor: "pointer", fontWeight: "bold", height: "2em" }} onClick={openMenu}>
@@ -321,22 +321,22 @@ useEffect(() => {
         {renderMenu}
       </Box>
       <Box>
-      {selectedMenu === "Colaboradores" ? (
-        <Table
-          dataSource={filteredEmployees}
-          columns={employeeColumns}
-          pagination={{ pageSize: 6 }}
-        />
-      ) : (
-        <Table
-          dataSource={filteredDocuments}
-          columns={documentColumns}
-          pagination={{ pageSize: 6 }}
-        />
-      )}
+        {selectedMenu === "Colaboradores" ? (
+          <Table
+            dataSource={filteredEmployees}
+            columns={employeeColumns}
+            pagination={{ pageSize: 5 }}
+          />
+        ) : (
+          <Table
+            dataSource={filteredDocuments}
+            columns={documentColumns}
+            pagination={{ pageSize: 5 }}
+            scroll={{x: '100%'}}
+          />
+        )}
       </Box>
     </Card>
   );
 }
-
 export default Teams;

@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  ui-saag:
+    build: .
+    ports: 
+      - "8080:8080"
+    depends_on:
+      - b-saag
+  b-saag:
+    build: ../../../Proyectos express.js/SAAG/
+    ports:
+      - "3001:3001"

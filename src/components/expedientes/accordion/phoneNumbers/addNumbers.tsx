@@ -10,7 +10,6 @@ interface Props{
     phoneNumbers: string[];
 }
 
-//const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const AddNumbers = ({idColaborador, loadPhones, phoneNumbers}: Props) => {
 

@@ -5,7 +5,7 @@ import Footer from "./layout/footer";
 import CustomCard from "./cards/customCard";
 import Projects from "./content/table";
 import Orders from "./content/timeLine";
-import { getEmployeeData, getRequestData, getAbsenceData, getAuditData } from "./data/summary"
+import { getEmployeeData, getRequestData, getAbsenceData, getFutureAbsenceData } from "./data/summary"
 import { useAuth } from '../../authProvider'; 
 import WeekendIcon from '@mui/icons-material/Weekend';
 import {getEmployyesByUnit, getRequestsInfo, getUltimaSolicitudInfo, getUltimoIngreso} from "./data/chartData";
@@ -50,7 +50,7 @@ function Dashboard() {
   } | null>(null);
 
 
-  const [auditData, setAuditData] = useState<{
+  const [futureAbsenceData, setFutureAbsenceData] = useState<{
     totalCount: number;
     color: string;
     title: string;
@@ -108,10 +108,10 @@ function Dashboard() {
       }
     }
 
-    async function fetchAuditData() {
+    async function fetchFutureAbsenceData() {
       try {
-        const data = await getAuditData();
-        setAuditData(data);
+        const data = await getFutureAbsenceData();
+        setFutureAbsenceData(data);
       } catch (error) {
         console.error('Error fetching request data:', error);
       }
@@ -135,7 +135,7 @@ function Dashboard() {
         const dataRequest = await getEmployyesByUnit();
         const employeeInfo =  await getUltimoIngreso();
         setemployeeInfo(employeeInfo);
-    
+        
        
         if (Array.isArray(dataRequest)) {
           console.error('Error: Unexpected data format received from server');
@@ -171,7 +171,7 @@ function Dashboard() {
 
     fetchEmployeeData();
     fetchRequestData();
-    fetchAuditData();
+    fetchFutureAbsenceData();
     fetchRequestsInfo();
     fetchAbsenceData();
     fetchEmployeesByUnit();
@@ -223,11 +223,11 @@ function Dashboard() {
           </Grid>
           <Grid item xs={12} md={6} lg={3}>
               <CustomCard
-                  color={auditData?.color || defaultEmployeeData.color}
-                  icon={auditData?.icon || defaultEmployeeData.icon}
-                  title={auditData?.title || defaultEmployeeData.title}
-                  count={auditData?.totalCount || defaultEmployeeData.totalCount}
-                  route = {'/auditorias'}
+                  color={futureAbsenceData?.color || defaultEmployeeData.color}
+                  icon={futureAbsenceData?.icon || defaultEmployeeData.icon}
+                  title={futureAbsenceData?.title || defaultEmployeeData.title}
+                  count={futureAbsenceData?.totalCount || defaultEmployeeData.totalCount}
+                  route = {'/ausencias'}
               />
           </Grid>
         </Grid>
@@ -235,7 +235,7 @@ function Dashboard() {
           <Grid container spacing={3}>
             <Grid item xs={12} md={6} lg={4}>
                 <BarCard
-                  color= "#758184"
+                  color= "#717D7E"
                   title="Vista Solicitudes"
                   description="Datos de la semana anterior"
                   chart={chartData}
@@ -253,7 +253,7 @@ function Dashboard() {
             </Grid>
             <Grid item xs={12} md={6} lg={4}>
                 <LineCard
-                  color="#516091"
+                  color="#884EA0"
                   title="Vista Ausentismo"
                   description="Datos de los últimos meses"
                   chart={lineChartData}

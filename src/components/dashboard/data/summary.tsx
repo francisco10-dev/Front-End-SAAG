@@ -1,10 +1,9 @@
 import ColaboradorService from '../../../services/colaborador.service';
 import SolicitudService from '../../../services/solicitud.service';
-import AuditService from '../../../services/auditoria.service';
-import Person4Icon from '@mui/icons-material/Person4';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
 import RequestPageIcon from '@mui/icons-material/RequestPage';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import GppBadIcon from '@mui/icons-material/GppBad';
 
 
 export async function getEmployeeData() {
@@ -14,9 +13,9 @@ export async function getEmployeeData() {
       const employees = await employeeService.obtenerColaboradores();
       const data = {
          totalCount : employees.length,
-         color : "#EEF3AD",
-         title : "Empleados",
-         icon : <Person4Icon />,
+         color : "rgb(244, 161, 0)",
+         title : "Total Empleados",
+         icon : <AssignmentIndIcon />,
       }
       
       return data;
@@ -31,10 +30,11 @@ export async function getEmployeeData() {
   
     try {
       const solicitudes = await requestService.getSolicitudes();
+      const solicitudesPendientes = solicitudes.filter(solicitud => solicitud.estado === "Pendiente");
       const data = {
-        totalCount : solicitudes.length,
-        color : "#A9ECA2",
-        title : "Solicitudes",
+        totalCount : solicitudesPendientes.length,
+        color : "rgb(73, 163, 241)",
+        title : "Solicitudes Pendientes",
         icon : <RequestPageIcon />
       }
   
@@ -51,13 +51,13 @@ export async function getEmployeeData() {
     try {
       const solicitudes= await solicitudService.getSolicitudes();
       const ausencias = solicitudes.filter(solicitud =>
-        solicitud.estado === 'Aprobado');
+        solicitud.estado === 'Aprobado' && new Date(solicitud.fechaInicio ?? "") <= new Date() && new Date(solicitud.fechaFin ?? "") > new Date());
   
       const data = {
         totalCount : ausencias.length,
-        color : "#74BEC1",
-        title : "Ausencias",
-        icon : <WatchLaterIcon />
+        color : "rgb(102, 187, 106)",
+        title : "Empleados Ausentes",
+        icon : <GppBadIcon/>
       }
   
       return data;
@@ -67,16 +67,19 @@ export async function getEmployeeData() {
     }
   }
 
-  export async function getAuditData() {
-    const auditService = new AuditService();
+  export async function getFutureAbsenceData() {
+    const solicitudService = new SolicitudService();
   
     try {
-      const audits = await auditService.getAuditorias();
+      const solicitudes= await solicitudService.getSolicitudes();
+      const proximasAusencias = solicitudes.filter(solicitud =>
+        solicitud.estado === 'Aprobado' && new Date(solicitud.fechaInicio ?? "") > new Date());
+
       const data = {
-        totalCount : audits.length,
-        color : "#F5C8BD",
-        title : "Auditorías",
-        icon : <VerifiedUserIcon />
+        totalCount : proximasAusencias.length,
+        color : "rgb(236, 64, 122)",
+        title : "Próximas Ausencias",
+        icon : <WatchLaterIcon  />
       }
   
   

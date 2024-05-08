@@ -3,6 +3,7 @@ import { Box, Grid, Typography } from '@mui/material';
 import { calcularAntiguedad, calcularEdad } from './period';
 import { formatDate } from '../../solicitudes/utils';
 import { Colaborador } from '../../../services/colaborador.service';
+import { useAuth } from '../../../authProvider';
 
 interface Props {
   colaborador: Colaborador | null;
@@ -12,13 +13,29 @@ interface Props {
 
 const Info: React.FC<Props> = ({ colaborador, size, marginBottom }: Props) => {
 
+  const { userRole } = useAuth();
+
   if (!colaborador) {
     return <div>Expediente no disponible</div>;
-  }
+  };
+
+  const validate = (value: string) => {
+    return userRole === 'empleado' ? value : null;
+  };
 
   const { puesto, fechaIngreso, fechaSalida } = colaborador || {};
-  const excludedProperties = ['fotoCarnet', 'idColaborador', 'idPuesto', 'nombre', 'unidad', 'puesto','fechaIngreso', 'fechaSalida' ];
-  const periodoEnEmpresa = calcularAntiguedad(new Date(fechaIngreso), new Date());
+  const excludedProperties = [
+    'fotoCarnet', 
+    'idColaborador',
+    'idPuesto',
+    'nombre',
+    'unidad',
+    'puesto',
+    'fechaIngreso',
+    'fechaSalida',
+    validate('tipoJornada'),
+    validate('estado')
+  ];
 
   const visualNames: { [key: string]: string } = {
     idColaborador: 'ID Colaborador',
@@ -36,6 +53,43 @@ const Info: React.FC<Props> = ({ colaborador, size, marginBottom }: Props) => {
     tipoJornada: 'Jornada'
   };
 
+  const renderDateFields = () => {
+    if (userRole !== 'empleado') {
+      const periodoEnEmpresa = calcularAntiguedad(new Date(fechaIngreso), new Date());
+
+      return (
+        <>
+          <Grid item xs={12} sm={6} md={size} key="fechaIngreso" >
+            <Typography variant="body2">
+              Fecha de ingreso
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              {formatDate(fechaIngreso)}
+            </Typography>
+          </Grid>
+          <Grid item xs={12} sm={6} md={size} key="periodoEnEmpresa" >
+            <Typography variant="body2">
+              Periodo en la organización
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              {periodoEnEmpresa}
+            </Typography>
+          </Grid>
+          {fechaSalida && (
+            <Grid item xs={12} sm={6} md={size} key="fechaSalida" >
+              <Typography variant="body2">
+                Fecha de salida
+              </Typography>
+              <Typography variant="body2" color="textSecondary">
+                {fechaSalida ? formatDate(fechaSalida) : 'No indica'}
+              </Typography>
+            </Grid>
+          )}
+        </>
+      );
+    }
+    return null;
+  };
 
   return (
     <Box>
@@ -60,6 +114,7 @@ const Info: React.FC<Props> = ({ colaborador, size, marginBottom }: Props) => {
             </Grid>
           )
         ))}
+        {renderDateFields()}
         <Grid item xs={12} sm={6} md={size} key="edad" >
           <Typography variant="body2">
             Edad
@@ -68,32 +123,6 @@ const Info: React.FC<Props> = ({ colaborador, size, marginBottom }: Props) => {
             {calcularEdad(colaborador.fechaNacimiento) + ' años'}
           </Typography>
         </Grid>
-        <Grid item xs={12} sm={6} md={size} key="fechaIngreso" >
-          <Typography variant="body2">
-            Fecha de ingreso
-          </Typography>
-          <Typography variant="body2" color="textSecondary">
-            {formatDate(fechaIngreso)}
-          </Typography>
-        </Grid>
-        <Grid item xs={12} sm={6} md={size} key="periodoEnEmpresa" >
-          <Typography variant="body2">
-            Periodo en la organización
-          </Typography>
-          <Typography variant="body2" color="textSecondary">
-            {periodoEnEmpresa}
-          </Typography>
-        </Grid>
-        {fechaSalida && (
-          <Grid item xs={12} sm={6} md={size} key="fechaSalida" >
-            <Typography variant="body2">
-              Fecha de salida
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              { fechaSalida? formatDate(fechaSalida) : 'No indica'}
-            </Typography>
-         </Grid>
-        )}
       </Grid>
     </Box>
   );

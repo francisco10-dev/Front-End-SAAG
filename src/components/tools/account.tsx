@@ -20,7 +20,7 @@ export default function AccountPopover() {
 
   const settings = [
     { icon: <LockClockIcon sx={{ marginRight: 1 }} />, text: 'Administración', onClick: () => navigate('/administrador'), role: 'admin' },
-    { icon: <AccountBoxIcon sx={{ marginRight: 1 }} />, text: 'Cuenta', onClick: () => navigate('/') },
+    { icon: <AccountBoxIcon sx={{ marginRight: 1 }} />, text: 'Mi información', onClick: () => navigate('/mi-informacion') },
   ];
 
   const filteredSettings = settings.filter(setting => !setting.role || setting.role === userRole);
@@ -83,7 +83,7 @@ export default function AccountPopover() {
           onClick={handleLogout}
           sx={{ typography: 'body2', color: 'error.main', py: 1.5 }}
         >
-          <LogoutIcon sx={{ marginRight: 1 }} />Salir
+          <LogoutIcon sx={{ marginRight: 1 }} />Cerrar sesión
         </MenuItem>
       </Popover>
       <ToastContainer />

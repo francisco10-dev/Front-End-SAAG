@@ -29,26 +29,29 @@ function PieCard({ color, title, description, chart, info }: PieCardProps) {
                 display="flex"
                 bgcolor={color}
                 py={2}
-                pr={0.5}
                 mt={-4.6}
                 height={200}
                 borderRadius="0.75rem"
-                sx={{ overflow: "visible", overflowWrap: "break-word" }} 
+                sx={{ overflow: "visible", overflowWrap: "break-word",  justifyContent:"center", alignItems:"center" }} 
               >
                 <PieChart
                   series={[{ data: chart.labels.map((label, index) => ({ id: index, value: chart.data[index], label })) }]}
-                  height={170}
-                  width={350}
+                  height={240}
+                  width={270}     
+                  legend={
+                  {hidden:true}
+                  }
+                  sx={{paddingLeft:"70px"}}
                 />
               </Box>
             ),
             [chart, color]
           )}
           <Box pt={3} pb={1} px={1}>
-            <Typography variant="h6" textTransform="capitalize">
+            <Typography variant="h6" fontSize="19px" fontWeight="400" textTransform="capitalize" fontFamily= 'Gotham'>
               {title}
             </Typography>
-            <Typography component="div" variant="button" color="text" fontWeight="light" fontSize="small" mb={2}>
+            <Typography component="div" variant="button" color="text" fontWeight="400" fontSize="small" mb={2} fontFamily= 'Gotham'>
               {description}
             </Typography>
             <Divider />
@@ -56,7 +59,7 @@ function PieCard({ color, title, description, chart, info }: PieCardProps) {
               <Icon sx={{ marginTop: "10px", width: "30px", height: "30px", fontSize: "small" }}>
                 <ErrorOutlineIcon />
               </Icon>
-              <Typography fontSize="small" variant="button" color="gray" lineHeight={1} sx={{ mt: 1.15, mr: 0.5 }}>
+              <Typography fontSize="12px" fontWeight="light"  variant="button" color="gray" fontFamily= 'Gotham'lineHeight={1} sx={{ mt: 1.15, mr: 0.5 }}>
                 {info}
               </Typography>
             </Box>

@@ -7,9 +7,10 @@ interface Props{
     isLoadingImage: boolean;
     imageUrl: string | null;
     colaborador: Colaborador | null;
+    size: number;
 }
 
-const PersonalInfo = ({isLoadingImage, imageUrl, colaborador}: Props) => {
+const PersonalInfo = ({isLoadingImage, imageUrl, colaborador, size}: Props) => {
 
     return (
         <Box>
@@ -36,7 +37,7 @@ const PersonalInfo = ({isLoadingImage, imageUrl, colaborador}: Props) => {
                 </Box>
             </Box> 
             <Box m={2} mt={5}>
-                <Info colaborador={colaborador} size={6} marginBottom={1}/>
+                <Info colaborador={colaborador} size={size} marginBottom={1}/>
             </Box>
         </Box>
     );
