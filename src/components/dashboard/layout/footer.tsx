@@ -42,6 +42,7 @@ function Footer({ company, links }: FooterProps) {
       justifyContent="space-between"
       alignItems="center"
       px={1.5}
+      mt={5}
       
     >
       <Box
@@ -55,17 +56,17 @@ function Footer({ company, links }: FooterProps) {
       >
         &copy; {new Date().getFullYear()}, hecho con
         <Box fontSize={10} color="text" mb={-0.5} mx={0.25}>
-          <FavoriteIcon color="inherit" fontSize="inherit">
+          <FavoriteIcon color="inherit" fontSize="inherit" sx={{marginBottom:"3px"}}>
             
           </FavoriteIcon>
         </Box>
         por
         <Link href={href} target="_blank">
-          <Typography variant="button" fontWeight="small" >
+          <Typography variant="caption" fontWeight="small" >
             &nbsp;{name}&nbsp;
           </Typography>
         </Link>
-        para una mejor experiencia
+        para una mejor gestión de trabajo
       </Box>
       <Box
         component="ul"

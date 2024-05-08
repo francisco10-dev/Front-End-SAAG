@@ -332,6 +332,7 @@ function Teams() {
             dataSource={filteredDocuments}
             columns={documentColumns}
             pagination={{ pageSize: 5 }}
+            scroll={{x: '100%'}}
           />
         )}
       </Box>
