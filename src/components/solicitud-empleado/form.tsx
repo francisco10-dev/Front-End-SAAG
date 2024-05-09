@@ -49,8 +49,8 @@ const Formulario = () => {
   const [form] = Form.useForm();
   const dateFormat = 'DD/MM/YYYY';
   const [userChoiceDocument, setUserChoiceDocument] = useState<string>('0'); // Cambiado a string
+  const [diferencia, setDiferencia] = useState<any>(null);
   const now = days();
-
   useEffect(() => {
     if (userRole === "admin") {
       setShowModal(true);
@@ -78,7 +78,7 @@ const Formulario = () => {
   };
 
   const handleFechaInicioChange = (date: any) => {
-    setFechaInicio(date);
+    setFechaInicio(date.format());
   };
 
   const handleUserChoiceDocument = (value: string) => {
@@ -86,7 +86,7 @@ const Formulario = () => {
   };
 
   const handleFechaFinChange = (date: any) => {
-    setFechaFin(date);
+    setFechaFin(date.format());
   };
 
   const reset = () => {
@@ -95,11 +95,11 @@ const Formulario = () => {
   }
 
   const handleHoraInicioChange = (time: any) => {
-    setHoraInicio(time);
+    setHoraInicio(time.format('HH:mm:ss'));
   };
 
   const handleHoraFinChange = (time: any) => {
-    setHoraFin(time);
+    setHoraFin(time.format('HH:mm:ss'));
   };
 
   const handleCheckboxChange = (e: any) => {
@@ -123,7 +123,7 @@ const Formulario = () => {
     setShowModal(true);
   };
 
-  const handleTipoSolicitudChange = (value:any) => {
+  const handleTipoSolicitudChange = (value: any) => {
     setTipoSolicitud(value);
     handleGoceChangeDisabled(value);
   };
@@ -132,13 +132,13 @@ const Formulario = () => {
     if (value === "Vacaciones" || value === "Licencias" || value === "Incapacidad") {
       form.setFieldsValue({ goce_salarial: "1" });
       setGoce("1");
-      setGoceDisabled(true); 
+      setGoceDisabled(true);
     } else if (value === "Injustificada") {
       setGoce("0");
-      setGoceDisabled(true); 
+      setGoceDisabled(true);
       form.setFieldsValue({ goce_salarial: "0" });
     } else {
-      setGoceDisabled(false); 
+      setGoceDisabled(false);
     }
   }
 
@@ -149,7 +149,6 @@ const Formulario = () => {
 
   const handleGoceChange = (value: any) => {
     setGoce(value);
-    console.log(value);
   };
 
   const handleEstadoChange = (value: any) => {
@@ -165,18 +164,6 @@ const Formulario = () => {
     }
   }
 
-  const formatearFecha = (fecha: any) => {
-    if (fecha && fecha.$y && fecha.$M && fecha.$D) {
-      const anio = fecha.$y;
-      const mes = (fecha.$M + 1).toString().padStart(2, '0');
-      const dia = fecha.$D.toString().padStart(2, '0');
-      return `${anio}-${mes}-${dia}`;
-    } else {
-      return null;
-    }
-  };
-
-
   let alerta = (type: "success" | "error" | undefined, content: string) => {
     messageApi.open({
       type: type,
@@ -189,20 +176,18 @@ const Formulario = () => {
     console.log(fecha);
     if (userRole !== "admin") {
       if (fecha) {
-        const a = moment();
-        const b = formatearFecha(fecha);
-
-        const diferencia = a.diff(b, 'days'); // Calcular la diferencia en días
-        console.log(`diferencia ${diferencia}`);
-
-        if (diferencia >= 7) {
-          alerta('success', 'La fecha es válida  (cumple con el minimo de 7 días de anticipación)');
+        const date = now;
+        const fechaParsed = days(fecha);
+        const diff = date.diff(fechaParsed, 'day');
+        setDiferencia(diff);
+        if (diff >= 7) {
+          alerta('success', 'La fecha es válida (cumple con el mínimo de 7 días de anticipación)');
         } else {
-          alerta('error', 'La fecha no es válida (solicitud debe hacerse minimo con 7 días de anticipación)');
+          alerta('error', 'La fecha no es válida (la solicitud debe hacerse con un mínimo de 7 días de anticipación)');
         }
       }
     } else {
-      alerta('success', 'Como administrador no tiene restricciones en el ingreso de fechas')
+      alerta('success', 'Como administrador no tiene restricciones en el ingreso de fechas');
     }
   };
 
@@ -214,18 +199,10 @@ const Formulario = () => {
     setNombreJefaturaInmediata(option.supervisor?.nombre ?? '');
   };
 
-
-  const formatearHora = (horas: any) => {
-    if (horas) {
-      const hora = horas.$H.toString().padStart(2, '0');;
-      const min = horas.$m.toString().padStart(2, '0');
-      const mili = horas.$s.toString().padStart(2, '0');
-      return `${hora}:${min}:${mili}`;
-    } else {
-      return null;
-    }
-  };
-
+  const resetDates = () => {
+    setFechaInicio(now)
+    setFechaFin(now);
+  }
   const [enviandoSolicitud, setEnviandoSolicitud] = useState(
     {
       loading: false,
@@ -256,59 +233,40 @@ const Formulario = () => {
     }, 2000);
   };
 
+  const resetAll = () => {
+    form.resetFields();
+    resetDates();
+    setDiferencia(0);
+    reset();
+  }
 
   const enviarSolicitud = async () => {
-    const fechaSolicitud = new Date();
-    const fechaSolicitudFormateada = moment(fechaSolicitud, "DD-MM-YYYY").format("YYYY-MM-DD");
-    let fechaRecibidoFormateada;
+    const fechaSolicitud = now.toString();
+    let fechaRecibido;
     if (userRole == "admin") {
-      if (moment(fechaRecibido, 'DD-MM-YYYY', true).isValid()) {
-        fechaRecibidoFormateada = moment(fechaRecibido, 'DD-MM-YYYY').format("YYYY-MM-DD");
-      } else {
-        console.error('La fecha recibida no es válida');
-      }
-    } else {
-      fechaRecibidoFormateada = null;
+      fechaRecibido = now.toString();
     }
-    console.log(fechaRecibidoFormateada)
-    let fechaInicioFormateada;
-    let fechaFinFormateada;
-    if (fechaInicio != null) {
-      fechaInicioFormateada = formatearFecha(fechaInicio);
-    } else {
-      fechaInicioFormateada = now.format('YYYY-MM-DD');
-    }
-    console.log(`fecha formateada de inicio:${fechaInicioFormateada}`);
-    if (fechaFin != null) {
-      fechaFinFormateada = formatearFecha(fechaFin);
-    } else {
-      fechaFinFormateada = now.format('YYYY-MM-DD');
-    }
-    let horaInicioFormateada = formatearHora(horaInicio);
-    let horaFinFormateada = formatearHora(horaFin);
-    const goceSalarialFormat = parseInt(goceSalarial);
     if (userRole != "admin") {
       setEstado("Pediente");
     }
     const formData = new FormData();
-    formData.append('conGoceSalarial', goceSalarialFormat.toString());
-    formData.append('tipoSolicitud', String(tipoSolicitud)); // Convertido a cadena
-    formData.append('asunto', String(asunto)); // Convertido a cadena
-    formData.append('nombreColaborador', String(nombreColaborador)); // Convertido a cadena
-    formData.append('nombreEncargado', String(nombreEncargado)); // Convertido a cadena
-    formData.append('fechaSolicitud', fechaSolicitudFormateada);
-    console.log(fechaInicioFormateada);
-    formData.append('fechaInicio', fechaInicioFormateada?.toString() ?? '');
-    formData.append('fechaFin', fechaFinFormateada?.toString() ?? '');
+    formData.append('conGoceSalarial', goceSalarial.toString());
+    formData.append('tipoSolicitud', String(tipoSolicitud));
+    formData.append('asunto', String(asunto));
+    formData.append('nombreColaborador', String(nombreColaborador));
+    formData.append('nombreEncargado', String(nombreEncargado));
+    formData.append('fechaSolicitud', fechaSolicitud);
+    formData.append('fechaInicio', fechaInicio?.toString() ?? now.format().toString());
+    formData.append('fechaFin', fechaFin?.toString() ?? now.format().toString());
     if (userRole === "admin") {
-      formData.append('fechaRecibido', fechaRecibidoFormateada?.toString() ?? '');
+      formData.append('fechaRecibido', fechaRecibido ?? '');
     }
-    formData.append('horaInicio', horaInicioFormateada?.toString() ?? '');
-    formData.append('horaFin', horaFinFormateada?.toString() ?? '');
-    formData.append('sustitucion', String(sustitucion)); // Convertido a cadena
-    formData.append('nombreSustituto', nombreSustituto); // Convertido a cadena
-    formData.append('estado', String(estado)); // Convertido a cadena
-    formData.append('comentarioTalentoHumano', String(comentarioTalentoHumano)); // Convertido a cadena
+    formData.append('horaInicio', horaInicio?.toString() ?? '');
+    formData.append('horaFin', horaFin?.toString() ?? '');
+    formData.append('sustitucion', String(sustitucion));
+    formData.append('nombreSustituto', nombreSustituto);
+    formData.append('estado', String(estado));
+    formData.append('comentarioTalentoHumano', String(comentarioTalentoHumano));
     if (selectedFile[0] && selectedFile[0].originFileObj) {
       formData.append('comprobante', selectedFile[0].originFileObj);
     } else if (selectedFile[0] instanceof File) {
@@ -317,23 +275,20 @@ const Formulario = () => {
     formData.append('idColaborador', String(idUsuario)); // Convertido a cadena
     try {
       estadoBtn();
-      formData.forEach((value, key) => {
-        console.log(key, value);
-      });
+      // formData.forEach((value, key) => {
+      //   console.log(key, value);
+      // });
       const solicitudService = new SolicitudService();
       const response = await solicitudService.agregarSolicitud(formData);
       console.log(response);
-      alerta('success','La solicitud se ha procesado exitosamente.')
-      form.resetFields();
-      reset();
+      alerta('success', 'La solicitud se ha procesado exitosamente.')
+      resetAll();
     } catch (error) {
-      alerta('error','La solicitud no se ha procesado correctamente.')
+      alerta('error', 'La solicitud no se ha procesado correctamente.')
       console.error('Error al enviar la solicitud:', error);
+      resetAll();
     }
   };
-
-
-  
 
   return (
     <div className='box'>
@@ -391,7 +346,7 @@ const Formulario = () => {
                 label="Tipo"
                 rules={[{ required: true, message: 'Seleccione el tipo' }]}
               >
-                <Select showSearch placeholder="Tipo de solicitud" value={tipoSolicitud} onChange={(value) => {                 
+                <Select showSearch placeholder="Tipo de solicitud" value={tipoSolicitud} onChange={(value) => {
                   handleTipoSolicitudChange(value)
                   handleGoceChangeDisabled(value)
                 }} style={{ width: 150 }}>
@@ -399,8 +354,8 @@ const Formulario = () => {
                   <Option value="Licencias">Licencias</Option>
                   <Option value="Vacaciones">Vacaciones</Option>
                   <Option value="Incapacidad">Incapacidad</Option>
-                  { userRole === 'admin' && (
-                     <Option value="Injustificada">Injustificada</Option>
+                  {userRole === 'admin' && (
+                    <Option value="Injustificada">Injustificada</Option>
                   )}
                 </Select>
               </Form.Item>
@@ -411,16 +366,16 @@ const Formulario = () => {
                 label="Goce salarial"
                 rules={[{ required: true, message: 'Seleccione' }]}
               >
-                <Select placeholder="Con goce salarial" 
+                <Select placeholder="Con goce salarial"
                   value={goceSalarial} onChange={handleGoceChange} disabled={goceDisabled} style={{ width: 150 }}>
                   {tipoSolicitud === "Injustificada" ? (
-                      <Option value="0" disabled={true}>NO</Option>
-                    ) : (
-                      <>
-                        <Option value="1">SI</Option>
-                        <Option value="0">NO</Option>
-                      </>
-                    )}
+                    <Option value="0" disabled={true}>NO</Option>
+                  ) : (
+                    <>
+                      <Option value="1">SI</Option>
+                      <Option value="0">NO</Option>
+                    </>
+                  )}
                 </Select>
               </Form.Item>
             </div>
@@ -482,15 +437,15 @@ const Formulario = () => {
             </div>
             <div className="campo campo-asunto">
               <Text>Asunto</Text>
-              <TextArea 
-                placeholder="Asunto" 
-                value={asunto} 
-                onChange={(e) => setAsunto(e.target.value)} 
-                allowClear 
-                showCount 
-                maxLength={30} 
+              <TextArea
+                placeholder="Asunto"
+                value={asunto}
+                onChange={(e) => setAsunto(e.target.value)}
+                allowClear
+                showCount
+                maxLength={30}
                 autoSize={{ minRows: 2, maxRows: 6 }}
-                style={{zIndex: 0}}
+                style={{ zIndex: 0 }}
               />
             </div>
             <div className="campo campo-jefaura">
@@ -583,15 +538,15 @@ const Formulario = () => {
                 </div>
                 <div className="campo campo-comentario">
                   <Text>Comentario</Text>
-                  <TextArea 
-                    placeholder="Comentario de Talento Humano" 
-                    value={comentarioTalentoHumano} 
-                    onChange={(e) => setComentarioTalentoHumano(e.target.value)} 
-                    allowClear 
-                    showCount 
+                  <TextArea
+                    placeholder="Comentario de Talento Humano"
+                    value={comentarioTalentoHumano}
+                    onChange={(e) => setComentarioTalentoHumano(e.target.value)}
+                    allowClear
+                    showCount
                     maxLength={150}
                     autoSize={{ minRows: 2, maxRows: 6 }}
-                    style={{zIndex: 0}}
+                    style={{ zIndex: 0 }}
                   />
                 </div>
                 <div className="campo campo-estado">
@@ -617,7 +572,7 @@ const Formulario = () => {
               htmlType="submit"
               style={{ marginTop: 8 }}
               loading={enviandoSolicitud.loading}
-              disabled={enviandoSolicitud.isDisabled}
+              disabled={enviandoSolicitud.isDisabled || (userRole != "admin" && diferencia < 7)}
             >
               {enviandoSolicitud.buttonText}
             </Button>
