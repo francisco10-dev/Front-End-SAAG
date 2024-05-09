@@ -31,7 +31,7 @@ interface Props {
 export default function EditDialog({ solicitud, open, onClose, reload }: Props) {
     const { userRole } = useAuth();
     const [estado, setEstado] = useState<string | null>();
-    const [estadoComprobante, setEstadoComprobante] = useState<string | null>('');
+    const [estadoComprobante, setEstadoComprobante] = useState('');
     const [comentario, setComentarios] = useState<string | null>();
     const { colaborador } = useAuth();
     const [mostrarModal, setMostrarModal] = useState(false);
@@ -73,7 +73,7 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
         onClose();
         setRequiereSustituto("NO");
         setEstado(null);
-        setEstadoComprobante(null);
+        setEstadoComprobante('');
         setRequiereActualizarComentario('');
     }
 
@@ -456,7 +456,11 @@ export default function EditDialog({ solicitud, open, onClose, reload }: Props) 
                 </DialogContent>
                 <DialogActions>
                     <Button variant='outlined' onClick={handleClose}>Cerrar</Button>
-                    <Button variant='contained' disabled={estado ? false : true} onClick={handleSave}>Guardar</Button>
+                    <Button variant='contained'
+                        disabled={
+                            (requiereActualizarComentario !== "SI" && estado === null && estadoComprobante !== "SI")
+                        }
+                        onClick={handleSave}>Guardar</Button>
                 </DialogActions>
             </Dialog>
         </Fragment>
