@@ -58,7 +58,7 @@ const Formulario = () => {
       recuperarDatos();
     }
     console.log(userChoice)
-  }, []); // El segundo argumento del useEffect es un array vacío para que se ejecute solo una vez al montar el componente
+  }, []);
 
   const handleAdminChoice = (choice: string | null) => {
     setShowModal(false);
@@ -209,7 +209,7 @@ const Formulario = () => {
       buttonText: "Enviar",
       isDisabled: false
     }
-  ); // Nuevo estado para el estado de envío de la solicitud
+  );
 
   const estadoBtn = () => {
     setEnviandoSolicitud(prevState => ({
@@ -240,15 +240,10 @@ const Formulario = () => {
     reset();
   }
 
-  const enviarSolicitud = async () => {
+  const preparedFormData = () => {
     const fechaSolicitud = now.toString();
-    let fechaRecibido;
-    if (userRole == "admin") {
-      fechaRecibido = now.toString();
-    }
-    if (userRole != "admin") {
-      setEstado("Pediente");
-    }
+    let fechaRecibido = (userRole === "admin") ? now.toString() : '';
+    const estado = (userRole !== "admin") ? "Pendiente" : '';
     const formData = new FormData();
     formData.append('conGoceSalarial', goceSalarial.toString());
     formData.append('tipoSolicitud', String(tipoSolicitud));
@@ -258,8 +253,8 @@ const Formulario = () => {
     formData.append('fechaSolicitud', fechaSolicitud);
     formData.append('fechaInicio', fechaInicio?.toString() ?? now.format().toString());
     formData.append('fechaFin', fechaFin?.toString() ?? now.format().toString());
-    if (userRole === "admin") {
-      formData.append('fechaRecibido', fechaRecibido ?? '');
+    if (fechaRecibido) {
+      formData.append('fechaRecibido', fechaRecibido);
     }
     formData.append('horaInicio', horaInicio?.toString() ?? '');
     formData.append('horaFin', horaFin?.toString() ?? '');
@@ -273,11 +268,13 @@ const Formulario = () => {
       formData.append('comprobante', selectedFile[0]);
     }
     formData.append('idColaborador', String(idUsuario)); // Convertido a cadena
+    return formData;
+  }
+
+  const enviarSolicitud = async () => {
+    const formData = preparedFormData();
     try {
       estadoBtn();
-      // formData.forEach((value, key) => {
-      //   console.log(key, value);
-      // });
       const solicitudService = new SolicitudService();
       const response = await solicitudService.agregarSolicitud(formData);
       console.log(response);
