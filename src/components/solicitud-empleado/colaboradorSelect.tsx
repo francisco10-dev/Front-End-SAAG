@@ -51,7 +51,7 @@ const ColaboradorSelect: React.FC<{ onSelect: (option: ColaboradorOption) => voi
         }
         options={colaboradores}
         onSelect={(value, option) => onSelect(option as ColaboradorOption)}
-        style={{ width: 200,zIndex:2000 }}
+        style={{ width: 200,zIndex:0 }}
         disabled={loading}
       />
     </Form.Item>
