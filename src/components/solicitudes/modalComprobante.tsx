@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { message} from 'antd';
 import SolicitudService from '../../services/solicitud.service';
 import CloseIcon from '@mui/icons-material/Close';

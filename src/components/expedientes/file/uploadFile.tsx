@@ -25,6 +25,7 @@ const UploadFiles: React.FC<UploadFilesProps> = ({ onFilesChange, isMultiple, me
     multiple: isMultiple,
     beforeUpload,
     showUploadList: false,
+    accept: '.pdf,image/*'
   };
 
   return (

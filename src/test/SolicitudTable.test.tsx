@@ -70,7 +70,7 @@ it('Filtra las filas basado en el texto de búsqueda', async () => {
     { idSolicitud: 2, tipoSolicitud: 'Tipo 2', asunto: 'No Mostrar', nombreColaborador: 'Ana', nombreEncargado: 'María', fechaSolicitud: '2022-02-01', estado: 'En Progreso' },
   ];
 
-  render(<TableSolicitud rows={mockRows} deleteRows={jest.fn()} isLoading={false} onSolicitudUpdate={jest.fn()} load={jest.fn()} />);
+  render(<TableSolicitud rows={mockRows}  isLoading={false} load={jest.fn()} />);
   const user = userEvent.setup();
   // Simula la escritura del usuario en el campo de búsqueda.
   await user.type(screen.getByLabelText(/Buscar.../i), 'Filtro');

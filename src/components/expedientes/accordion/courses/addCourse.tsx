@@ -1,18 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Select, Modal, message, Input, DatePicker } from 'antd';
-import { Box, IconButton } from '@mui/material';
+import { Box } from '@mui/material';
 import ExpedienteService from '../../../../services/expediente.service';
 import type { UploadFile } from 'antd/lib/upload/interface';
 import moment from 'moment';
 import UploadFiles from '../../file/uploadFile';
-import ListItem from '@mui/material/ListItem';
-import ListItemAvatar from '@mui/material/ListItemAvatar';
-import ListItemText from '@mui/material/ListItemText';
-import Avatar from '@mui/material/Avatar';
-import Grid from '@mui/material/Grid';
-import DeleteIcon from '@mui/icons-material/Delete';
-import List from '@mui/material/List';
-import AttachFileOutlinedIcon from '@mui/icons-material/AttachFileOutlined';
 import SelectedFiles from '../selectedFiles';
 
 

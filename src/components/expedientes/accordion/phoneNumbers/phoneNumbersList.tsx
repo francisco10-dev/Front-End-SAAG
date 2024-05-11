@@ -21,9 +21,6 @@ interface Data{
     idTelefono: number;
 }
 
-
-//const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export default function PhoneNumbers({idColaborador}: Prop) {
 
     const service = new ExpedienteService();
@@ -140,12 +137,13 @@ export default function PhoneNumbers({idColaborador}: Prop) {
                     key={row.idTelefono}
                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                   >
-                    <TableCell component="td" scope="row" contentEditable='false' sx={{ width: '33%' }}>
+                    <TableCell component="td" scope="row" sx={{ width: '33%' }}>
                       {activeCell === row.idTelefono ? (
                         <Input 
                           value={newNumber} 
                           onChange={(e) => handleChange(e.target.value)}
                           size='small'
+                          type='number'
                         />
                       ) : (
                         row.numeroTelefono

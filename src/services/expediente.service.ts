@@ -17,7 +17,7 @@ export interface Documento {
   licencia: string | null;
   curso: string | null;
   nombreArchivo: string;
-  tamaño: string;
+  tamano: string;
   fechaSubida: string;
   fechaVencimiento: string;
 }

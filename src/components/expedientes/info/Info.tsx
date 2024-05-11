@@ -33,6 +33,8 @@ const Info: React.FC<Props> = ({ colaborador, size, marginBottom }: Props) => {
     'puesto',
     'fechaIngreso',
     'fechaSalida',
+    'idColaborador_fk',
+    'supervisor',
     validate('tipoJornada'),
     validate('estado')
   ];
@@ -55,7 +57,10 @@ const Info: React.FC<Props> = ({ colaborador, size, marginBottom }: Props) => {
 
   const renderDateFields = () => {
     if (userRole !== 'empleado') {
-      const periodoEnEmpresa = calcularAntiguedad(new Date(fechaIngreso), new Date());
+
+      const desde = new Date(fechaIngreso);
+      const hasta = colaborador.fechaSalida ? new Date(colaborador.fechaSalida) : new Date();
+      const periodoEnEmpresa = calcularAntiguedad(desde, hasta);
 
       return (
         <>

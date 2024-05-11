@@ -10,6 +10,7 @@ import { Puesto } from '../create/createExpediente';
 import PuestoService from '../../../services/puesto.service';
 import { PlusCircleFilled } from '@ant-design/icons';
 import AddPuesto from '../addpuesto';
+import dayjs from 'dayjs'; // Importar Dayjs
 
 
 type FieldType = {
@@ -34,9 +35,10 @@ interface Props{
   setIsEdit: (value:boolean) => void;
   imageUrl: string | null;
   loadData: ()=> void;
+  reload: ()=> void;
 }
 
-const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData}: Props) => {
+const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData, reload}: Props) => {
 
   const [nombre, setNombre] = useState(colaborador?.nombre);
   const [identificacion, setIdentificacion] = useState(colaborador?.identificacion);
@@ -73,6 +75,7 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData}: Props) => {
         setIsEdit(false);
         localStorage.removeItem("expedientesData");
         loadData();
+        reload();
         message.success('Información actualizada');
       }else{
         message.error('Ocurrió un error al tratar de actualizar la información, intente de nuevo.');
@@ -88,7 +91,6 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData}: Props) => {
     setRazon(value);
     if(value){
       const newDate = new Date();
-      console.log(newDate);
       const fechaValida = moment(newDate).format("YYYY-MM-DD");
       setFechaSalida(fechaValida);
     }
@@ -109,7 +111,11 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData}: Props) => {
 
   const dataColaborador = ()=> {
 
-     const estadoFinal = estadoRazon ?  estado + ' ('+ estadoRazon +')' : estado;
+     let estadoFinal = estadoRazon ?  estado + ' ('+ estadoRazon +')' : estado;
+
+     if(estadoFinal === 'Activo' && fechaSalida !== null ) {
+       estadoFinal = 'Inactivo';
+     }
     
       const data = {
         nombre: nombre,
@@ -135,30 +141,30 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData}: Props) => {
 
   useEffect(() => {
     form.setFieldsValue({
-      fechaNacimiento: colaborador.fechaNacimiento ? moment(colaborador.fechaNacimiento) : null,
-      fechaSalida: colaborador.fechaSalida ? moment(colaborador.fechaSalida) : null,
-      fechaIngreso: colaborador.fechaIngreso ? moment(colaborador.fechaIngreso) : null,
+      fechaNacimiento: colaborador.fechaNacimiento ? dayjs(colaborador.fechaNacimiento) : null,
+      fechaIngreso: colaborador.fechaIngreso ? dayjs(colaborador.fechaIngreso) : null,
+      fechaSalida: colaborador.fechaSalida ? dayjs(colaborador.fechaSalida) : null,
     });
   }, [colaborador.fechaNacimiento, colaborador.fechaSalida, colaborador.fechaIngreso, form]);
 
-  //@ts-ignore
-  const setNacimiento = (date: any, dateString: any) => {
+  
+  const setNacimiento = (_date: any, dateString: any) => {
     if(dateString && dateString.trim() !== ""){
       const fechaValida = moment(dateString, "DD-MM-YYYY").format("YYYY-MM-DD");
       setFechaNacimiento(fechaValida);
     }
   }
 
-  //@ts-ignore
-  const setIngreso = (date: any, dateString: any) => {
+  
+  const setIngreso = (_date: any, dateString: any) => {
     if(dateString && dateString.trim() !== ""){
       const fechaValida = moment(dateString, "DD-MM-YYYY").format("YYYY-MM-DD");
       setFechaIngreso(fechaValida);
    }
   }
 
-  //@ts-ignore
-  const setSalida = (date: any, dateString: any) => {
+  
+  const setSalida = (_date: any, dateString: any) => {
     if (dateString && dateString.trim() !== "") {
       const fechaValida = moment(dateString, "DD-MM-YYYY").format("YYYY-MM-DD");
       setFechaSalida(fechaValida);

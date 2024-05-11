@@ -22,7 +22,7 @@ const renewToken = async () =>{   // Función para renovar el token de acceso si
     return response.data.newToken;
     }
   } catch (error) {
-    localStorage.removeItem('accessToken');
+    localStorage.clear();
     window.location.reload();
     console.error("Error al renovar el token de acceso:", error);
     return null;

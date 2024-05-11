@@ -11,9 +11,10 @@ import ColaboradorService, { Colaborador } from '../../services/colaborador.serv
 
 interface Props{
     data: Colaborador | null,
+    reload: ()=> void;
 }
 
-const ExpedienteInfo = ({data}: Props) => {
+const ExpedienteInfo = ({data, reload}: Props) => {
 
     const [isLoading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -104,7 +105,7 @@ const ExpedienteInfo = ({data}: Props) => {
         <Box className='container-expediente' component={Paper}>
             {isEdit ? (
                     <Box sx={{width: '100%'}}>
-                        <EditInfo colaborador={expediente} setIsEdit={setIsEdit} imageUrl={imageUrl} loadData={loadExpediente}/>
+                        <EditInfo colaborador={expediente} setIsEdit={setIsEdit} imageUrl={imageUrl} loadData={loadExpediente} reload={reload}/>
                     </Box>
             ): (
                 <Box>

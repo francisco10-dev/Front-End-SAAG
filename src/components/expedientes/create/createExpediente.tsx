@@ -12,6 +12,8 @@ import AddPuesto from '../addpuesto';
 import PuestoService from '../../../services/puesto.service';
 import UploadImage from '../uploadFoto';
 import SelectedFiles from './selectedFiles';
+import moment from 'moment';
+import UsuarioService from '../../../services/usuario.service';
 
 
 interface EmployeeData {
@@ -28,6 +30,7 @@ interface EmployeeData {
   estado: string;
   equipo: string;
   tipoJornada: string;
+  idColaborador_fk: number | null;
 };
 
 const initialEmployeeData: EmployeeData = {
@@ -43,7 +46,8 @@ const initialEmployeeData: EmployeeData = {
   domicilio: '',
   estado: 'Activo',
   equipo: '',
-  tipoJornada:'Diurna'
+  tipoJornada:'Diurna', 
+  idColaborador_fk: null
 };
 
 interface Props{
@@ -57,10 +61,14 @@ export interface Puesto{
   label: string;
 };
 
+interface Supervisor{
+  value: number;
+  label: string;
+}
+
 const Formulario = ({openForm, setOpenForm, reload}:Props) => {
 
-  //@ts-ignore
-  const [open, setOpen] = useState(false);
+  
   const [phoneNumbers, setPhoneNumbers] = useState<string[]>([]);
   const [visible, setVisible] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<UploadFile[]>([]);
@@ -73,6 +81,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
   const [isLoading, setLoading] = useState(false);
   const [openP, setOpenP] = useState(false);
   const [puestos, setPuestos] = useState<Puesto[]>([]);
+  const [supervisores, setSupervisores] = useState<Supervisor[]>([]);
   const colaboradorService = new ColaboradorService();
 
   
@@ -91,7 +100,6 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
 
 
   const onClose = () => {
-    setOpen(false);
     setOpenForm(false);
     form.resetFields();
     setEmployeeData(initialEmployeeData);
@@ -165,8 +173,25 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
     }
   };
 
+  const loadSupervisores = async () => {
+    try {
+      const usuarioService = new UsuarioService();
+      const response = await usuarioService.obtenerSupervisores();
+      console.log(response);
+      const opciones = response.map(supervisor => ({
+        value: supervisor.idColaborador,
+        label: supervisor.nombreUsuario
+      }));
+      console.log(opciones);
+      setSupervisores(opciones);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     loadPuestos();
+    loadSupervisores();
   }, []);
 
   async function checkExistingEmployee(): Promise<{ emailExists: boolean, idExists: boolean }> {
@@ -208,7 +233,6 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
       } else if (idExists) {
         message.warning('La identificación ingresada ya existe.');
       } else {
-        console.log(data);
         const response = await colaboradorService.agregarColaborador(data);
 
         console.log(response.data);
@@ -224,11 +248,12 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
     }
   };
 
-  //@ts-ignore
-  const onChange = (date : any, dateString : any, fieldName : string ) => {
+  
+  const onChange = (_date : any, dateString : any, fieldName : string ) => {
+    const fechaValida = moment(dateString, 'DD-MM-YYYY').format('YYYY-MM-DD');
     setEmployeeData({
       ...employeeData,
-      [fieldName]: dateString,
+      [fieldName]: fechaValida,
     });
   };
 
@@ -369,7 +394,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
                 label="Fecha de nacimiento"
                 rules={[{ required: true, message: 'Complete este campo' }]}
               >
-                <DatePicker  onChange={(date, dateString) => onChange(date, dateString, 'fechaNacimiento')} placeholder="Seleccione" style={{ width: '100%' }} />
+                <DatePicker format='DD-MM-YYYY' onChange={(date, dateString) => onChange(date, dateString, 'fechaNacimiento')} placeholder="Seleccione" style={{ width: '100%' }} />
               </Form.Item>
             </Col>
             <Col span={isLargeScreen ? 12 : 24}>
@@ -417,7 +442,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
                 label="Fecha de ingreso"
                 rules={[{ required: true, message: 'Complete este campo' }]}
               >
-                <DatePicker  onChange={(date, dateString) => onChange(date, dateString, 'fechaIngreso')} placeholder="Seleccione" style={{ width: '100%' }}/>
+                <DatePicker format ='DD-MM-YYYY' onChange={(date, dateString) => onChange(date, dateString, 'fechaIngreso')} placeholder="Seleccione" style={{ width: '100%' }}/>
               </Form.Item>
             </Col>
             <Col span={isLargeScreen ? 12 : 24}>
@@ -425,7 +450,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
                 name="fechaSalida"
                 label="Fecha de salida"
               >
-                <DatePicker  onChange={(date, dateString) => onChange(date, dateString, 'fechaSalida')} placeholder="Seleccione" style={{ width: '100%' }}/>
+                <DatePicker format ='DD-MM-YYYY'  onChange={(date, dateString) => onChange(date, dateString, 'fechaSalida')} placeholder="Seleccione" style={{ width: '100%' }}/>
               </Form.Item>
             </Col>            
           </Row>
@@ -457,6 +482,19 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
                       { value: 'Diurna', label: 'Diurna' },
                       { value: 'Nocturna', label: 'Nocturna' },
                     ]}
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={isLargeScreen ? 12 : 24}>
+                <Form.Item
+                  name="supervisor"
+                  label="Supervisor"
+                >
+                  <Select
+                    style={{ width: '100%' }}
+                    placeholder = 'Seleccione'
+                    onChange={(value) => handleChange('idColaborador_fk', value)}
+                    options={supervisores}
                   />
                 </Form.Item>
               </Col>

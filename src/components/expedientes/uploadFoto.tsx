@@ -59,7 +59,7 @@ const UploadImage = ({imageUrl, Image}: Props) => {
                 {selectedImage ? (
                   <img
                     src={selectedImage}
-                    alt="Selected"
+                    alt="image selected"
                     className='image-'
                   />
                 ) : (

@@ -272,7 +272,7 @@ export default function Files(props: { readonly idColaborador: number}) {
                         </Typography>
                     </TableCell>
                     <TableCell align='center'>
-                        {row.tamaño}
+                        {row.tamano}
                     </TableCell>
                     <TableCell align='center'>
                         {row.fechaSubida}

@@ -32,7 +32,7 @@
         this.axiosInstance = axiosApi;
     }
 
-    async agregarColaborador(data: FormData): Promise<AxiosResponse> {
+    async agregarColaborador(data: any): Promise<AxiosResponse> {
         try {
         const response = await this.axiosInstance.post('/agregar-colaborador/', data);
         if (response.status >= 200 && response.status < 300) {

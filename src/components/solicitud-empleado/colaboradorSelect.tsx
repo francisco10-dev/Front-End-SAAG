@@ -50,7 +50,7 @@ const ColaboradorSelect: React.FC<{ onSelect: (option: ColaboradorOption) => voi
           (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
         }
         options={colaboradores}
-        onSelect={(value, option) => onSelect(option as ColaboradorOption)}
+        onSelect={(_value, option) => onSelect(option as ColaboradorOption)}
         style={{ width: 200,zIndex:0 }}
         disabled={loading}
       />

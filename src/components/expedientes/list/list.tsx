@@ -6,6 +6,7 @@ import { DataGrid, GridColDef, esES, GridRowSelectionModel } from '@mui/x-data-g
 import Formulario from "../create/createExpediente";
 import { CustomToolbar } from "./gridToolBar";
 import ColaboradorService, { Colaborador } from "../../../services/colaborador.service";
+import FullScreenDialog from "../fullDialog";
 
 const columns: GridColDef[] = [
     { field: 'idColaborador', headerName: 'N# Registro', width: 110 },
@@ -27,11 +28,11 @@ const columns: GridColDef[] = [
 ];
 
 interface Props{
-    selected: (nuevoValor : number | null) => void;
-    selectedExpediente: (nuevo : Colaborador | null) => void;
+    selectedPreviewInfo: (nuevo: Colaborador | null) => void;
+    loading: (value: boolean) => void;
 }
 
-const List = ({selected, selectedExpediente}: Props) => {
+const List = ({selectedPreviewInfo, loading}: Props) => {
 
     const [filterText, setFilterText] = useState('');
     const [expedientes, setExpedientes] = useState<Colaborador[]>([]);
@@ -41,24 +42,20 @@ const List = ({selected, selectedExpediente}: Props) => {
     const getRowId = (row: Colaborador) => row.idColaborador;
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
     const [openForm, setOpenForm] = useState(false);
+    const [selectedExp, setSelectedExp] = useState<Colaborador | null>(null);
+    const [openExp, setOpenExp] = useState(false);
     
-
     const fetchExpedientes = async () => {
         try {
             setLoading(true);
-            
-            const cachedData = localStorage.getItem('expedientesData');
-            if (cachedData) {
-                setExpedientes(JSON.parse(cachedData));
-            } else {
-                const data = await service.obtenerColaboradores();
-                setExpedientes(data);
-                localStorage.setItem('expedientesData', JSON.stringify(data));
-            }
+            loading(true);
+            const data = await service.obtenerColaboradores();
+            setExpedientes(data);
         } catch (error) {
             console.log(error);
         } finally {
             setLoading(false);
+            loading(false);
         }
     }
 
@@ -71,10 +68,19 @@ const List = ({selected, selectedExpediente}: Props) => {
         }
     };
 
-    const onRefresh = () => {
+    const onRefresh = async () => {
         localStorage.removeItem('expedientesData');
         clearLocalStorageByPrefix();
         fetchExpedientes();
+    }
+
+    const updatePreviewInfo = () => {
+        if(selectedExp){
+            const selected = selectedExp.idColaborador;
+            selectedPreviewInfo(null);
+            const updateSelectedExp = expedientes.find((exp) => selected === exp.idColaborador);
+            selectedPreviewInfo(updateSelectedExp!);            
+        }
     }
 
     const applyFilters = () => {
@@ -91,7 +97,8 @@ const List = ({selected, selectedExpediente}: Props) => {
     };
 
     const handleRowClick = (params: { row: Colaborador}) => {
-        selected(params.row.idColaborador);
+        selectedPreviewInfo(params.row);
+        setSelectedExp(params.row);
     };
 
     const handleSelectionChange = (selection: GridRowSelectionModel) => {
@@ -99,27 +106,36 @@ const List = ({selected, selectedExpediente}: Props) => {
     };
 
     const onEditClick = () => {
-        const data = expedientes.find((expediente) => expediente.idColaborador === selectedIds[0]);
-        if (data) {
-            selectedExpediente(data);
-        }
+        setOpenExp(true);
     };
 
     const onViewClick = () => {
         setOpenForm(true);
-    }
+    };
     
     const closeForm = (value: boolean) => {
         setOpenForm(value);
-    }
+    };
 
     useEffect(() => {
         fetchExpedientes();
-    }, [])
+    }, []);
 
     useEffect(() => {
         applyFilters();
     }, [filteredRows, expedientes]);
+
+    useEffect(()=> {
+        updatePreviewInfo();
+        if(selectedExp === null){
+            if(expedientes.length > 0){
+                selectedPreviewInfo(expedientes[0]);
+                setSelectedExp(expedientes[0]);
+                setSelectedIds([1]);
+            }
+        }
+    },[expedientes]);
+
 
     return (
         <div className="box-data-grid">
@@ -157,8 +173,8 @@ const List = ({selected, selectedExpediente}: Props) => {
             onRowClick={handleRowClick}
             localeText={esES.components.MuiDataGrid.defaultProps.localeText} 
             loading={isLoading}
-            //checkboxSelection
           />
+          <FullScreenDialog colaboradores={expedientes} colaborador={selectedExp} open={openExp} onClose={()=> setOpenExp(false)} reload={onRefresh} />
         </div>
       );
 }
