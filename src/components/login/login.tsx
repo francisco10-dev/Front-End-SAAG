@@ -52,7 +52,9 @@ const Login = () => {
   
   const handleSuccessfulLogin = (response: any) => {
     setLoggedIn(true);
-    navigate('/dashboard');
+    const rol = getUserRole(response);
+     rol === 'admin' ? navigate('/dashboard') : ( rol === 'supervisor' ? navigate('/solicitudes') : navigate('/solicitud-form'));
+    
     saveTokens(response);
     loadPhoto(response.colaborador.idColaborador);
     saveUserData(response);
@@ -71,9 +73,13 @@ const Login = () => {
     localStorage.setItem('employee', JSON.stringify(response.colaborador));
     setColaborador(response.colaborador);
     setNameSupervisor(response.supervisor);
-    const decodedToken: any = jwtDecode(response.accessToken);
-    setUserRole(decodedToken.rol);
+    setUserRole(getUserRole(response));
   };
+
+  const getUserRole = (response: any) => {
+    const decodedToken: any = jwtDecode(response.accessToken);
+    return decodedToken.rol;
+  }
   
   const displayErrorToast = (message: string) => {
     toast.error(message, {

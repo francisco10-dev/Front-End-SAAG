@@ -13,6 +13,30 @@ import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import { useMediaQuery } from '@mui/material';
 import UserInfo from './userInfo';
 import AccountInfo from './accountInfo';
+import { useAuth } from '../../authProvider';
+import { SendOutlined } from '@ant-design/icons';
+import {FileOutlined } from '@ant-design/icons';
+
+const optionsEmpleado = [
+  {
+    key: '6',
+    label: 'Ingresar solicitud',
+    icon: <SendOutlined/>
+  }
+]
+
+const optionsSuper = [
+  {
+    key: '5',
+    label: 'Solicitudes',
+    icon: <FileOutlined/>
+  },
+  {
+    key: '6',
+    label: 'Ingresar solicitud',
+    icon: <SendOutlined/>
+  }
+]
 
 const { Content, Sider } = Layout;
 
@@ -24,6 +48,7 @@ const Main: React.FC = () => {
   const isSmallScreen = useMediaQuery('(max-width:1000px)');
   const [openInfo, setOpenInfo] = useState(false);
   const [open, setOpen] = useState(true);
+  const { userRole } = useAuth();
   const [selectedKey, setSelectedKey] = useState<string>(() => {
     return localStorage.getItem('selectedKey') || '1';
   });
@@ -69,6 +94,10 @@ const Main: React.FC = () => {
     setOpen(!isSmallScreen);
     return () => setOpen(!isSmallScreen);
   }, [isSmallScreen]);
+
+  const getItems = () => {
+   return userRole === 'admin' ? options : (userRole === 'empleado' ? optionsEmpleado : optionsSuper);
+  }
   
 
   useEffect(() => {
@@ -123,7 +152,7 @@ const Main: React.FC = () => {
             theme='dark' mode="inline" 
             defaultSelectedKeys={[selectedKey]}
             onClick={({ key }) => handleMenuClick(key as string)}
-            items={options}
+            items={getItems()}
           />
 
         </Sider>
