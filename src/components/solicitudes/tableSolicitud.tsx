@@ -15,7 +15,7 @@ export interface DataTableProps {
   load: () => void;
 }
 
-export default function DataTable({rows, isLoading, load}: DataTableProps) {
+export default function DataTable({rows, isLoading, load}: Readonly<DataTableProps>) {
 
   const [filterText, setFilterText] = useState('');
   const [filteredRows, setFilteredRows] = useState(rows); 
@@ -102,10 +102,10 @@ export default function DataTable({rows, isLoading, load}: DataTableProps) {
   const filterRow = (row: Solicitud) => {
     const formattedDate = utils.formatDate(row.fechaSolicitud);
     return (
-      (row.nombreColaborador && row.nombreColaborador.toLowerCase().includes(filterText.toLowerCase())) ||
-      (row.estado && row.estado.toLowerCase().includes(filterText.toLowerCase())) ||
-      (row.idColaborador && row.idColaborador.toString().includes(filterText)) ||
-      (row.idSolicitud && row.idSolicitud.toString().includes(filterText)) ||
+      (row.nombreColaborador?.toLowerCase().includes(filterText.toLowerCase())) ||
+      (row.estado?.toLowerCase().includes(filterText.toLowerCase())) ||
+      (row.idColaborador?.toString().includes(filterText)) ||
+      (row.idSolicitud?.toString().includes(filterText)) ||
       (formattedDate.toLowerCase().includes(filterText.toLowerCase()))
     );
   };

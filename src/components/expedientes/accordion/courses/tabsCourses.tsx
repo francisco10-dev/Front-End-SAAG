@@ -22,7 +22,7 @@ interface TabPanelProps {
 
 const { Option } = Select;
 
-function CustomTabPanel(props: TabPanelProps) {
+function CustomTabPanel(props: Readonly<TabPanelProps>) {
   const { children, value, index, ...other } = props;
 
   return (
@@ -49,7 +49,7 @@ function a11yProps(index: number) {
   };
 }
 
-export default function TabsCourses(props: { idColaborador: number }) { 
+export default function TabsCourses(props: Readonly<{ idColaborador: number }>) { 
 
   const { idColaborador } = props;
   const [id, setId] = useState(idColaborador);
@@ -98,6 +98,8 @@ export default function TabsCourses(props: { idColaborador: number }) {
     }
   };
 
+  const selectedDays = () => daysToExpire !== 6 ? daysToExpire : customDayToExpire;
+
   const updateData = () => {
     const currentDate = new Date();
 
@@ -109,7 +111,7 @@ export default function TabsCourses(props: { idColaborador: number }) {
     const upcomingExpirationsArray = courses.filter((course) => {
       const dateToCheck = parseISO(course.fechaVencimiento);
       return isBefore(dateToCheck, currentDate) ? false :
-        isBefore(dateToCheck, addDays(currentDate, (daysToExpire !== 6 ? daysToExpire : customDayToExpire) || 15));
+        isBefore(dateToCheck, addDays(currentDate, selectedDays() || 15));
     });
 
     upcomingExpirationsArray.sort((a, b) => {

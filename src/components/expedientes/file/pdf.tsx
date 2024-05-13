@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
 import '@react-pdf-viewer/core/lib/styles/index.css'; // Importa los estilos necesarios
 
@@ -9,12 +9,7 @@ interface FileViewerProps {
 }
 
 const FileViewer: React.FC<FileViewerProps> = ({ fileUrl, fileType }) => {
-  const [numPages, setNumPages] = useState<number | null>(null);
 
-  //@ts-ignore
-  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
-    setNumPages(numPages);
-  };
 
   return (
     <div>
@@ -25,7 +20,6 @@ const FileViewer: React.FC<FileViewerProps> = ({ fileUrl, fileType }) => {
       ) : (
         <img src={fileUrl} alt="Preview" />
       )}
-      {fileType === 'pdf' && numPages && <p>Página {numPages} de {numPages}</p>}
     </div>
   );
 };

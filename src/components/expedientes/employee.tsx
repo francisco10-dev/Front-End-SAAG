@@ -30,23 +30,23 @@ interface Props {
   selected: (nuevaVariable: number | null) => void;
 }
 
-export default function EmployeeList({ handleOpen, handleSelected, selected }: Props) {
+export default function EmployeeList({ handleOpen, handleSelected, selected }: Readonly<Props>) {
 
     const [colaboradores, setColaboradores] = useState<Colaborador[]>([]);
-    const [isLoading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [filterText, setFilterText] = useState('');
     const [filteredRows, setFilteredRows] = useState(colaboradores); 
     const getRowId = (row: Colaborador) => row.idColaborador;
 
     const fetchEmployees = async () => {
         try {
-          setLoading(true);
+          setIsLoading(true);
           const response = await service.obtenerColaboradores();
           setColaboradores(response);
         } catch (e) {
           console.error('Ocurrió un error al obtener los colaboradores:', e);
         } finally {
-          setLoading(false);
+          setIsLoading(false);
         }
     };
       
@@ -67,8 +67,8 @@ export default function EmployeeList({ handleOpen, handleSelected, selected }: P
     const applyFilters = () => {
         const filteredData = colaboradores.filter((row) => {
           return (
-            (row.nombre && row.nombre.toLowerCase().includes(filterText.toLowerCase())) ||
-            (row.idColaborador && row.idColaborador.toString().includes(filterText)) 
+            (row.nombre?.toLowerCase().includes(filterText.toLowerCase())) ||
+            (row.idColaborador?.toString().includes(filterText)) 
           );
         });
         setFilteredRows(filteredData);

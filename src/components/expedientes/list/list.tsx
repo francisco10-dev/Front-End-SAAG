@@ -37,7 +37,7 @@ const List = ({selectedPreviewInfo, loading}: Props) => {
     const [filterText, setFilterText] = useState('');
     const [expedientes, setExpedientes] = useState<Colaborador[]>([]);
     const [filteredRows, setFilteredRows] = useState(expedientes);
-    const [isLoading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const service = new ColaboradorService();
     const getRowId = (row: Colaborador) => row.idColaborador;
     const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -47,14 +47,14 @@ const List = ({selectedPreviewInfo, loading}: Props) => {
     
     const fetchExpedientes = async () => {
         try {
-            setLoading(true);
+            setIsLoading(true);
             loading(true);
             const data = await service.obtenerColaboradores();
             setExpedientes(data);
         } catch (error) {
             console.log(error);
         } finally {
-            setLoading(false);
+            setIsLoading(false);
             loading(false);
         }
     }
@@ -62,7 +62,7 @@ const List = ({selectedPreviewInfo, loading}: Props) => {
     const clearLocalStorageByPrefix = () => {
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
-            if (key && key.startsWith('imgUrl')) {
+            if (key?.startsWith('imgUrl')) {
                 localStorage.removeItem(key);
             }
         }
@@ -87,10 +87,10 @@ const List = ({selectedPreviewInfo, loading}: Props) => {
         const filteredData = expedientes.filter((row) => {
             const formattedDate = formatDate(row.fechaIngreso);
           return (
-            (row.idColaborador && row.idColaborador.toString().includes(filterText.toLowerCase())) ||
-            (row.identificacion && row.identificacion.toString().includes(filterText)) ||
-            (row.nombre && row.nombre.toLowerCase().includes(filterText.toLowerCase())) ||
-            (formattedDate && formattedDate.toLocaleLowerCase().includes(filterText.toLowerCase()))
+            (row.idColaborador?.toString().includes(filterText.toLowerCase())) ||
+            (row.identificacion?.toString().includes(filterText)) ||
+            (row.nombre?.toLowerCase().includes(filterText.toLowerCase())) ||
+            (formattedDate?.toLocaleLowerCase().includes(filterText.toLowerCase()))
           );
         });
         setFilteredRows(filteredData);

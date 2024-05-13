@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import UsuarioService from './services/usuario.service';
 import { Colaborador } from './services/colaborador.service';
 import ExpedienteService from './services/expediente.service';
+import { message } from 'antd';
 
 
 interface AuthContextType {
@@ -72,27 +73,19 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const logout = async() => {
   
     const token = localStorage.getItem('refreshToken');
-          if (token) {
+    
+    if (token) {
 
-            const response = await usuarioService.logout(token);
-            
-            if (response.status === 200) {
-              localStorage.removeItem('accessToken');
-              localStorage.removeItem('refreshToken');
-              sessionStorage.removeItem('Welcome');
-              localStorage.removeItem('photo');
-              localStorage.removeItem('requestsCount');
-              localStorage.removeItem('employeesCount');
-              localStorage.removeItem('usersCount');
-              localStorage.removeItem('expedientesData');
-              localStorage.removeItem('solicitudesData');
-              localStorage.removeItem('employee');
-              localStorage.removeItem('selectedKey');
-              setPhoto(null);
-              setLoggedIn(false);
-              navigate('/');
-            }
-          }
+      message.loading('Cerrando sesión...');
+      const response = await usuarioService.logout(token);
+      console.log(response);
+      if (response.status === 200) {
+        localStorage.clear();
+        setPhoto(null);
+        setLoggedIn(false);
+        navigate('/');
+      }      
+    }
   };
 
   const loadPhoto = async (id: any) => {

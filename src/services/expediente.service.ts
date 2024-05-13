@@ -1,7 +1,6 @@
-import axios from "axios";
 import axiosApi, { localhost } from "./api.service";
 import { Colaborador } from "./colaborador.service";
-import { AxiosResponse } from 'axios';
+import axios, { AxiosResponse } from 'axios';
 
 export interface Expediente {
     idExpediente: number;
@@ -210,66 +209,101 @@ class ExpedienteService {
   }
 
   async updatePhoto(id: number, file: File):  Promise<AxiosResponse<any, any>> {
-    // eslint-disable-next-line no-useless-catch
     try {
       const form = new FormData();
       form.append('fotoCarnet', file);
       const response = await this.axiosInstance.put(`/colaborador/insertar-foto/${id}`, form);
       return response;
     } catch (error) {
-        //console.log(error);
-        throw error; 
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 403) {
+          throw new Error(error.response.data.message);
+        } else {
+          throw new Error('Error en la solicitud de red');
+        }
+      }
+      throw error;
     }   
   }
 
   async getPhoto(id: number): Promise<AxiosResponse<any, any>> {
-    // eslint-disable-next-line no-useless-catch
     try {
       const response = await this.axiosInstance.get(`/documentos/obtener-foto/${id}`);
       return response;
     } catch (error) {
-      throw error; 
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 403) {
+          throw new Error(error.response.data.message);
+        } else {
+          throw new Error('Error en la solicitud de red');
+        }
+      }
+      throw error;
     }
   }
 
   async getEmployeeNumbers(id: number): Promise<AxiosResponse<any, any>> {
-    // eslint-disable-next-line no-useless-catch
     try {
       const response = await this.axiosInstance.get(`/telefonos/obtener-por-colaborador/${id}`);
       return response.data;
     } catch (error) {
-      throw error; 
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 403) {
+          throw new Error(error.response.data.message);
+        } else {
+          throw new Error('Error en la solicitud de red');
+        }
+      }
+      throw error;
     }
   }
 
   async deletePhoneNumber(id: number): Promise<number> {
-    // eslint-disable-next-line no-useless-catch
     try {
       const response = await this.axiosInstance.delete(`/telefonos/eliminar-telefono/${id}`);
       return response.status;
     } catch (error) {
-      throw error; 
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 403) {
+          throw new Error(error.response.data.message);
+        } else {
+          throw new Error('Error en la solicitud de red');
+        }
+      }
+      throw error;
     }
   }
 
   async deleteDocument(id: number): Promise<number> {
-    // eslint-disable-next-line no-useless-catch
     try {
       const response = await this.axiosInstance.delete(`/eliminar-documento/${id}`);
       return response.status;
     } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 403) {
+          throw new Error(error.response.data.message);
+        } else {
+          throw new Error('Error en la solicitud de red');
+        }
+      }
       throw error; 
     }
   }
 
   async getDocument(id: number): Promise<Blob> {
-    // eslint-disable-next-line no-useless-catch
     try {
       const response = await this.axiosInstance.get(`/obtener-documento/${id}`, {
         responseType: 'blob', // Configura el tipo de respuesta como arraybuffer para manejar datos binarios
       });
       return response.data;
     } catch (error) {
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 403) {
+          throw new Error(error.response.data.message);
+        } else {
+          throw new Error('Error en la solicitud de red');
+        }
+      }
       throw error;
     }
   }

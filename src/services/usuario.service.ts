@@ -1,5 +1,6 @@
 import axios from 'axios';
 import axiosApi from '../services/api.service'
+import { message } from 'antd';
 
 export interface Usuario {
   idUsuario: number,
@@ -8,6 +9,18 @@ export interface Usuario {
   rol: string,
   idColaborador: number,
 }
+
+//403-401 -> FORBIDDEN - NO AUTORIZADO
+export const validateSession = (status: number) => {
+  if(status === 403 || status === 401){
+    localStorage.clear();
+    message.info('La sesión ha expirado...');
+    setTimeout(() => {
+      window.location.reload();
+    }, 2000);
+  }
+}
+
 
 class UsuarioService {
   private axiosInstance;
@@ -39,6 +52,7 @@ class UsuarioService {
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
+          validateSession(error.response.status);
           throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
         } else {
           throw new Error('Error en la solicitud de red');

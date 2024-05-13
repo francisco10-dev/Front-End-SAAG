@@ -11,7 +11,7 @@ interface Props{
 }
 
 
-const AddNumbers = ({idColaborador, loadPhones, phoneNumbers}: Props) => {
+const AddNumbers = ({idColaborador, loadPhones, phoneNumbers}: Readonly<Props>) => {
 
     const [numbers, setNumbers] = useState<string[]>([]);
     const [ loading, setLoading] = useState(false);
@@ -89,7 +89,7 @@ const AddNumbers = ({idColaborador, loadPhones, phoneNumbers}: Props) => {
                 placeholder="Ingrese"
                 value={number}
                 onChange={(e) => handlePhoneNumberChange(index, e.target.value)}
-                type="text"
+                type="number"
               />
               {index >= 0 && (
                 <MinusCircleOutlined 

@@ -6,7 +6,7 @@ import ReplayIcon from '@mui/icons-material/Replay';
 import { useAuth } from '../../authProvider';
 
 
-export function CustomToolbar({ onEditClick, onDeleteClick, selectedIds, onRefresh }: { onRefresh: () => void, onEditClick: () => void, onDeleteClick: () => void; selectedIds: string[] }) {
+export function CustomToolbar({ onEditClick, onDeleteClick, selectedIds, onRefresh }: Readonly<{ onRefresh: () => void, onEditClick: () => void, onDeleteClick: () => void; selectedIds: string[] }>) {
   const DeleteButtonDisabled = selectedIds.length === 0;
   const EditButtonDisabled = selectedIds.length !== 1;
   const { userRole } = useAuth();

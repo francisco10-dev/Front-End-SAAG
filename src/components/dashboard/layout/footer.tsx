@@ -1,8 +1,7 @@
 import PropTypes from "prop-types";
 import Link from "@mui/material/Link";
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import { Typography } from "antd";
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 
 interface Company {
   href: string;

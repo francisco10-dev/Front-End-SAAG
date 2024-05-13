@@ -5,8 +5,7 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import DataTable from './tableSolicitud';
-import SolicitudService from '../../services/solicitud.service';
-import { Solicitud } from '../../services/solicitud.service';
+import SolicitudService, { Solicitud } from '../../services/solicitud.service';
 import { message } from 'antd';
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -14,7 +13,7 @@ interface TabPanelProps {
   value: number;
 }
 
-function CustomTabPanel(props: TabPanelProps) {
+function CustomTabPanel(props: Readonly<TabPanelProps>) {
   const { children, value, index, ...other } = props;
 
   return (

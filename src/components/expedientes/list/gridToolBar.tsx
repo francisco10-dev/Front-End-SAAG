@@ -4,9 +4,8 @@ import AddIcon from '@mui/icons-material/Add';
 import { Button } from '@mui/material';
 import ReplayIcon from '@mui/icons-material/Replay'
 
-
-
-export function CustomToolbar({onEditClick, onViewClick, selectedIds, onRefresh }: { onRefresh : () => void ,onEditClick: () => void, onViewClick: () => void; selectedIds: string[] }) {
+export function CustomToolbar({onEditClick, onViewClick, selectedIds, onRefresh }: 
+  Readonly<{ onRefresh : () => void ,onEditClick: () => void, onViewClick: () => void; selectedIds: string[] }>) {
     
     const EditButtonDisabled = selectedIds.length !== 1;
   

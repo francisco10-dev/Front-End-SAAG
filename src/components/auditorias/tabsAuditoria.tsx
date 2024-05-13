@@ -50,7 +50,7 @@ export default function TabsAuditoriasLogin() {
   const [loading, setLoading] = React.useState(false);
 
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 

@@ -14,7 +14,7 @@ import UploadImage from '../uploadFoto';
 import SelectedFiles from './selectedFiles';
 import moment from 'moment';
 import UsuarioService from '../../../services/usuario.service';
-
+import { v4 as uuid } from 'uuid';
 
 interface EmployeeData {
   nombre: string;
@@ -69,7 +69,7 @@ interface Supervisor{
 const Formulario = ({openForm, setOpenForm, reload}:Props) => {
 
   
-  const [phoneNumbers, setPhoneNumbers] = useState<string[]>([]);
+  const [phoneNumbers, setPhoneNumbers] = useState<{ id: string; number: string }[]>([]);
   const [visible, setVisible] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<UploadFile[]>([]);
   const [employeeData, setEmployeeData] = useState<EmployeeData>(initialEmployeeData);
@@ -78,7 +78,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
   const [form] = Form.useForm();
   const isLargeScreen = useMediaQuery({ query: '(min-width:750px)' }); 
   const service = new ExpedienteService();
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [openP, setOpenP] = useState(false);
   const [puestos, setPuestos] = useState<Puesto[]>([]);
   const [supervisores, setSupervisores] = useState<Supervisor[]>([]);
@@ -118,10 +118,16 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
     }
   };
 
+  const span = () => { 
+   return isLargeScreen ? 12 : 24
+  }
+
   const handleAddPhoneNumbers = async (id: any) => {
     if (phoneNumbers) {
       // Filtrar los números de teléfono que no tienen valor
-      const validPhoneNumbers = phoneNumbers.filter((phoneNumber) => phoneNumber.trim() !== '');
+      const validPhoneNumbers = phoneNumbers
+      .filter((phoneNumber) => phoneNumber.number.trim() !== '')
+      .map((phoneNumber) => phoneNumber.number);
   
       if (validPhoneNumbers.length > 0) {
         const service = new ColaboradorService();
@@ -220,7 +226,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
   
   const handleSubmit = async () => {
     try {
-      setLoading(true);
+      setIsLoading(true);
   
       const data: EmployeeData = Object.fromEntries(
         Object.entries(employeeData).filter(([_, value]) => value !== '')
@@ -244,7 +250,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
     } catch (error) {
       message.error('Ocurrió un error al registrar la información, por favor intente más tarde. ');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -258,19 +264,17 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
   };
 
   const handleAddPhoneNumber = () => {
-    setPhoneNumbers([...phoneNumbers, '']);
+    setPhoneNumbers([...phoneNumbers, { id: uuid(), number: '' }]);
   };
 
-  const handleRemovePhoneNumber = (index : any) => {
-    const newPhoneNumbers = [...phoneNumbers];
-    newPhoneNumbers.splice(index, 1);
+  const handleRemovePhoneNumber = (id: string) => {
+    const newPhoneNumbers = phoneNumbers.filter(item => item.id !== id);
     setPhoneNumbers(newPhoneNumbers);
   };
+  
 
-  const handlePhoneNumberChange = (index : any, value : any) => {
-    const newPhoneNumbers = [...phoneNumbers];
-    newPhoneNumbers[index] = value;
-    setPhoneNumbers(newPhoneNumbers);
+  const handlePhoneNumberChange = (id: string, value: string) => {
+    setPhoneNumbers(phoneNumbers.map(item => (item.id === id ? { ...item, number: value } : item)));
   };
 
   
@@ -311,7 +315,6 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
   };
 
   return (
-    <>
       <Drawer
         title="Ingresar nuevo"
         width={800}
@@ -341,7 +344,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
             <UploadImage imageUrl={selectedImage} Image={handleImage}/>
           </Box>
           <Row gutter={16}>
-            <Col span={isLargeScreen ? 12 : 24}>
+            <Col span={span()}>
               <Form.Item
                 name="nombre"
                 label="Nombre completo"
@@ -350,7 +353,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
                 <Input placeholder="Nombre completo" onChange={(e) => handleChange('nombre', e.target.value)} />
               </Form.Item>
             </Col>
-            <Col span={isLargeScreen ? 12 : 24}>
+            <Col span={span()}>
               <Form.Item
                 name="identificacion"
                 label="Identificación"
@@ -361,7 +364,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
             </Col>
           </Row>
           <Row gutter={16}>
-            <Col span={isLargeScreen ? 12 : 24}>
+            <Col span={span()}>
                 <Form.Item
                   name="equipo"
                   label="Equipo"
@@ -370,7 +373,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
                   <Input placeholder="Equipo" onChange={(e) => handleChange('equipo', e.target.value)} />
                 </Form.Item>
               </Col>
-              <Col span={isLargeScreen ? 12 : 24}>
+              <Col span={span()}>
                 <Form.Item
                   name="estado"
                   label="Estado"
@@ -388,7 +391,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
               </Col>
           </Row>
           <Row gutter={16}>
-          <Col span={isLargeScreen ? 12 : 24}>
+          <Col span={span()}>
               <Form.Item
                 name="fechaNacimiento"
                 label="Fecha de nacimiento"
@@ -397,7 +400,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
                 <DatePicker format='DD-MM-YYYY' onChange={(date, dateString) => onChange(date, dateString, 'fechaNacimiento')} placeholder="Seleccione" style={{ width: '100%' }} />
               </Form.Item>
             </Col>
-            <Col span={isLargeScreen ? 12 : 24}>
+            <Col span={span()}>
               <Form.Item
                 name="correoElectronico"
                 label="Correo electrónico"
@@ -408,7 +411,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
             </Col>
           </Row>
           <Row gutter={16}>
-            <Col span={isLargeScreen ? 12 : 24}>
+            <Col span={span()}>
               <Form.Item
                 name="unidad"
                 label="Unidad de gestión"
@@ -416,7 +419,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
                 <Input placeholder="Unidad de gestión" onChange={(e) => handleChange('unidad', e.target.value)} />
               </Form.Item>
             </Col>
-            <Col span={isLargeScreen ? 12 : 24}>
+            <Col span={span()}>
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 <Form.Item
                   name="puesto"
@@ -436,7 +439,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
             </Col>
           </Row>
           <Row gutter={16}>
-            <Col span={isLargeScreen ? 12 : 24}>
+            <Col span={span()}>
               <Form.Item
                 name="fechaIngreso"
                 label="Fecha de ingreso"
@@ -445,7 +448,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
                 <DatePicker format ='DD-MM-YYYY' onChange={(date, dateString) => onChange(date, dateString, 'fechaIngreso')} placeholder="Seleccione" style={{ width: '100%' }}/>
               </Form.Item>
             </Col>
-            <Col span={isLargeScreen ? 12 : 24}>
+            <Col span={span()}>
               <Form.Item
                 name="fechaSalida"
                 label="Fecha de salida"
@@ -455,7 +458,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
             </Col>            
           </Row>
           <Row gutter={16}>
-            <Col span={isLargeScreen ? 12 : 24}>
+            <Col span={span()}>
               <Form.Item
                 name="domicilio"
                 label="Domicilio"
@@ -469,7 +472,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
                 <Input.TextArea rows={2} placeholder="Ingrese domicilio" onChange={(e) => handleChange('domicilio', e.target.value)} />
               </Form.Item>
             </Col>
-            <Col span={isLargeScreen ? 12 : 24}>
+            <Col span={span()}>
                 <Form.Item
                   name="tipoJornada"
                   label="Jornada"
@@ -485,7 +488,7 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
                   />
                 </Form.Item>
               </Col>
-              <Col span={isLargeScreen ? 12 : 24}>
+              <Col span={span()}>
                 <Form.Item
                   name="supervisor"
                   label="Supervisor"
@@ -500,22 +503,22 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
               </Col>
           </Row>
           <Row gutter={16}>
-            <Col span={isLargeScreen? 12 : 24}>
+            <Col span={span()}>
               <Form.Item
                 label="Números de teléfono"
               >
-                { phoneNumbers.map((phoneNumber, index) => (
-                  <Space className='space' key={index}>
+                { phoneNumbers.map(({ id, number }, index) => (
+                  <Space className='space' key={id}>
                     <Input
                       style={{ flex: 1  }}
                       placeholder="Ingrese"
-                      value={phoneNumber}
-                      onChange={(e) => handlePhoneNumberChange(index, e.target.value)}
+                      value={number}
+                      onChange={(e) => handlePhoneNumberChange(id, e.target.value)}
                       type="number"
                     />
                     {index >= 0 && (
                       <MinusCircleOutlined 
-                        onClick={()=> handleRemovePhoneNumber(index)} 
+                        onClick={()=> handleRemovePhoneNumber(id)} 
                         style={{color: 'red', fontSize: 18}}
                       />
                     )}
@@ -548,7 +551,6 @@ const Formulario = ({openForm, setOpenForm, reload}:Props) => {
         </Form> }
       </Drawer>
       
-    </>
   );
 }
 

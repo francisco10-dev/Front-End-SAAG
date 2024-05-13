@@ -57,7 +57,6 @@ const ModalComprobanteComponent: React.FC<ModalComponentProps> = ({ idSolicitud,
   };
   
   return (
-    <React.Fragment>
       <BootstrapDialog
         onClose={onClose}
         aria-labelledby="customized-dialog-title"
@@ -96,7 +95,6 @@ const ModalComprobanteComponent: React.FC<ModalComponentProps> = ({ idSolicitud,
           </Button>
         </DialogActions>
       </BootstrapDialog>
-    </React.Fragment>
   );
 };
 

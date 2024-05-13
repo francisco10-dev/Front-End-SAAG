@@ -20,7 +20,7 @@ import { TextField } from '@mui/material';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 
-function Row(props: { row: Solicitud }) {
+function Row(props: Readonly<{ row: Solicitud }>) {
   
   const [open, setOpen] = useState(false);
   
@@ -97,7 +97,7 @@ interface Props{
     id: number;
 }
 
-export default function Requests({id}: Props) {
+export default function Requests({id}: Readonly<Props>) {
 
   const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
   const [idColaborador, setIdColaborador] = useState(id);
@@ -132,11 +132,11 @@ export default function Requests({id}: Props) {
   const filterRow = (row: Solicitud) => {
     const formattedDate = formatDate(row.fechaSolicitud);
     return (
-      (row.nombreColaborador && row.nombreColaborador.toLowerCase().includes(filterText.toLowerCase())) ||
-      (row.estado && row.estado.toLowerCase().includes(filterText.toLowerCase())) ||
-      (row.tipoSolicitud && row.tipoSolicitud.toLowerCase().includes(filterText.toLowerCase())) ||
-      (row.idColaborador && row.idColaborador.toString().includes(filterText)) ||
-      (row.idSolicitud && row.idSolicitud.toString().includes(filterText)) ||
+      (row.nombreColaborador?.toLowerCase().includes(filterText.toLowerCase())) ||
+      (row.estado?.toLowerCase().includes(filterText.toLowerCase())) ||
+      (row.tipoSolicitud?.toLowerCase().includes(filterText.toLowerCase())) ||
+      (row.idColaborador?.toString().includes(filterText)) ||
+      (row.idSolicitud?.toString().includes(filterText)) ||
       (formattedDate.toLowerCase().includes(filterText.toLowerCase()))
     );
   };

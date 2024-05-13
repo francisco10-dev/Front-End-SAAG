@@ -11,7 +11,7 @@ interface Props{
     onClose: () => void;
 }
 
-export default function AccountInfo({open, onClose}: Props) {
+export default function AccountInfo({open, onClose}: Readonly<Props>) {
 
     const {logout, colaborador, userRole, photo} = useAuth();
     const nombre = colaborador?.nombre.split(" ")[0];

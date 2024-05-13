@@ -13,7 +13,7 @@ const UploadImage = ({imageUrl, Image}: Props) => {
     const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target?.files?.[0];
     
-        if (file && file.type.startsWith('image/')) {
+        if (file?.type.startsWith('image/')) {
           const reader = new FileReader();
     
           reader.onload = (e) => {

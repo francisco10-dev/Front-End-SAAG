@@ -16,7 +16,7 @@ interface Props{
 
 const ExpedienteInfo = ({data, reload}: Props) => {
 
-    const [isLoading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const service = new ColaboradorService();
     const [expediente, setExpediente] = useState<Colaborador | null>(null);
@@ -48,7 +48,7 @@ const ExpedienteInfo = ({data, reload}: Props) => {
     const loadImage = async () => {
         if(expediente){
             try {
-                setLoading(true);
+                setIsLoading(true);
                 const imgUrl = localStorage.getItem(`imgUrl${expediente.idColaborador}`);
                 if(imgUrl){
                     setImageUrl(imgUrl);
@@ -59,7 +59,7 @@ const ExpedienteInfo = ({data, reload}: Props) => {
             } catch (error) {
                 console.log(error);
             } finally {
-                setLoading(false);
+                setIsLoading(false);
             }
         } else {
             console.log(imageUrl)
@@ -82,24 +82,28 @@ const ExpedienteInfo = ({data, reload}: Props) => {
     }
 
 
-
-    const image  = () => {
-       return <Box className='imageSeccion' >
-                {isLoading ? (
-                    <Loader />
-                ) : imageUrl ? (
-                    <Box className='image-'>
-                        <img src={imageUrl} alt="" className="image-"/>
-                    </Box>
-                ) : (
-                    <Box className='image-'>
-                        <Typography variant="body2" color='textSecondary'> 
-                            Sin foto
-                        </Typography>
-                    </Box>
-                )}
-        </Box>
+    const image = () => {
+        
+        let content;
+      
+        if (isLoading) {
+          content = <Loader />;
+        } else {
+          content = imageUrl ? (
+            <Box className='image-'>
+              <img src={imageUrl} alt="" className="image-" />
+            </Box>
+          ) : (
+            <Box className='image-'>
+              <Typography variant="body2" color='textSecondary'> 
+                Sin foto
+              </Typography>
+            </Box>
+          );
+        }
+        return <Box className='imageSeccion'>{content}</Box>;
     };
+      
 
     return (
         <Box className='container-expediente' component={Paper}>

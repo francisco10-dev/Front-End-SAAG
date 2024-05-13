@@ -4,6 +4,7 @@ import { Box } from '@mui/material';
 import ExpedienteService from '../../../services/expediente.service';
 import { useState, useEffect } from 'react';
 
+
 interface Props {
   setOpen: (value: boolean) => void;
   open: boolean;
@@ -38,29 +39,28 @@ const PreviewPdf = ({ open, setOpen, id, fileType }: Props) => {
     setOpen(false);
   };
 
-
+  const width = () => loading ? 'auto' : (fileType === 'image' ? 'auto' : '80%');
+  
   return (
-    <> 
-        <Modal
-          open={open}
-          onCancel={handleCancel}
-          cancelText="Cerrar"
-          okButtonProps={{ style: { display: 'none' } }}
-          width={loading ? 'auto' : (fileType === 'image' ? 'auto' : '80%')} 
-          centered
-          style={{ zIndex: 1000 }}
-        > 
-        {loading ? (
-          <Box>
-           <h6>Cargando...</h6>
-          </Box>
-        ) : (
-          <Box maxHeight={500} overflow="auto">
-            {fileUrl && <FileViewer fileUrl={fileUrl} fileType={fileType} />}
-          </Box>
-        )}
-        </Modal>
-    </>
+      <Modal
+        open={open}
+        onCancel={handleCancel}
+        cancelText="Cerrar"
+        okButtonProps={{ style: { display: 'none' } }}
+        width={width()} 
+        centered
+        style={{ zIndex: 1000 }}
+      > 
+      {loading ? (
+        <Box minHeight={200} minWidth={200} justifyContent='center' display='flex' alignItems='center' >
+          <h6>Cargando...</h6>
+        </Box>
+      ) : (
+        <Box maxHeight={500} overflow="auto">
+          {fileUrl && <FileViewer fileUrl={fileUrl} fileType={fileType} />}
+        </Box>
+      )}
+      </Modal>
   );
 };
 

@@ -12,7 +12,7 @@
         correoElectronico: string;
         edad: number;
         domicilio: string;
-        fechaNacimiento: Date | any;
+        fechaNacimiento: any;
         unidad?: string | null;
         idPuesto?: number | null;
         puesto?: Puesto | null;
@@ -227,15 +227,10 @@
         }
      }
 
-     async getPhoto(id: number): Promise<AxiosResponse<any, any>> {
-      try {
-        const response = await this.axiosInstance.get(`/documentos/obtener-foto/${id}`);
-        return response;
-      } catch (error) {
-        throw error; 
-      }
+    async getPhoto(id: number): Promise<AxiosResponse<any, any>> {
+      return this.axiosInstance.get(`/documentos/obtener-foto/${id}`);
     }
-      
+    
     incrementarContadorLocalStorage() {
       const count = localStorage.getItem('employeesCount');
       const newCount = count ? parseInt(count) + 1 : 1;
