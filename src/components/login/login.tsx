@@ -20,13 +20,13 @@ const Login = () => {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [band, setBand] = useState(false);
   const { setLoggedIn, setUserRole, setColaborador, loadPhoto,setNameSupervisor } = useAuth();
-  const [isLoading, setLoading] =useState(false);
+  const [isLoading, setIsLoading] =useState(false);
   const navigate = useNavigate();
 
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setIsLoading(true);
     toast.dismiss();
     try {
       const data = {
@@ -46,15 +46,24 @@ const Login = () => {
       }
       setBandWithTimeout();
     }finally{
-      setLoading(false);
+      setIsLoading(false);
     }
   };
+
+  const handleNavigation = (response:any) => {
+    const rol = getUserRole(response);
+    if(rol === 'admin'){
+      navigate('/dashboard');
+    }else if(rol === 'supervisor'){
+      navigate('/solicitudes');
+    }else{
+      navigate('/solicitud-form');
+    }
+  }
   
   const handleSuccessfulLogin = (response: any) => {
     setLoggedIn(true);
-    const rol = getUserRole(response);
-     rol === 'admin' ? navigate('/dashboard') : ( rol === 'supervisor' ? navigate('/solicitudes') : navigate('/solicitud-form'));
-    
+    handleNavigation(response);
     saveTokens(response);
     loadPhoto(response.colaborador.idColaborador);
     saveUserData(response);
@@ -138,7 +147,16 @@ const Login = () => {
                 className={band ? 'error' : ''}
                 required
               />
-              <span className="password-toggle" onClick={() => setPasswordVisible(!passwordVisible)}>
+              <span 
+                role='button' 
+                className="password-toggle" 
+                onClick={() => setPasswordVisible(!passwordVisible)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    setPasswordVisible(!passwordVisible);
+                  }
+                }}
+              >
                 {passwordVisible ?  <VisibilityOffIcon className='showPasswordBtn' /> : <RemoveRedEyeIcon className='showPasswordBtn'/>}
               </span>
             </div>

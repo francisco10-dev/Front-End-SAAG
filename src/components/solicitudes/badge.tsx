@@ -5,7 +5,7 @@ const estadoAbreviado: {[key: string]: string} = {
   "RechazadoPorJefatura": "RPJ"
 };
 
-export default function Badge(props: {estado: string}){
+export default function Badge(props: Readonly<{estado: string}>){
     const {estado} = props;
 
     const getStatusColor = (status: string) => {

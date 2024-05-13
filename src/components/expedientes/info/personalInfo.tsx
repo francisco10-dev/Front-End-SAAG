@@ -12,24 +12,35 @@ interface Props{
 
 const PersonalInfo = ({isLoadingImage, imageUrl, colaborador, size}: Props) => {
 
+
+    const renderImage = () => {
+        let content;
+      
+        if (isLoadingImage) {
+          content = <Loader/>;
+        } else if (imageUrl) {
+          content = (
+            <Box className='image-'>
+              <img src={imageUrl} alt="" className="image-"/>
+            </Box>
+          );
+        } else {
+          content = (
+            <Box className='image-'>
+              <Typography variant="body2" color='textSecondary'> 
+                Sin foto
+              </Typography>
+            </Box>
+          );
+        }
+        return <Box mr={2}>{content}</Box>;
+    }
+      
+
     return (
         <Box>
             <Box className='foto-info-seccion' >
-                <Box mr={2}>
-                {isLoadingImage ? (
-                    <Loader />
-                ) : imageUrl ? (
-                    <Box className='image-'>
-                        <img src={imageUrl} alt="" className="image-"/>
-                    </Box>
-                ) : (
-                    <Box className='image-'>
-                        <Typography variant="body2" color='textSecondary'> 
-                            Sin foto
-                        </Typography>
-                    </Box>
-                )}
-                </Box>
+                {renderImage()}
                 <Box>
                 <Typography variant='h5'>{colaborador?.nombre}</Typography> 
                 <Typography variant='body2'><span style={{ fontWeight: 'bold', fontSize: 13 }}>Unidad de gestión: </span>  {colaborador?.unidad ?? 'No indica'}</Typography>

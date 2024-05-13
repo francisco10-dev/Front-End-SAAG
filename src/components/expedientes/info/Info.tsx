@@ -4,6 +4,7 @@ import { calcularAntiguedad, calcularEdad } from './period';
 import { formatDate } from '../../solicitudes/utils';
 import { Colaborador } from '../../../services/colaborador.service';
 import { useAuth } from '../../../authProvider';
+import { Puesto } from '../../../services/puesto.service';
 
 interface Props {
   colaborador: Colaborador | null;
@@ -53,6 +54,20 @@ const Info: React.FC<Props> = ({ colaborador, size, marginBottom }: Props) => {
     estado: 'Estado',
     equipo: 'Equipo',
     tipoJornada: 'Jornada'
+  };
+
+  const renderValue = (key: string, value: any, puesto: Puesto | null | undefined) => {
+    if (key === 'puesto' && puesto) {
+      return puesto.nombrePuesto;
+    } else if (key === 'fechaNacimiento') {
+      return formatDate(value as string);
+    } else if (value === null) {
+      return 'No indica';
+    } else if (typeof value === 'object') {
+      return JSON.stringify(value);
+    } else {
+      return value;
+    }
   };
 
   const renderDateFields = () => {
@@ -106,15 +121,7 @@ const Info: React.FC<Props> = ({ colaborador, size, marginBottom }: Props) => {
                 {visualNames[key]}
               </Typography>
               <Typography variant="body2" color="textSecondary">
-                {key === 'puesto' && puesto
-                  ? `${puesto.nombrePuesto}`
-                  : key === 'fechaNacimiento'
-                  ? formatDate(value as string)
-                  : value === null
-                  ? 'No indica'
-                  : typeof value === 'object'
-                  ? JSON.stringify(value)
-                  : value}
+                {renderValue(key, value, puesto)}
               </Typography>
             </Grid>
           )

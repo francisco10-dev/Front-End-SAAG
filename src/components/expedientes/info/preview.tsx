@@ -12,7 +12,7 @@ interface Props {
 
 const Preview = ({ colaborador, loading }: Props) => {
 
-    const [isLoadingImage, setLoadingImage] = useState(false);
+    const [isLoadingImage, setIsLoadingImage] = useState(false);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const service = new ColaboradorService();
 
@@ -20,14 +20,14 @@ const Preview = ({ colaborador, loading }: Props) => {
     const loadImage = async () => {
         if(colaborador){
             try {
-                setLoadingImage(true);
+                setIsLoadingImage(true);
                 const response = await service.getPhoto(colaborador.idColaborador);
                 const imgUrl = response.data.imageUrl;
                 setImageUrl(imgUrl);
             } catch (error) {
                 message.info('Ocurrió un error al cargar la foto');
             } finally {
-                setLoadingImage(false);
+                setIsLoadingImage(false);
             }
         } else {
             setImageUrl(null);

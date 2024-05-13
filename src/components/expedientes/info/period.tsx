@@ -9,11 +9,31 @@ export const calcularAntiguedad = (fechaIngreso: Date, fechaActual: Date) => {
   fechaUltimoMes.setMonth(fechaUltimoMes.getMonth() + diferenciaMeses);
   const diferenciaDias = differenceInDays(fechaActual, fechaUltimoMes);
 
-  const aniosTexto = diferenciaAnios > 0 ? `${diferenciaAnios} ${diferenciaAnios === 1 ? 'año' : 'años'}` : '';
-  const mesesTexto = diferenciaMeses > 0 ? `${diferenciaMeses} ${diferenciaMeses === 1 ? 'mes' : 'meses'}` : '';
-  const diasTexto = diferenciaDias > 0 ? `${diferenciaDias} ${diferenciaDias === 1 ? 'día' : 'días'}` : '';
+  const meses = () => {
+    if (diferenciaMeses > 0) {
+      return `${diferenciaMeses} ${diferenciaMeses === 1 ? 'mes' : 'meses'}`;
+    } else {
+      return '';
+    }
+  }
 
-  const periodos = [aniosTexto, mesesTexto, diasTexto].filter(texto => texto !== ''); // Filtra textos vacíos
+  const dias = () => {
+    if (diferenciaDias > 0) {
+      return `${diferenciaDias} ${diferenciaDias === 1 ? 'día' : 'días'}`;
+    } else {
+      return '';
+    }
+  }
+
+  const años = () => {
+    if(diferenciaAnios > 0){
+      return `${diferenciaAnios} ${diferenciaAnios === 1 ? 'año' : 'años'}`;
+    }else{
+      return '';
+    }
+  }
+
+  const periodos = [años(), meses(), dias()].filter(texto => texto !== ''); // Filtra textos vacíos
 
   if (periodos.length === 0) {
     return 'Recién ingresado';

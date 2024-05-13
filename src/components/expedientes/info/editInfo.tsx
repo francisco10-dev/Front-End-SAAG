@@ -46,10 +46,10 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData, reload}: Props) =
   const [domicilio, setDomicilio] = useState(colaborador?.domicilio);
   const [fechaNacimiento, setFechaNacimiento] = useState(colaborador?.fechaNacimiento);
   const [unidad, setUnidad] = useState(colaborador?.unidad);
-  const [tipoJornada, setJornada] = useState(colaborador?.tipoJornada);
+  const [tipoJornada, setTipoJornada] = useState(colaborador?.tipoJornada);
   const [equipo, setEquipo] = useState(colaborador?.equipo);
   const [estado, setEstado ] = useState(colaborador?.estado); 
-  const [estadoRazon, setRazon] = useState<string | null>(null);
+  const [estadoRazon, setEstadoRazon] = useState<string | null>(null);
   const [idPuesto, setIdPuesto] = useState(colaborador?.puesto?.idPuesto);
   const [fechaIngreso, setFechaIngreso] = useState(colaborador?.fechaIngreso);
   const [fechaSalida, setFechaSalida] = useState(colaborador?.fechaSalida);
@@ -58,6 +58,18 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData, reload}: Props) =
   const [form] = Form.useForm();
   const [puestos, setPuestos] = useState<Puesto[]>([]);
   const [openP, setOpenP] = useState(false);
+
+  useEffect(() => {
+    form.setFieldsValue({
+      fechaNacimiento: colaborador?.fechaNacimiento ? dayjs(colaborador.fechaNacimiento) : null,
+      fechaIngreso: colaborador?.fechaIngreso ? dayjs(colaborador.fechaIngreso) : null,
+      fechaSalida: colaborador?.fechaSalida ? dayjs(colaborador.fechaSalida) : null,
+    });
+  }, [colaborador?.fechaNacimiento, colaborador?.fechaSalida, colaborador?.fechaIngreso, form]);
+
+  useEffect(() => {
+    loadPuestos();
+  }, []);
 
   if(!colaborador){
     return <div>No se encontró el expediente</div>
@@ -88,7 +100,7 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData, reload}: Props) =
   };
 
   const changeEstado = (value: string) =>{
-    setRazon(value);
+    setEstadoRazon(value);
     if(value){
       const newDate = new Date();
       const fechaValida = moment(newDate).format("YYYY-MM-DD");
@@ -139,15 +151,6 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData, reload}: Props) =
   };
 
 
-  useEffect(() => {
-    form.setFieldsValue({
-      fechaNacimiento: colaborador.fechaNacimiento ? dayjs(colaborador.fechaNacimiento) : null,
-      fechaIngreso: colaborador.fechaIngreso ? dayjs(colaborador.fechaIngreso) : null,
-      fechaSalida: colaborador.fechaSalida ? dayjs(colaborador.fechaSalida) : null,
-    });
-  }, [colaborador.fechaNacimiento, colaborador.fechaSalida, colaborador.fechaIngreso, form]);
-
-  
   const setNacimiento = (_date: any, dateString: any) => {
     if(dateString && dateString.trim() !== ""){
       const fechaValida = moment(dateString, "DD-MM-YYYY").format("YYYY-MM-DD");
@@ -155,7 +158,6 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData, reload}: Props) =
     }
   }
 
-  
   const setIngreso = (_date: any, dateString: any) => {
     if(dateString && dateString.trim() !== ""){
       const fechaValida = moment(dateString, "DD-MM-YYYY").format("YYYY-MM-DD");
@@ -163,7 +165,6 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData, reload}: Props) =
    }
   }
 
-  
   const setSalida = (_date: any, dateString: any) => {
     if (dateString && dateString.trim() !== "") {
       const fechaValida = moment(dateString, "DD-MM-YYYY").format("YYYY-MM-DD");
@@ -197,10 +198,6 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData, reload}: Props) =
     }
   };
 
-  useEffect(() => {
-    loadPuestos();
-  }, []);
-  
   const handleChangePuesto = (id: number) => {
     setIdPuesto(id);
   }
@@ -333,7 +330,7 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData, reload}: Props) =
             style={{ width: '150%' }}
           >
               <Select
-                onChange={setJornada}
+                onChange={setTipoJornada}
                 options={[
                   { value: 'Diurna', label: 'Diurna' },
                   { value: 'Nocturna', label: 'Nocturna' },
@@ -373,7 +370,7 @@ const EditInfo = ({colaborador, setIsEdit, imageUrl, loadData, reload}: Props) =
               <Form.Item
                   name="razon"
                   label="Indique"
-                  initialValue={estadoRazon ? estadoRazon : ''}
+                  initialValue={estadoRazon || ''}
                   rules={[{ required: true, message: 'Complete este campo' }]}
                 >
                   <Select

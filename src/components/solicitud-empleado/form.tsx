@@ -45,7 +45,7 @@ const Formulario = () => {
   const [openUploader, setOpenUploader] = useState(true);
   const [showModal, setShowModal] = useState(false); // Estado para controlar la visibilidad del modal
   const [userChoice, setUserChoice] = useState<string | null>(null); // Estado para almacenar la elección del usuario
-  const [userSelect, setUserSelect] = useState<ColaboradorOption | null>(null);
+  const [_userSelect, setUserSelect] = useState<ColaboradorOption | null>(null);
   const [form] = Form.useForm();
   const dateFormat = 'DD/MM/YYYY';
   const [userChoiceDocument, setUserChoiceDocument] = useState<string>('0'); // Cambiado a string

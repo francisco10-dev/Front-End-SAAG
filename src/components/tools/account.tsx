@@ -9,14 +9,13 @@ import { useAuth } from '../../authProvider';
 import LogoutIcon from '@mui/icons-material/Logout';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LockClockIcon from '@mui/icons-material/LockClock';
-import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Avatar } from '@mui/material';
 
 export default function AccountPopover() {
   const [open, setOpen] = useState(null);
   const navigate = useNavigate();
-  const { userRole,logout } = useAuth();
+  const { userRole,logout, photo } = useAuth();
 
   const settings = [
     { icon: <LockClockIcon sx={{ marginRight: 1 }} />, text: 'Administración', onClick: () => navigate('/administrador'), role: 'admin' },
@@ -31,16 +30,23 @@ export default function AccountPopover() {
     handleClose();
     const confirmed = await showConfirmation();
     if (confirmed) {
-      try {
-        toast.loading('Cerrando sesión...', { autoClose: false, position: 'bottom-center' });
-        logout();
-      } finally {
-        toast.dismiss();
-      }
+      logout();
     }
   };
 
   const handleOpen = (event:any) => setOpen(event.currentTarget);
+
+  const renderAvatar = () => {
+    if(photo){
+      return (
+        <Avatar src={photo} sx={{ width: 30, height: 30 }}/>
+      );
+    }else{
+      return (
+        <Avatar sx={{ width: 30, height: 30 }}/>
+      );
+    }
+  }
 
   return (
     <>
@@ -50,7 +56,7 @@ export default function AccountPopover() {
           color: 'white',
         }}
       >
-        <Avatar  sx={{ width: 30, height: 30 }}/>
+        {renderAvatar()}
       </IconButton>
       <Popover
         open={!!open}
@@ -86,7 +92,6 @@ export default function AccountPopover() {
           <LogoutIcon sx={{ marginRight: 1 }} />Cerrar sesión
         </MenuItem>
       </Popover>
-      <ToastContainer />
     </>
   );
 }

@@ -23,7 +23,7 @@ interface TabPanelProps {
 const { Option } = Select;
 
 
-function CustomTabPanel(props: TabPanelProps) {
+function CustomTabPanel(props: Readonly<TabPanelProps>) {
   const { children, value, index, ...other } = props;
 
   return (
@@ -50,7 +50,7 @@ function a11yProps(index: number) {
   };
 }
 
-export default function TabsLicencias(props:{idColaborador: number}) {
+export default function TabsLicencias(props: Readonly<{idColaborador: number}>) {
 
   const {idColaborador} = props;
   const [id, setId] = useState(idColaborador);
@@ -99,6 +99,8 @@ export default function TabsLicencias(props:{idColaborador: number}) {
       }
   };
 
+  const selectedDays = () => daysToExpire !== 6 ? daysToExpire : customDayToExpire;
+
   const updateData = () => {
     const currentDate = new Date();
 
@@ -110,7 +112,7 @@ export default function TabsLicencias(props:{idColaborador: number}) {
     const upcomingExpirationsArray = licenses.filter((license) => {
       const dateToCheck = parseISO(license.fechaVencimiento);
       return isBefore(dateToCheck, currentDate) ? false :
-        isBefore(dateToCheck, addDays(currentDate, (daysToExpire !== 6 ? daysToExpire : customDayToExpire) || 15));
+        isBefore(dateToCheck, addDays(currentDate, selectedDays() || 15));
     });
 
     upcomingExpirationsArray.sort((a, b) => {
@@ -128,8 +130,8 @@ export default function TabsLicencias(props:{idColaborador: number}) {
     setExpiredLicenses(expiredLicensesArray);
   };
 
-  //@ts-ignore
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+  
+  const handleChange = (_event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 

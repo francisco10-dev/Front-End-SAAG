@@ -6,16 +6,14 @@ import { useNavigate } from 'react-router-dom';
 import CurrentNavigation from './navigation';
 import AccountPopover from './account';
 import AlertPopover from './alert';
-import { Box } from '@mui/material';
+import { Box, useMediaQuery } from '@mui/material';
 import { items as options} from './options';
 import MenuIcon from '@mui/icons-material/Menu';
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
-import { useMediaQuery } from '@mui/material';
 import UserInfo from './userInfo';
 import AccountInfo from './accountInfo';
 import { useAuth } from '../../authProvider';
-import { SendOutlined } from '@ant-design/icons';
-import {FileOutlined } from '@ant-design/icons';
+import { SendOutlined, FileOutlined } from '@ant-design/icons';
 
 const optionsEmpleado = [
   {
@@ -50,7 +48,7 @@ const Main: React.FC = () => {
   const [open, setOpen] = useState(true);
   const { userRole } = useAuth();
   const [selectedKey, setSelectedKey] = useState<string>(() => {
-    return localStorage.getItem('selectedKey') || '1';
+    return localStorage.getItem('selectedKey') ?? '1';
   });
 
   const routeMap: Record<string, string> = {

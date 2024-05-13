@@ -21,7 +21,7 @@ interface Data{
     idTelefono: number;
 }
 
-export default function PhoneNumbers({idColaborador}: Prop) {
+export default function PhoneNumbers({idColaborador}: Readonly<Prop>) {
 
     const service = new ExpedienteService();
     const [phoneNumbers, setPhoneNumbers] = useState<Data[]>([]);
