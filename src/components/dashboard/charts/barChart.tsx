@@ -1,6 +1,15 @@
 import { useMemo } from "react";
 import PropTypes from "prop-types";
-import { BarChart} from '@mui/x-charts/BarChart';
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
 import Card from "@mui/material/Card";
 import Divider from "@mui/material/Divider";
 import Icon from "@mui/material/Icon";
@@ -8,6 +17,8 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import { } from '@mui/x-charts';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+
+
 
 interface BarCardProps {
     color: string;
@@ -23,9 +34,65 @@ interface BarCardProps {
     info: string;
 }
 
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 function BarCard({color, title, description, chart, info }: BarCardProps) {
-   
+    const chartData = {
+        labels: chart.labels,
+        datasets: [{
+          label: chart.datasets.label,
+          data: chart.datasets.data,
+          backgroundColor: "rgb(73, 163, 241)",
+          borderWidth: 0,
+          weight: 5,
+          borderRadius: 4,
+          fill: false,
+          maxBarThickness: 35,
+        }]
+      };
+      
+      
+    
+      const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+        },
+        scales: {
+          y: {
+            grid: {
+              drawBorder: false,
+              display: true,
+              drawOnChartArea: true,
+              drawTicks: false,
+              borderDash: [5, 5],
+              color: "#b2b9bf",
+            },
+            ticks: {
+              display: true,
+              padding: 10,
+              color: "white",
+            },
+          },
+          x: {
+            grid: {
+              drawBorder: false,
+              display: false,
+              drawOnChartArea: true,
+              drawTicks: true,
+            },
+            ticks: {
+              display: true,
+              color: "white",
+              padding: 10,
+            },
+          },
+        },
+    };
+
     return (
         <Card sx={{ height: "100%", overflow: "visible", overflowWrap: "break-word",position: "relative"}}>
             <Box padding="1rem" > 
@@ -35,20 +102,18 @@ function BarCard({color, title, description, chart, info }: BarCardProps) {
                             bgcolor= {color}
                             py={2}
                             pr={0.5}
-                            mt={-4.6}
-                            height={200}
-                            borderRadius= "0.75rem"
+                            mt={-5}
+                            height={210}
+                            borderRadius= "0.5rem"
+                            boxShadow= "rgba(0, 0, 0, 0.14) 0rem 0.25rem 1.25rem 0rem, rgba(0, 187, 212, 0.4) 0rem 0.4375rem 0.625rem -0.3125rem"
                         >
               
-                            <BarChart
-                                dataset={chart.labels.map((label, index) => ({ label, value: chart.datasets.data[index] }))}
-                                xAxis={[{scaleType: "band", dataKey: 'label' }]}
-                                series={[{ dataKey: 'value', label: chart.datasets.label }]}
-                                height={200} width={350}
+                            <Bar
+                                 data={chartData} options={chartOptions} redraw
                             />
                         </Box>
                     ),
-                    [chart.datasets.data, chart.datasets.label, chart.labels, color]
+                    [chart, color]
                 )}
                 <Box pt={3} pb={1} px={1}>
                     <Typography variant="h6" fontSize="19px" fontWeight="400" textTransform="capitalize" fontFamily= 'Gotham' >

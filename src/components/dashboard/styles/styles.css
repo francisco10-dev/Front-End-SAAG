@@ -4,3 +4,44 @@
   box-shadow: rgba(0, 0, 0, 0.1) 0rem 0.25rem 0.375rem -0.0625rem;
 
 }
+.custom-column {
+  color: #333;
+  font-size: 14px;
+  font-family: "Gotham";
+}
+
+
+.custom-table {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-collapse: collapse;
+}
+
+.custom-table th {
+  background-color: #333;
+  font-family: "Gotham";
+  color: #fff;
+  font-size: 14px;
+  text-align: center;
+  padding: 10px; 
+  border: 1px solid #ddd; 
+  border-radius: 5px;
+}
+
+.custom-table tbody tr:nth-child(even) {
+  background-color: #f0f8ff; 
+}
+
+.custom-table tbody tr:nth-child(odd) {
+  background-color: white;
+}
+
+.custom-table tbody tr {
+  border-bottom: 1px solid #cccccc; 
+}
+
+.custom-table td {
+  border-top: 1px solid #cccccc; 
+  border-bottom: 1px solid #cccccc; 
+  padding: 8px; 
+}

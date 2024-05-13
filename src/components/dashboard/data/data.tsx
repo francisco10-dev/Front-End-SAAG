@@ -1,32 +1,36 @@
 import SolicitudService from "../../../services/solicitud.service";
 import ColaboradorService from "../../../services/colaborador.service";
+import {fetchData} from '../data/cacheData';
 
 
-export async function getAbsenceIndicators() {
-  const solicitudService = new SolicitudService();
-  const employeeService = new ColaboradorService();
+export async function getAbsenceIndicators(): Promise<number[] | null> {
+  return fetchData<number[] | null>(
+      async () => {
+          const solicitudService = new SolicitudService();
+          const employeeService = new ColaboradorService();
 
-  try {
-    const colaboradores = await employeeService.obtenerColaboradores();
-    const solicitudes = await solicitudService.getSolicitudes();
-    
+          try {
+              const colaboradores = await employeeService.obtenerColaboradores();
+              const solicitudes = await solicitudService.getSolicitudes();
 
-    const ausencias = 
-solicitudes.filter(solicitud => solicitud.estado === "Aprobado");
-    const indicadoresMeses: number[] = [];
+              const ausencias = solicitudes.filter(solicitud => solicitud.estado === "Aprobado");
+              const indicadoresMeses: number[] = [];
 
+              for (let mes = 0; mes < 12; mes++) {
+                  const indicadorMes = calcularIndicadorAusentismoMes(ausencias, colaboradores, mes);
+                  indicadoresMeses.push(indicadorMes);
+              }
 
-    for (let mes = 0; mes < 12; mes++) {
-      const indicadorMes = calcularIndicadorAusentismoMes(ausencias, colaboradores, mes);
-      indicadoresMeses.push(indicadorMes);
-    }
-
-    return indicadoresMeses;
-  } catch (error) {
-    console.error('Error fetching absence data:', error);
-    return null;
-  }
+              return indicadoresMeses;
+          } catch (error) {
+              console.error('Error fetching absence data:', error);
+              return null;
+          }
+      },
+      'absenceIndicators'
+  );
 }
+
 
 const calcularIndicadorAusentismoMes = (solicitudes: any[], colaboradores: any[], mes: number): number => {
   const hoy = new Date();
@@ -105,4 +109,3 @@ const obtenerCantidadDiasHabiles = (mes: number, año: number) => {
   }
   return cantidadDiasHabiles;
 };
-

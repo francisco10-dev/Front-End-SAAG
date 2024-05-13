@@ -1,6 +1,8 @@
 import axios from 'axios';
 import axiosApi from '../services/api.service'
 import { Colaborador } from './colaborador.service';
+import {invalidateCache} from '../components/dashboard/data/cacheData';
+
 
 export interface Solicitud {
     idSolicitud: number;
@@ -37,6 +39,7 @@ class SolicitudService {
       const response = await this.axiosInstance.post('/agregar-solicitud/', data);
       if (response.status >= 200 && response.status < 300) {
         this.incrementarContadorLocalStorage();
+        this.limpiarCache();
       }
       return response.data;
     } catch (error) {
@@ -164,6 +167,7 @@ class SolicitudService {
   }
 
   async getComprobante(id: number): Promise<Blob> {
+    // eslint-disable-next-line no-useless-catch
     try {
       const response = await this.axiosInstance.get(`/obtener-comprobante/${id}`, {
         responseType: 'blob', // Configura el tipo de respuesta como blob para manejar datos binarios
@@ -181,6 +185,19 @@ class SolicitudService {
     localStorage.setItem('requestsCount', newCount.toString());
     const event = new Event('contadorActualizado');
     document.dispatchEvent(event);
+    invalidateCache('requestData');
+    invalidateCache('absenceData');
+    invalidateCache('futureAbsenceData');
+    invalidateCache('absenceIndicators');
+    invalidateCache('ultimaSolicitudInfo');
+  }
+
+  limpiarCache() {
+    invalidateCache('requestData');
+    invalidateCache('absenceData');
+    invalidateCache('futureAbsenceData');
+    invalidateCache('absenceIndicators');
+    invalidateCache('ultimaSolicitudInfo');
   }
 }
 

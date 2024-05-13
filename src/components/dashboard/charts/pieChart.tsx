@@ -1,12 +1,14 @@
 import { useMemo } from "react";
 import PropTypes from "prop-types";
-import { PieChart } from '@mui/x-charts/PieChart';
+import { Pie } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import Card from "@mui/material/Card";
 import Divider from "@mui/material/Divider";
 import Icon from "@mui/material/Icon";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";  
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+
 
 interface PieCardProps {
     color: string;
@@ -19,7 +21,49 @@ interface PieCardProps {
     info: string;
 }
 
+ChartJS.register(ArcElement, Tooltip, Legend);
+
 function PieCard({ color, title, description, chart, info }: PieCardProps) {
+
+  const chartData = {
+    labels: chart.labels,
+    datasets: [{
+      data: chart.data,
+      weight: 9,
+      cutout: 0,
+      tension: 0.9,
+      pointRadius: 2,
+      borderWidth: 2,
+      fill: false,
+      backgroundColor: [
+        '#007bff', 
+        '#2e59d9', 
+        '#00bcd4',
+        '#4caf50',
+        '#ffeb3b',
+        '#884EA0',
+        'rgb(236, 64, 122)'
+
+      ],
+    }]
+  };
+  
+  
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+        legend: {
+            display: false,
+        },
+    },
+    interaction: {
+        intersect: false,
+        mode: "nearest" as const, 
+    },
+ };   
+
     return (
       <Card sx={{ height: "100%", overflow: "visible", overflowWrap: "break-word", position: "relative" }}>
         <Box padding="1rem">
@@ -29,20 +73,13 @@ function PieCard({ color, title, description, chart, info }: PieCardProps) {
                 display="flex"
                 bgcolor={color}
                 py={2}
-                mt={-4.6}
-                height={200}
-                borderRadius="0.75rem"
+                mt={-5}
+                height={210}
+                borderRadius= "0.5rem"
+                boxShadow= "rgba(0, 0, 0, 0.14) 0rem 0.25rem 1.25rem 0rem, rgba(0, 187, 212, 0.4) 0rem 0.4375rem 0.625rem -0.3125rem"
                 sx={{ overflow: "visible", overflowWrap: "break-word",  justifyContent:"center", alignItems:"center" }} 
               >
-                <PieChart
-                  series={[{ data: chart.labels.map((label, index) => ({ id: index, value: chart.data[index], label })) }]}
-                  height={240}
-                  width={270}     
-                  legend={
-                  {hidden:true}
-                  }
-                  sx={{paddingLeft:"70px"}}
-                />
+                <Pie data={chartData} options={chartOptions} redraw />
               </Box>
             ),
             [chart, color]

@@ -12,6 +12,7 @@ import ExpedienteService from '../../../services/expediente.service';
 import ColaboradorService from '../../../services/colaborador.service';
 import { isBefore,isAfter, parseISO } from 'date-fns';
 import '../styles/styles.css';
+import CircularProgress from '@mui/material/CircularProgress';
 
 interface Documento {
   idColaborador: number;
@@ -31,7 +32,7 @@ interface Colaborador {
   fechaSalida: string | null;
 }
 
-function Teams() {
+function DashTable() {
   const Service = new ExpedienteService();
   const Service2 = new ColaboradorService();
   const [menu, setMenu] = useState<null | HTMLElement>(null);
@@ -43,12 +44,15 @@ function Teams() {
   const [filteredEmployees, setFilteredEmployees] = useState<Colaborador[]>([]);
   const [dataSourceEmployees, setDataSourceEmployees] = useState<Colaborador[]>([]);
   const [selectedMenu, setSelectedMenu] = useState<string>("Documentos");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const { Option } = Select;
 
   const loadDocuments = async () => {
     try {
+      setIsLoading(true);
       const documentsData = await Service.getDocumentos();
+      setIsLoading(false);
       const filteredData = documentsData.filter(
         documento => (documento.licencia !== null || documento.curso !== null) 
       );
@@ -72,12 +76,13 @@ function Teams() {
       setDataSourceDocuments(dataFilter);
     } catch (error) {
       console.error("Error en la petición:", error);
+      setIsLoading(false);
     }
   };
 
   const filterDocumentsByDays = (days: number) => {
     const currentDate = new Date();
-    const expirationDate = new Date(currentDate.getTime() + days * 24 * 60 * 60 * 1000); // Suma días en milisegundos
+    const expirationDate = new Date(currentDate.getTime() + days * 24 * 60 * 60 * 1000); 
     
     const filtered = dataSourceDocuments.filter((document) => {
       const dateToCheck = parseISO(document.fechaVencimiento);
@@ -212,57 +217,77 @@ function Teams() {
 
   const documentColumns = [
     {
-      title: 'IdColaborador',
+      title: 'ID',
       dataIndex: 'idColaborador',
       key: 'IdColaborador',
+      width: 80,
+      className: 'custom-column' 
     },
     {
       title: 'NombreColaborador',
       dataIndex: 'nombreColaborador',
       key: 'NombreColaborador',
+      width: 200,
+      className: 'custom-column'
     },
     {
       title: 'NombreArchivo',
       dataIndex: 'nombreArchivo',
       key: 'NombreArchivo',
+      width: 200,
+      className: 'custom-column'
     },
     {
-      title: 'Tipo',
+      title: 'TipoDocumento',
       dataIndex: 'tipo',
       key: 'Tipo',
+      width: 200,
+      className: 'custom-column'
     },
     {
       title: 'FechaVencimiento',
       dataIndex: 'fechaVencimiento',
       key: 'FechaVencimiento',
+      width: 100,
+      className: 'custom-column'
     }
   ];
   
   const employeeColumns = [
     {
-      title: 'Id',
+      title: 'ID',
       dataIndex: 'idColaborador',
       key: 'IdColaborador',
+      width: 80,
+      className: 'custom-column' 
     },
     {
       title: 'Nombre',
       dataIndex: 'nombre',
       key: 'Nombre',
+      width: 240,
+      className: 'custom-column'
     },
     {
       title: 'Identificación',
       dataIndex: 'identificacion',
       key: 'Identificacion',
+      width: 170,
+      className: 'custom-column'
     },
     {
       title: 'FechaIngreso',
       dataIndex: 'fechaIngreso',
       key: 'FechaIngreso',
+      width: 150,
+      className: 'custom-column'
     },
     {
       title: 'FechaSalida',
       dataIndex: 'fechaSalida',
       key: 'FechaSalida',
+      width: 150,
+      className: 'custom-column'
     }
   ];
 
@@ -320,23 +345,30 @@ function Teams() {
         </Box>
         {renderMenu}
       </Box>
-      <Box>
-        {selectedMenu === "Colaboradores" ? (
-          <Table
-            dataSource={filteredEmployees}
-            columns={employeeColumns}
-            pagination={{ pageSize: 5 }}
-          />
+      <Box  display="flex" justifyContent="center" alignItems="center" minHeight="300px">
+      {isLoading ? ( 
+          <CircularProgress /> 
         ) : (
-          <Table
-            dataSource={filteredDocuments}
-            columns={documentColumns}
-            pagination={{ pageSize: 5 }}
-            scroll={{x: '100%'}}
-          />
+          selectedMenu === "Colaboradores" ? (
+            <Table
+              dataSource={filteredEmployees}
+              columns={employeeColumns}
+              pagination={{ pageSize: 6 }}
+              scroll={{x: '100%'}}
+              className="custom-table"
+            />
+          ) : (
+            <Table
+              dataSource={filteredDocuments}
+              columns={documentColumns}
+              pagination={{ pageSize: 6 }}
+              scroll={{x: '100%'}}
+              className="custom-table"
+            />
+          )
         )}
       </Box>
     </Card>
   );
 }
-export default Teams;
+export default DashTable;

@@ -3,6 +3,7 @@
     import { Solicitud } from './solicitud.service';
     import { Puesto } from './puesto.service';
     import { Usuario } from './usuario.service';
+    import {invalidateCache} from '../components/dashboard/data/cacheData';
 
       
     export interface Colaborador {
@@ -37,6 +38,7 @@
         const response = await this.axiosInstance.post('/agregar-colaborador/', data);
         if (response.status >= 200 && response.status < 300) {
           this.incrementarContadorLocalStorage();
+          this.limpiarCache();
         }
         return response;
         } catch (error) {
@@ -228,12 +230,10 @@
      }
 
      async getPhoto(id: number): Promise<AxiosResponse<any, any>> {
-      try {
+
         const response = await this.axiosInstance.get(`/documentos/obtener-foto/${id}`);
         return response;
-      } catch (error) {
-        throw error; 
-      }
+
     }
       
     incrementarContadorLocalStorage() {
@@ -242,6 +242,13 @@
       localStorage.setItem('employeesCount', newCount.toString());
       const event = new Event('contadorActualizado');
       document.dispatchEvent(event);
+      invalidateCache('employeeData');
+      invalidateCache('employeeByUnitData');
+    }
+
+    limpiarCache() {
+      invalidateCache('employeeData');
+      invalidateCache('employeeByUnitData');
     }
 }
 

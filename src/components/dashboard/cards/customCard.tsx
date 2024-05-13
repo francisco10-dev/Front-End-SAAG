@@ -8,7 +8,7 @@ import '../styles/styles.css'
 
 function CustomCard({ color, title, count, icon, route }: { color: string, title: string, count: string | number, icon: React.ReactNode, route: string }) {
   return (
-    <Card className="custom-card" sx={{ overflow: "visible", height:"150px"}}>
+    <Card className="custom-card" sx={{ overflow: "visible", height:"160px"}}>
       <Box display="flex" justifyContent="space-between" pt={1} px={2}>
         <Box
           sx={{
@@ -29,11 +29,11 @@ function CustomCard({ color, title, count, icon, route }: { color: string, title
             {icon}
 
         </Box>
-        <Box textAlign="right" lineHeight={1.25} mb={3}>
-          <Typography variant="button"  fontWeight="bolder" color="grey" fontSize="10px" fontFamily= 'Gotham' >
+        <Box textAlign="right" lineHeight={1.25} mb={2}>
+          <Typography variant="button"  fontWeight="bolder" color="grey" fontSize="11px" fontFamily= 'Gotham' >
             {title}
           </Typography>
-          <Typography variant="h4" >{count}</Typography>
+          <Typography variant="h4" sx={{marginTop:"10px"}} >{count}</Typography>
         </Box>
       </Box>
       <Divider />

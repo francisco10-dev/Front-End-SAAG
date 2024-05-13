@@ -22,7 +22,7 @@ import moment from 'moment';
 
 
 
-function Orders() {
+function RecentActivity() {
   const auditService = new AuditService();
   const [auditLogs, setAuditLogs] = useState<Auditoria[]>([]);
 
@@ -57,7 +57,7 @@ function Orders() {
           </Grid>
           {/* Contenedor del timeline */}
           <Grid item xs={3}>
-            <Box mt={3} ml={7}>
+            <Box mt={3} ml={8}>
               <Timeline position="left">
                 {auditLogs.slice(0, 5).map((log,index) => (
                   <TimelineItem key={log.idAuditoria}>
@@ -87,10 +87,10 @@ function Orders() {
             {auditLogs.slice(0, 5).map(log => (
               <Box key={log.idAuditoria} display="flex" alignItems="center" >
                 <Box mb={2.5}>
-                  <Typography variant="subtitle1" color="text.primary" fontWeight="medium">
+                  <Typography variant="subtitle1" color="text.primary" fontWeight="405" fontFamily="Gotham">
                     {log.nombre}
                   </Typography>
-                  <Typography variant="caption" color="text.secondary">
+                  <Typography variant="caption" color="text.secondary" fontFamily="Gotham">
                   {fechaFormateada(log.fecha)}
                   </Typography>
                 </Box>
@@ -137,7 +137,7 @@ function getIcon(accion: string): JSX.Element {
   }
 }
 
-export default Orders;
+export default RecentActivity;
 
 
 

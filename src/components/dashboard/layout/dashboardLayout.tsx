@@ -10,14 +10,13 @@ function DashboardLayout({ children }: DashboardLayoutProps) {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    // Simulación de cambio de layout
+
     console.log(`Cambiando a layout personalizado en la ruta: ${pathname}`);
   }, [pathname]);
 
   return (
     <div
       style={{
-        padding: "24px",
         position: "relative",
       }}
     >

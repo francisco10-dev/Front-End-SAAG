@@ -1,144 +1,140 @@
 import SolicitudService from '../../../services/solicitud.service';
 import colaboradorService from '../../../services/colaborador.service';
+import {fetchData} from '../data/cacheData';
 
 
-export async function getEmployyesByUnit() {
-  const employeeService = new colaboradorService();
+export async function getEmployyesByUnit(): Promise<{ labels: string[], data: number[] }> {
+  return fetchData<{ labels: string[], data: number[] }>(
+      async () => {
+          const employeeService = new colaboradorService();
+          const employees = await employeeService.obtenerColaboradores();
+          const colaboradoresPorUnidad: { [unidad: string]: number } = {};
 
-  try {
-    const colaboradores = await employeeService.obtenerColaboradores();
-    const colaboradoresPorUnidad: { [unidad: string]: number } = {}; 
+          employees.forEach(colaborador => {
+              const unidad = colaborador.unidad || 'Sin unidad';
 
-  
-    colaboradores.forEach(colaborador => {
-      const unidad = colaborador.unidad || 'Sin unidad'; 
+              if (unidad in colaboradoresPorUnidad) {
+                  colaboradoresPorUnidad[unidad]++;
+              } else {
+                  colaboradoresPorUnidad[unidad] = 1;
+              }
+          });
 
-      if (unidad in colaboradoresPorUnidad) {
-        colaboradoresPorUnidad[unidad]++;
-      } else {
-        colaboradoresPorUnidad[unidad] = 1;
-      }
-    });
-
-    
-    const pieChartData = {
-      labels: Object.keys(colaboradoresPorUnidad), 
-      data: Object.values(colaboradoresPorUnidad) 
-    };
-
-    return pieChartData;
-  } catch (error) {
-    console.error('Error fetching employee data:', error);
-    return [];
-  }
+          const pieChartData = {
+              labels: Object.keys(colaboradoresPorUnidad),
+              data: Object.values(colaboradoresPorUnidad)
+          };
+          return pieChartData;
+      },
+      'employeeByUnitData'
+  );
 }
 
-export async function getUltimoIngreso() {
-  const employeeService = new colaboradorService();
+export async function getUltimoIngreso(): Promise<string | null> {
+  return fetchData<string | null>(
+      async () => {
+          const employeeService = new colaboradorService();
 
-  try {
-    const colaboradores = await employeeService.obtenerColaboradores();
+          try {
+              const colaboradores = await employeeService.obtenerColaboradores();
 
-    if (!colaboradores || colaboradores.length === 0) {
-      console.log('No hay colaboradores registrados.');
-      return null;
-    }
+              if (!colaboradores || colaboradores.length === 0) {
+                  console.log('No hay colaboradores registrados.');
+                  return null;
+              }
 
+              const colaboradoresIngresados = colaboradores.filter(colaborador =>
+                  colaborador.fechaIngreso <= obtenerFechaActual()
+              );
 
-    const colaboradoresIngresados = colaboradores.filter(colaborador =>
-      colaborador.fechaIngreso <= obtenerFechaActual()
-    );
+              if (colaboradoresIngresados.length === 0) {
+                  console.log('No hay colaboradores registrados antes de la fecha actual.');
+                  return null;
+              }
 
+              colaboradoresIngresados.sort((a, b) => b.fechaIngreso.localeCompare(a.fechaIngreso));
+              const ultimoIngreso = colaboradoresIngresados[0].fechaIngreso;
+              const fechaActual = obtenerFechaActual();
+              const esHoy = esMismoDia(fechaActual, ultimoIngreso);
+              const diasTranscurridos = calcularDiasTranscurridos(fechaActual, ultimoIngreso);
 
-    if (colaboradoresIngresados.length === 0) {
-      console.log('No hay colaboradores registrados antes de la fecha actual.');
-      return null;
-    }
-
-    colaboradoresIngresados.sort((a, b) => b.fechaIngreso.localeCompare(a.fechaIngreso));
-
-    
-    const ultimoIngreso = colaboradoresIngresados[0].fechaIngreso;
-
-
-    const fechaActual = obtenerFechaActual();
-
-    const esHoy = esMismoDia(fechaActual,  ultimoIngreso);
-    const diasTranscurridos = calcularDiasTranscurridos(fechaActual, ultimoIngreso);
-
-  if (esHoy) {
-    return 'Ultimo ingreso fue hoy';
-  }else if(diasTranscurridos === 1) {
-    return `Último ingreso hace ${diasTranscurridos} día`;
-  }else{
-    return `Último ingreso hace ${diasTranscurridos} días`;
-  }
-  } catch (error) {
-    console.error('Error fetching employee data:', error);
-    return null;
-  }
+              if (esHoy) {
+                  return 'Último ingreso fue hoy';
+              } else if (diasTranscurridos === 1) {
+                  return `Último ingreso hace ${diasTranscurridos} día`;
+              } else {
+                  return `Último ingreso hace ${diasTranscurridos} días`;
+              }
+          } catch (error) {
+              console.error('Error fetching employee data:', error);
+              return null;
+          }
+      },
+      'ultimoIngreso'
+  );
 }
 
-export async function getRequestsInfo() {
-  const requestService = new SolicitudService();
 
-  try {
-    const solicitudes = await requestService.getSolicitudes();
-    const fechaActual = new Date();
-    const diaActual = fechaActual.getDay(); // 0: Domingo, 1: Lunes, ..., 6: Sábado
-    const fechaFinSemana = new Date(fechaActual.getTime() - (diaActual + 1) * 24 * 60 * 60 * 1000); // Resta los días para llegar al domingo
-    const fechaInicioSemana = new Date(fechaFinSemana.getTime() - 6 * 24 * 60 * 60 * 1000); // Resta 6 días para llegar al lunes
-    const solicitudesPorDia: number[] = [0, 0, 0, 0, 0, 0, 0]; // Arreglo para almacenar las solicitudes por día
+export async function getRequestsInfo(): Promise<number[]> {
+  return fetchData<number[]>(
+      async () => {
+          const requestService = new SolicitudService();
+          const solicitudes = await requestService.getSolicitudes();
+          const fechaActual = new Date();
+          const diaActual = fechaActual.getDay();
+          const fechaFinSemana = new Date(fechaActual.getTime() - (diaActual + 1) * 24 * 60 * 60 * 1000);
+          const fechaInicioSemana = new Date(fechaFinSemana.getTime() - 6 * 24 * 60 * 60 * 1000); 
+          const solicitudesPorDia: number[] = [0, 0, 0, 0, 0, 0, 0]; 
 
-    // Recorre las solicitudes y asigna las que estén dentro del rango de la última semana a sus respectivos días en el arreglo
-    solicitudes.forEach(solicitud => {
-      const fechaSolicitud = new Date(solicitud.fechaSolicitud);
-      
-      if (fechaSolicitud >= fechaInicioSemana && fechaSolicitud <= fechaFinSemana) {
-        const dia = fechaSolicitud.getDay(); 
-        solicitudesPorDia[dia]++;
-      }
-    });
-    return solicitudesPorDia;
-  } catch (error) {
-    console.error('Error fetching request data:', error);
-    return [];
-  }
+          solicitudes.forEach(solicitud => {
+              const fechaSolicitud = new Date(solicitud.fechaSolicitud);
+              
+              if (fechaSolicitud >= fechaInicioSemana && fechaSolicitud <= fechaFinSemana) {
+                  const dia = fechaSolicitud.getDay(); 
+                  solicitudesPorDia[dia]++;
+              }
+          });
+          return solicitudesPorDia;
+      },
+      'requestsInfo'
+  );
 }
 
-export async function getUltimaSolicitudInfo() {
-  const requestService = new SolicitudService();
+export async function getUltimaSolicitudInfo(): Promise<string | null> {
+  return fetchData<string | null>(
+      async () => {
+          const requestService = new SolicitudService();
 
-  try {
-    const solicitudes = await requestService.getSolicitudes()
-  if (!solicitudes || solicitudes.length === 0) {
-    console.log('No hay solicitudes registradas.');
-    return null;
-  }
+          try {
+              const solicitudes = await requestService.getSolicitudes();
 
+              if (!solicitudes || solicitudes.length === 0) {
+                  console.log('No hay solicitudes registradas.');
+                  return null;
+              }
 
-  const ultimaSolicitud = solicitudes[solicitudes.length - 1];
-  const fechaActual = obtenerFechaActual();
+              const ultimaSolicitud = solicitudes[solicitudes.length - 1];
+              const fechaActual = obtenerFechaActual();
+              const fechaSolicitud = ultimaSolicitud.fechaSolicitud;
+              const esHoy = esMismoDia(fechaActual, fechaSolicitud);
+              const diasTranscurridos = calcularDiasTranscurridos(fechaActual, fechaSolicitud);
 
-
-  const fechaSolicitud = ultimaSolicitud.fechaSolicitud;
-
-
-  const esHoy = esMismoDia(fechaActual, fechaSolicitud);
-  const diasTranscurridos = calcularDiasTranscurridos(fechaActual, fechaSolicitud);
-
-  if (esHoy) {
-    return 'Última solicitud realizada hoy';
-  }else if(diasTranscurridos === 1) {
-    return `Última solicitud hace ${diasTranscurridos} día`;
-  }else {
-    return `Última solicitud hace ${diasTranscurridos} días`;
-  }
-  } catch (error) {
-  console.error('Error fetching request data:', error);
-  return null;
-  }
+              if (esHoy) {
+                  return 'Última solicitud realizada hoy';
+              } else if (diasTranscurridos === 1) {
+                  return `Última solicitud hace ${diasTranscurridos} día`;
+              } else {
+                  return `Última solicitud hace ${diasTranscurridos} días`;
+              }
+          } catch (error) {
+              console.error('Error fetching request data:', error);
+              return null;
+          }
+      },
+      'ultimaSolicitudInfo'
+  );
 }
+
 
 function obtenerFechaActual(): string {
   const fecha = new Date();
@@ -158,3 +154,4 @@ function calcularDiasTranscurridos(fechaActual: string, fechaSolicitud: string):
   const tiempoMilisegundos = fechaActualDate.getTime() - fechaSolicitudDate.getTime();
   return Math.floor(tiempoMilisegundos / (24 * 60 * 60 * 1000));
 }
+

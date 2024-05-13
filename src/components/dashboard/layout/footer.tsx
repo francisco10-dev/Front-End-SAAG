@@ -66,7 +66,7 @@ function Footer({ company, links }: FooterProps) {
             &nbsp;{name}&nbsp;
           </Typography>
         </Link>
-        para una mejor gestión de trabajo
+        para una mejor experiencia de trabajo
       </Box>
       <Box
         component="ul"
