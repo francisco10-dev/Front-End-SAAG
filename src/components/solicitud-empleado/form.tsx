@@ -321,7 +321,7 @@ const Formulario = () => {
           {showModal && <ModalComponent onAdminChoice={handleAdminChoice} />}
         </div>
         <Alert severity="error"><Text className='text'>Solicitud debe hacerse minimo con 7 días de anticipación.</Text></Alert>
-        <img src="../../public/logoACIB.PNG" alt="Logo" style={{ height: 50, width: 200 }}></img>
+        <img src="/logoACIB.png" alt="Logo" style={{ height: 50, width: 200 }}></img>
         <div className="contenedor-campos">
           <div className="columna-1">
             {userChoice === 'solicitudEmpleado' && (

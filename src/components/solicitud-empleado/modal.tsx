@@ -22,4 +22,4 @@ const ModalComponent: React.FC<ModalProps> = ({ onAdminChoice }) => {
   );
 };
 
-export default ModalComponent; // Asegúrate de exportar el componente ModalComponent correctamente
+export default ModalComponent; 
