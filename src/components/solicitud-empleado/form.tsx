@@ -240,10 +240,22 @@ const Formulario = () => {
     reset();
   }
 
+  const validacionEstado =()=>{
+    let estadoValid;
+    if(userRole==="Empleado"){
+      estadoValid="Pendiente"
+    }else if(userRole==="Supervisor"){
+      estadoValid="AprobadoPorJefatura"
+    }else{
+      estadoValid=estado;
+    }
+    return estadoValid;
+  }
+
   const preparedFormData = () => {
     const fechaSolicitud = now.toString();
     let fechaRecibido = (userRole === "admin") ? now.toString() : '';
-    const estado = (userRole !== "admin") ? "Pendiente" : '';
+    const estadoSend=validacionEstado();
     const formData = new FormData();
     formData.append('conGoceSalarial', goceSalarial.toString());
     formData.append('tipoSolicitud', String(tipoSolicitud));
@@ -260,7 +272,7 @@ const Formulario = () => {
     formData.append('horaFin', horaFin?.toString() ?? '');
     formData.append('sustitucion', String(sustitucion));
     formData.append('nombreSustituto', nombreSustituto);
-    formData.append('estado', String(estado));
+    formData.append('estado', String(estadoSend));
     formData.append('comentarioTalentoHumano', String(comentarioTalentoHumano));
     if (selectedFile[0] && selectedFile[0].originFileObj) {
       formData.append('comprobante', selectedFile[0].originFileObj);

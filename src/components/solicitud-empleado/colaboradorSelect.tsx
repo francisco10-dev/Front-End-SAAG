@@ -23,8 +23,8 @@ const ColaboradorSelect: React.FC<{ onSelect: (option: ColaboradorOption) => voi
           label: colaborador.nombre,
           colaborador: colaborador,
           supervisor: colaborador.supervisor || null
+          
         }));
-
         setColaboradores(colaboradoresOptions);
         setLoading(false);
       } catch (error) {
