@@ -107,9 +107,10 @@ export default function TabsSolicitudAdmin() {
         <DataTable isLoading={loading} 
         rows={
           approved
-          .filter(item => item.fechaInicio && new Date(item.fechaInicio) < new Date())
+          .filter(item => item.fechaInicio && new Date(item.fechaInicio) <= new Date() && item.fechaFin && new Date(item.fechaFin) >= new Date())
           .sort((a, b) => {
-          if (!a.fechaInicio || !b.fechaInicio) return 0;
+          if (!a.fechaInicio || !b.fechaInicio) 
+          return 0;
           return new Date(b.fechaInicio).getTime() - new Date(a.fechaInicio).getTime();})}
         load={loadRequests} />
       </CustomTabPanel>
