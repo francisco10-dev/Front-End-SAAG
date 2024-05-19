@@ -3,28 +3,21 @@ import { DataGrid, GridColDef, GridRowSelectionModel, esES } from '@mui/x-data-g
 import TextField from '@mui/material/TextField';
 import { Solicitud } from '../../services/solicitud.service';
 import *  as utils from './utils'; 
-import EditSolicitudModal from './editRequest';
 import * as  tools from './gridToolBar';
 import { ToastContainer } from 'react-toastify';
 
-
 export interface DataTableProps {
   rows: any[];
-  // deleteRows: (ids: number[]) => void; // Método que no vas a usar
   isLoading: boolean;
-  // onSolicitudUpdate: (id: number, status: string) => void; // Método que no vas a usar
   load: () => void;
 }
-//@ts-ignore
-export default function DataTable({rows, /*deleteRows,*/ isLoading, /*onSolicitudUpdate,*/ load}: DataTableProps) {
+export default function DataTable({rows,isLoading,}: DataTableProps) {
 
   const [filterText, setFilterText] = useState('');
   const [filteredRows, setFilteredRows] = useState(rows); 
   const [selectedRow ,setSelectedRow] = useState<Solicitud | null>(null);
   const getRowId = (row: Solicitud) => row.idSolicitud;
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedSolicitud] = useState<Solicitud | null>(null);
   selectedRow
 
   const columns: GridColDef[] = [
@@ -37,22 +30,6 @@ export default function DataTable({rows, /*deleteRows,*/ isLoading, /*onSolicitu
     {field: 'horaFin', headerName: 'Hora De fin', width: 115,},
     { field: 'nombreColaborador', headerName: 'Colaborador', width: 115 },
   ];
-
-  // const onEditClick = () => { // Método que no vas a usar
-  //   const data = rows.find((solicitud) => solicitud.idSolicitud === selectedIds[0]);
-  //   if (data) {
-  //     setSelectedSolicitud(data);
-  //     setIsModalOpen(true);
-  //   }
-  // };
-
-  // const onDeleteClick = async () => { // Método que no vas a usar
-  //   const confirmation= await utils.showConfirmation();
-  //   if(confirmation) {
-  //       await utils.dropRequests(selectedIds);
-  //       deleteRows(selectedIds)
-  //   }
-  // };
   
   const applyFilters = () => {
     const filteredData = rows.filter((row) => filterRow(row));
@@ -112,7 +89,7 @@ export default function DataTable({rows, /*deleteRows,*/ isLoading, /*onSolicitu
           toolbar: tools.CustomToolbar
         }}
         slotProps={{
-          toolbar: { /*onRefresh, onEditClick,onDeleteClick,*/ selectedIds }
+          toolbar: {selectedIds }
         }}
         style={{
             marginBottom: '16px',
@@ -120,7 +97,6 @@ export default function DataTable({rows, /*deleteRows,*/ isLoading, /*onSolicitu
             boxShadow: 'none',
         }}
       /> 
-      <EditSolicitudModal open={isModalOpen} solicitud={selectedSolicitud} onClose={() => setIsModalOpen(false)} onSolicitudUpdate={() => {}} />
         <ToastContainer/>
     </div>
   );
