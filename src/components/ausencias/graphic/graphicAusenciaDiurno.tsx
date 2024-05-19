@@ -13,7 +13,6 @@ import dayjs, { Dayjs } from 'dayjs';
 import './graphicStyle.css'
 import DatePickerRadioGroup from './datePickerRadioGroup';
 
-
 Chart.register(CategoryScale, LinearScale, PointElement, BarElement, Title, Tooltip, Legend, Filler);
 
 const solicitudService = new SolicitudService();
@@ -154,7 +153,6 @@ const BarsDiurno = () => {
       updatedSumaTotalIndicadores[tipo] = updatedSumasIndicadoresPorTipo[tipo];
     });
 
-    //console.log(updatedTiposSolicitudesPorUnidad);
     setTiposSolicitudesPorUnidad(updatedTiposSolicitudesPorUnidad);
     setSumaTotalIndicadores(updatedSumaTotalIndicadores);
     setSumasIndicadoresPorTipo(updatedSumasIndicadoresPorTipo);
@@ -282,7 +280,7 @@ const BarsDiurno = () => {
       x: {
         title: {
           display: true,
-          text: 'Indicador de Ausentismo Diurno',
+          text: 'Indicador de Ausentismo Diurno-Mixto',
           font: {
             size: 21,
           }
