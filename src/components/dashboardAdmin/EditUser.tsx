@@ -20,12 +20,14 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
   const [rol, setRol] = useState('empleado');
   const [idColaborador, setIdColaborador] = useState<number | null>(null);
   const [selectedColaborador, setSelectedColaborador] = useState<ColaboradorOption | null>(null);
+  const [colaboradores, setColaboradores] = useState<ColaboradorOption[]>([]);
+  const [loading, setLoading] = useState(false);
   const service = new UsuarioService();
   const serviceColaborador = new ColaboradorService();
-  const [colaboradores, setColaboradores] = useState<ColaboradorOption[]>([]);
   const [usuarioState, setUsuarioState] = useState<Usuario | null>(null);
 
   useEffect(() => {
+    console.log(usuario);
     setUsuarioState(usuario);
     if (usuario) {
       setNombreUsuario(usuario.nombreUsuario || '');
@@ -35,17 +37,36 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
   }, [usuario]);
 
   const cargarColaboradores = async () => {
+    setLoading(true);
     try {
-      const response = await serviceColaborador.obtenerColaboradores();
+      const [response, todos] = await Promise.all([
+        serviceColaborador.colaboradorSinUsuario(),
+        serviceColaborador.obtenerColaboradores(),
+      ]);
+
+      const colaboradorDelUsuario = todos.find(
+        (colaborador) => colaborador.idColaborador === usuario?.idColaborador
+      );
+
       if (response.length > 0) {
         const options = response.map((colaborador) => ({
           value: colaborador.idColaborador,
           label: colaborador.nombre,
         }));
+
+        if (colaboradorDelUsuario) {
+          options.push({
+            value: colaboradorDelUsuario.idColaborador,
+            label: colaboradorDelUsuario.nombre,
+          });
+        }
+
         setColaboradores(options);
 
         if (usuario) {
-          const currentColaborador = options.find(option => option.value === usuario.idColaborador);
+          const currentColaborador = options.find(
+            (option) => option.value === usuario.idColaborador
+          );
           setSelectedColaborador(currentColaborador || null);
         }
       } else {
@@ -53,6 +74,8 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
       }
     } catch (error) {
       setColaboradores([{ value: 0, label: "Error al cargar colaboradores" }]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -94,11 +117,15 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
           <Input value={nombreUsuario} onChange={(e) => setNombreUsuario(e.target.value)} />
         </Form.Item>
         <Form.Item label="Tipo de Empleado">
-          <AntSelect value={rol} onChange={(value) => setRol(value)} options={[
-            { value: 'admin', label: 'Administrador' },
-            { value: 'supervisor', label: 'Supervisor' },
-            { value: 'empleado', label: 'Empleado' },
-          ]} />
+          <AntSelect
+            value={rol}
+            onChange={(value) => setRol(value)}
+            options={[
+              { value: 'admin', label: 'Administrador' },
+              { value: 'supervisor', label: 'Supervisor' },
+              { value: 'empleado', label: 'Empleado' },
+            ]}
+          />
         </Form.Item>
         <Form.Item label="Nombre del Colaborador">
           <AntSelect
@@ -108,7 +135,8 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
               setIdColaborador(selectedOption?.value || null);
               setSelectedColaborador(selectedOption || null);
             }}
-            options={colaboradores}
+            options={loading ? [{ value: 0, label: 'Cargando...' }] : colaboradores}
+            disabled={loading}
           />
         </Form.Item>
         <Form.Item>

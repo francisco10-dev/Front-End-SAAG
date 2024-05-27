@@ -98,6 +98,7 @@ export default function TabsUsuarioAdmin() {
         if (datosColaborador) {
           return {
             idUsuario: usuario.idUsuario,
+            idColaborador: datosColaborador.idColaborador,
             nombreUsuario: usuario.nombreUsuario,
             rol: usuario.rol,
             nombreColaborador:datosColaborador.nombre,
