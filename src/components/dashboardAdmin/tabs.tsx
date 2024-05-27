@@ -13,6 +13,7 @@ export interface ColabUsuario {
   idUsuario: number;
   nombreUsuario: string;
   rol: string;
+  password?: string;
   nombreColaborador: string;
   correo: string;
 }
@@ -156,7 +157,7 @@ export default function TabsUsuarioAdmin() {
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onUpdate={onUpdateUser}
-        usuario={selectedUsuario ? { ...selectedUsuario, password: ''} : null}
+        usuario={selectedUsuario ? { ...selectedUsuario} : null}
       />
     </Box>
   );

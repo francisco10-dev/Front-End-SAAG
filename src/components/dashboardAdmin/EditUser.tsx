@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Form, Input, Button, message, Select as AntSelect } from 'antd';
 import UsuarioService, { Usuario } from '../../services/usuario.service';
 import ColaboradorService from '../../services/colaborador.service';
-import { Colaborador } from '../../services/colaborador.service';
 
 interface ColaboradorOption {
   value: number;
@@ -22,10 +21,10 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
   const [idColaborador, setIdColaborador] = useState<number | null>(null);
   const [selectedColaborador, setSelectedColaborador] = useState<ColaboradorOption | null>(null);
   const [colaboradores, setColaboradores] = useState<ColaboradorOption[]>([]);
+  const [loading, setLoading] = useState(false);
   const service = new UsuarioService();
   const serviceColaborador = new ColaboradorService();
   const [usuarioState, setUsuarioState] = useState<Usuario | null>(null);
-  const [data, setData] = useState<Colaborador[]>([]);
 
   useEffect(() => {
     console.log(usuario);
@@ -37,19 +36,15 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
     }
   }, [usuario]);
 
-  useEffect(()=> {
-    const loadData = async () => {
-      const response = await serviceColaborador.obtenerColaboradores();
-      setData(response);
-    };
-    loadData();
-  },[]);
-
   const cargarColaboradores = async () => {
+    setLoading(true);
     try {
+      const [response, todos] = await Promise.all([
+        serviceColaborador.colaboradorSinUsuario(),
+        serviceColaborador.obtenerColaboradores(),
+      ]);
 
-      const response = await serviceColaborador.colaboradorSinUsuario();
-      const colaboradorDelUsuario = data.find(
+      const colaboradorDelUsuario = todos.find(
         (colaborador) => colaborador.idColaborador === usuario?.idColaborador
       );
 
@@ -79,6 +74,8 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
       }
     } catch (error) {
       setColaboradores([{ value: 0, label: "Error al cargar colaboradores" }]);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -138,7 +135,8 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
               setIdColaborador(selectedOption?.value || null);
               setSelectedColaborador(selectedOption || null);
             }}
-            options={colaboradores}
+            options={loading ? [{ value: 0, label: 'Cargando...' }] : colaboradores}
+            disabled={loading}
           />
         </Form.Item>
         <Form.Item>
