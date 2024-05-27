@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Input, Button, Select as AntSelect } from 'antd';
-import { toast } from 'react-toastify';
+import { Modal, Form, Input, Button, message, Select as AntSelect } from 'antd';
 import UsuarioService, { Usuario } from '../../services/usuario.service';
 import ColaboradorService from '../../services/colaborador.service';
 
@@ -20,6 +19,7 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
   const [nombreUsuario, setNombreUsuario] = useState('');
   const [rol, setRol] = useState('empleado');
   const [idColaborador, setIdColaborador] = useState<number | null>(null);
+  const [selectedColaborador, setSelectedColaborador] = useState<ColaboradorOption | null>(null);
   const service = new UsuarioService();
   const serviceColaborador = new ColaboradorService();
   const [colaboradores, setColaboradores] = useState<ColaboradorOption[]>([]);
@@ -36,13 +36,18 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
 
   const cargarColaboradores = async () => {
     try {
-      const response = await serviceColaborador.colaboradorSinUsuario();
+      const response = await serviceColaborador.obtenerColaboradores();
       if (response.length > 0) {
         const options = response.map((colaborador) => ({
           value: colaborador.idColaborador,
           label: colaborador.nombre,
         }));
         setColaboradores(options);
+
+        if (usuario) {
+          const currentColaborador = options.find(option => option.value === usuario.idColaborador);
+          setSelectedColaborador(currentColaborador || null);
+        }
       } else {
         setColaboradores([{ value: 0, label: "No hay colaboradores sin usuario" }]);
       }
@@ -52,32 +57,32 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
   };
 
   useEffect(() => {
-    cargarColaboradores();
-  }, []);
+    if (open) {
+      cargarColaboradores();
+    }
+  }, [open]);
 
   const handleSave = async () => {
-    console.log(nombreUsuario + " "+ rol+ " " + idColaborador);
     if (!nombreUsuario || !rol || idColaborador === null) {
-      toast.error('Todos los campos son obligatorios');
+      message.error('Todos los campos son obligatorios');
       return;
     }
 
-    const updatedUsuario = { ...usuarioState };
-    updatedUsuario.nombreUsuario = nombreUsuario;
-    updatedUsuario.rol = rol;
-    updatedUsuario.idColaborador = idColaborador;
+    const updatedUsuario = { ...usuarioState, nombreUsuario, rol, idColaborador };
 
     if (usuario) {
       try {
         const response = await service.actualizarUsuario(usuario.idUsuario, updatedUsuario);
-        toast.success('Usuario actualizado exitosamente' + response);
+        message.success('Usuario actualizado exitosamente');
         setNombreUsuario('');
         setRol('empleado');
         setIdColaborador(null);
+        setSelectedColaborador(null);
         onUpdate(usuario.idUsuario);
         onClose();
       } catch (error) {
-        toast.error('Error al actualizar usuario' + error);
+        console.error('Error al actualizar usuario', error);
+        message.error('Error al actualizar usuario');
       }
     }
   };
@@ -89,16 +94,29 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
           <Input value={nombreUsuario} onChange={(e) => setNombreUsuario(e.target.value)} />
         </Form.Item>
         <Form.Item label="Tipo de Empleado">
-          <Input value={rol} onChange={(e) => setRol(e.target.value)} />
+          <AntSelect value={rol} onChange={(value) => setRol(value)} options={[
+            { value: 'admin', label: 'Administrador' },
+            { value: 'supervisor', label: 'Supervisor' },
+            { value: 'empleado', label: 'Empleado' },
+          ]} />
         </Form.Item>
-        <Form.Item label="ID de Colaborador">
-          <AntSelect value={idColaborador} onChange={(value) => setIdColaborador(value)} options={colaboradores} />
+        <Form.Item label="Nombre del Colaborador">
+          <AntSelect
+            value={selectedColaborador?.value}
+            onChange={(value) => {
+              const selectedOption = colaboradores.find(option => option.value === value);
+              setIdColaborador(selectedOption?.value || null);
+              setSelectedColaborador(selectedOption || null);
+            }}
+            options={colaboradores}
+          />
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
             Guardar
           </Button>
-          <Button onClick={onClose}>Cancelar</Button>
+          <span style={{ marginRight: '10px' }} />
+          <Button type="primary" danger onClick={onClose}>Cancelar</Button>
         </Form.Item>
       </Form>
     </Modal>

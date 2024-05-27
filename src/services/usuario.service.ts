@@ -21,7 +21,6 @@ export const validateSession = (status: number) => {
   }
 }
 
-
 class UsuarioService {
   private axiosInstance;
 
@@ -32,7 +31,6 @@ class UsuarioService {
   async login(data: any): Promise<any> {
     try { 
       const response = await this.axiosInstance.post('/login/', data);
-      
       return response;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -85,8 +83,7 @@ class UsuarioService {
   async obtenerUsuarios(): Promise<Usuario[]> {
     try {
       const response = await this.axiosInstance.get('/usuarios');
-      const usuarios = response.data; 
-      return usuarios;
+      return response.data; 
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
@@ -117,9 +114,7 @@ class UsuarioService {
 
   async actualizarUsuario(id: number, data: any): Promise<Usuario> {
     try {
-      console.log(data);
       const response = await this.axiosInstance.put(`/actualizar-usuario/${id}`, data);
-      console.log(response.data);
       return response.data;
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -132,12 +127,10 @@ class UsuarioService {
       throw error;
     }
   }
-   // esto debe de ser observado porque no se deberian eliminar
+
   async eliminarUsuario(id: number): Promise<void> {
     try {
-      console.log(id);
       await this.axiosInstance.delete(`/eliminar-usuario/${id}`);
-      console.log(id);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
@@ -176,4 +169,3 @@ class UsuarioService {
 }
 
 export default UsuarioService;
-

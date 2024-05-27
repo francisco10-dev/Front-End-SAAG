@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import Modal from '@mui/material/Modal';
 import DataTable from './table';
 import { ColabUsuario } from './tabs';
 import { GridColDef } from '@mui/x-data-grid';
@@ -9,15 +10,16 @@ import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
 import ReplayIcon from '@mui/icons-material/Replay';
 import AddIcon from '@mui/icons-material/Add';
-import { toast } from 'react-toastify';
 import AgregarUsuarioModal from './AgregarUsuarioModal'; 
+import { message } from 'antd';
+import Swal from 'sweetalert2';
 
 interface TabPanelProps {
     value: number;
     index: number;
     colabUsuario: ColabUsuario[];
     columns: GridColDef[];
-    onDeleteRow: (idsToDelete: number[]) => void;
+    onDeleteRow: (idsToDelete: number[]) => Promise<void>; // Make sure this is async
     onUpdateRow: (idToUpdate: number) => void;
     onRefresh: () => void;
 }
@@ -26,30 +28,39 @@ function CustomTabPanel(props: TabPanelProps) {
     const { value, index, colabUsuario, columns, onDeleteRow, onUpdateRow, onRefresh } = props;
     const [selectedRowIds, setSelectedRowIds] = useState<number[]>([]);
     const [isAgregarModalOpen, setAgregarModalOpen] = useState(false);
-
+    const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
 
     const handleDeleteSelected = async () => {
-        const cantidadRegistros = selectedRowIds.length;
-        const confirmMessage = `¿Estás seguro de que quieres eliminar ${cantidadRegistros} usuario(s)?`;
-        const userConfirmed = window.confirm(confirmMessage);
-        if (userConfirmed) {
-            try {
-                await Promise.all(selectedRowIds.map(async (idToDelete) => {
-                    await onDeleteRow([idToDelete]);
-                }));
-                toast.success(`Se han eliminado ${cantidadRegistros} usuarios`);
-                // obtenerYActualizarUsuarios(); // No está definido en este contexto
-            } catch (error) {
-                toast.error('Error al eliminar usuarios: ' + error);
-            }
-        } else {
-            toast.error('Eliminación cancelada por el usuario');
+        const confirmation = await Swal.fire({
+            title: '¿Está seguro?',
+            text: 'Esta acción no se puede deshacer',
+            showDenyButton: true,
+            confirmButtonText: 'Confirmar',
+            denyButtonText: 'Cancelar',
+            icon: 'warning',
+        });
+        if (confirmation.isConfirmed) {
+            await confirmDelete();
         }
-        setSelectedRowIds([]);
     };
 
+    const confirmDelete = async () => {
+        const hideLoadingMessage = message.loading('Esperando', 0);
+        try {
+            await onDeleteRow(selectedRowIds);
+        } catch (error) {
+        } finally {
+            hideLoadingMessage();
+            setDeleteModalOpen(false);
+            setSelectedRowIds([]);
+        }
+    };
 
-    // Dentro de CustomTabPanel
+    const cancelDelete = () => {
+        setDeleteModalOpen(false);
+        message.error('Eliminación cancelada por el usuario');
+    };
+
     const handleUpdateSelected = () => {
         if (selectedRowIds.length === 1) {
             onUpdateRow(selectedRowIds[0]);
@@ -57,13 +68,12 @@ function CustomTabPanel(props: TabPanelProps) {
         }
     };
 
-
     const handleRefresh = async () => {
         try {
-            await onRefresh(); // Llama a la función de actualización proporcionada desde TabsUsuarioAdmin
-            toast.success('Usuarios actualizados');
+            await onRefresh();
+            message.success('Usuarios actualizados');
         } catch (error) {
-            toast.error('Error al actualizar usuarios: ' + error);
+            message.error('Error al actualizar usuarios: ' + error);
         }
     };
 
@@ -73,7 +83,7 @@ function CustomTabPanel(props: TabPanelProps) {
 
     const handleAgregarModalClose = () => {
         setAgregarModalOpen(false);
-        handleRefresh(); // Actualiza la lista de usuarios después de agregar uno nuevo
+        handleRefresh();
     };
 
     return (
@@ -129,6 +139,29 @@ function CustomTabPanel(props: TabPanelProps) {
                             Refresh
                         </Button>
                     </Box>
+                    <Modal
+                        open={isDeleteModalOpen}
+                        onClose={cancelDelete}
+                        aria-labelledby="modal-modal-title"
+                        aria-describedby="modal-modal-description"
+                    >
+                        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', bgcolor: 'background.paper', boxShadow: 24, p: 4, width: 400 }}>
+                            <Typography id="modal-modal-title" variant="h6" component="h2">
+                                Confirmar eliminación
+                            </Typography>
+                            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                                ¿Estás seguro de que quieres eliminar {selectedRowIds.length} usuario(s)?
+                            </Typography>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+                                <Button onClick={confirmDelete} variant="contained" color="primary">
+                                    Eliminar
+                                </Button>
+                                <Button onClick={cancelDelete} variant="contained" color="error">
+                                    Cancelar
+                                </Button>
+                            </Box>
+                        </Box>
+                    </Modal>
                 </Box>
             )}
             <AgregarUsuarioModal
@@ -141,4 +174,3 @@ function CustomTabPanel(props: TabPanelProps) {
 }
 
 export default CustomTabPanel;
-

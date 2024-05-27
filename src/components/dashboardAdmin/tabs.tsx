@@ -1,17 +1,19 @@
-import { useState, useEffect, SetStateAction } from 'react';
+import { useState, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import UsuarioService, { Usuario } from '../../services/usuario.service';
 import ColaboradorService from '../../services/colaborador.service';
 import { GridColDef } from '@mui/x-data-grid';
 import CustomTabPanel from './CustomTabPanel';
-import { toast } from 'react-toastify';  
+import { message } from 'antd';
 import UpdateUserModal from './EditUser';
+import Swal from 'sweetalert2';
 
 export interface ColabUsuario {
   idUsuario: number;
   nombreUsuario: string;
   rol: string;
+  nombreColaborador: string;
   correo: string;
 }
 
@@ -29,13 +31,14 @@ export default function TabsUsuarioAdmin() {
   const [ColabUsuario, setUsuarios] = useState<ColabUsuario[]>([]);
   const [selectedUsuario, setSelectedUsuario] = useState<Usuario | null>(null);
   const [filterText, setFilterText] = useState('');
+  const [filteredUsuarios, setFilteredUsuarios] = useState<ColabUsuario[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const onUpdateRow = async (idUsuario: number) => {
     const usuarioToUpdate = ColabUsuario.find((usuario) => usuario.idUsuario === idUsuario);
     if (usuarioToUpdate) {
       setSelectedUsuario(usuarioToUpdate as unknown as Usuario);
-      setIsModalOpen(true); // Abre la modal al actualizar
+      setIsModalOpen(true); 
     }
   };
   
@@ -44,34 +47,44 @@ export default function TabsUsuarioAdmin() {
       if (!selectedUsuario) {
         return;
       }
-      // Aquí deberías actualizar el usuario usando service.actualizarUsuario
-      toast.success('Usuario actualizado correctamente');
+      message.success('Usuario actualizado correctamente');
       obtenerYRecargarUsuarios();
-      setIsModalOpen(false); // Cierra la modal si todo sale bien
+      setIsModalOpen(false); 
     } catch (error) {
-      toast.error('Error al actualizar usuario: ' + error);
+      message.error('Error al actualizar usuario: ' + error);
     }
   };
 
   const onDeleteRow = async (idsToDelete: number[]) => {
-    const cantidadRegistros = idsToDelete.length;
-    const confirmMessage = `¿Estás seguro de que quieres eliminar ${cantidadRegistros} usuario(s)?`;
-    const userConfirmed = window.confirm(confirmMessage);
-    if (userConfirmed) {
-      try {
-        for (const idToDelete of idsToDelete) {
-          await service.eliminarUsuario(idToDelete);
-        }
-        toast.success(`Se han eliminado ${cantidadRegistros} usuarios`);
-        obtenerYRecargarUsuarios();
-      } catch (error) {
-        toast.error('Error al eliminar usuarios: ' + error);
+    
+    const confirmation = await Swal.fire({
+      title: `Esta acción no se puede deshacer.`,
+      text: `¿Esta seguro?.`,
+      showDenyButton: true,
+      confirmButtonText: 'Confirmar',
+      denyButtonText: 'Cancelar',
+      icon: 'error', 
+    });
+
+    if (!confirmation.isConfirmed) {
+      message.error('Eliminación cancelada por el usuario');
+      return;
+    }
+
+    const hideLoadingMessage = message.loading('Cargando...', 0);
+
+    try {
+      for (const idToDelete of idsToDelete) {
+        await service.eliminarUsuario(idToDelete);
       }
-    } else {
-      toast.error('Eliminación cancelada por el usuario');
+      message.success(`Se han eliminado ${idsToDelete.length} usuarios`);
+      obtenerYRecargarUsuarios();
+    } catch (error) {
+      message.error('Error al eliminar usuarios: ' + error);
+    }finally {
+      hideLoadingMessage();
     }
   };
-  
 
   const obtenerYRecargarUsuarios = async () => {
     try {
@@ -87,6 +100,7 @@ export default function TabsUsuarioAdmin() {
             idUsuario: usuario.idUsuario,
             nombreUsuario: usuario.nombreUsuario,
             rol: usuario.rol,
+            nombreColaborador:datosColaborador.nombre,
             correo: datosColaborador.correoElectronico,
           };
         } else {
@@ -95,11 +109,11 @@ export default function TabsUsuarioAdmin() {
       });
   
       setUsuarios(consultasColaboradores);
+      setFilteredUsuarios(consultasColaboradores); 
     } catch (err) {
-      toast.error('Error al obtener usuarios: ' + err);
+      message.error('Error al obtener usuarios: ' + err);
     }
   };
-  
 
   useEffect(() => {
     obtenerYRecargarUsuarios();
@@ -111,27 +125,32 @@ export default function TabsUsuarioAdmin() {
         label="Buscar..."
         variant="standard"
         value={filterText}
-        onChange={(e: { target: { value: SetStateAction<string>; }; }) => setFilterText(e.target.value)}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+          setFilterText(e.target.value);
+          const filtered = ColabUsuario.filter(usuario =>
+            usuario.nombreUsuario.toLowerCase().includes(e.target.value.toLowerCase())
+          );
+          setFilteredUsuarios(filtered);
+        }}
         style={{ marginBottom: '20px' }}
       />
       {[0, 1, 2, 3].map((index) => (
         <CustomTabPanel
-        key={index}
-        value={value}
-        index={index}
-        colabUsuario={ColabUsuario} 
-        columns={columns}
-        onDeleteRow={onDeleteRow}
-        onUpdateRow={onUpdateRow}
-        onRefresh={obtenerYRecargarUsuarios}// Agrega esta línea
-      />
-      
+          key={index}
+          value={value}
+          index={index}
+          colabUsuario={filteredUsuarios} 
+          columns={columns}
+          onDeleteRow={onDeleteRow}
+          onUpdateRow={onUpdateRow}
+          onRefresh={obtenerYRecargarUsuarios}
+        />
       ))}
       <UpdateUserModal
         open={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onUpdate={onUpdateUser}
-        usuario={selectedUsuario ? { ...selectedUsuario, password: '', idColaborador: 0 } : null}
+        usuario={selectedUsuario ? { ...selectedUsuario, password: ''} : null}
       />
     </Box>
   );
