@@ -22,10 +22,11 @@ interface TabPanelProps {
     onDeleteRow: (idsToDelete: number[]) => Promise<void>; // Make sure this is async
     onUpdateRow: (idToUpdate: number) => void;
     onRefresh: () => void;
+    loading: boolean;
 }
 
 function CustomTabPanel(props: TabPanelProps) {
-    const { value, index, colabUsuario, columns, onDeleteRow, onUpdateRow, onRefresh } = props;
+    const { value, index, colabUsuario, columns, onDeleteRow, onUpdateRow, onRefresh, loading } = props;
     const [selectedRowIds, setSelectedRowIds] = useState<number[]>([]);
     const [isAgregarModalOpen, setAgregarModalOpen] = useState(false);
     const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -104,6 +105,7 @@ function CustomTabPanel(props: TabPanelProps) {
                             onDeleteRow={onDeleteRow}
                             onUpdateRow={onUpdateRow}
                             onSelectionModelChange={(selectionModel) => setSelectedRowIds(selectionModel)}
+                            loading={loading}
                         />
                     </Typography>
                     <Box sx={{ position: 'absolute', top: 0, right: 0, display: 'flex', gap: 1 }}>

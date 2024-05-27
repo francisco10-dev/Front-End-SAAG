@@ -33,6 +33,7 @@ export default function TabsUsuarioAdmin() {
   const [filterText, setFilterText] = useState('');
   const [filteredUsuarios, setFilteredUsuarios] = useState<ColabUsuario[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const onUpdateRow = async (idUsuario: number) => {
     const usuarioToUpdate = ColabUsuario.find((usuario) => usuario.idUsuario === idUsuario);
@@ -88,6 +89,7 @@ export default function TabsUsuarioAdmin() {
 
   const obtenerYRecargarUsuarios = async () => {
     try {
+      setLoading(true);
       const [usuariosActualizados, colaboradores] = await Promise.all([
         service.obtenerUsuarios(),
         colaborador.obtenerColaboradores()
@@ -113,6 +115,8 @@ export default function TabsUsuarioAdmin() {
       setFilteredUsuarios(consultasColaboradores); 
     } catch (err) {
       message.error('Error al obtener usuarios: ' + err);
+    }finally{
+      setLoading(false);
     }
   };
 
@@ -145,6 +149,7 @@ export default function TabsUsuarioAdmin() {
           onDeleteRow={onDeleteRow}
           onUpdateRow={onUpdateRow}
           onRefresh={obtenerYRecargarUsuarios}
+          loading={loading}
         />
       ))}
       <UpdateUserModal
