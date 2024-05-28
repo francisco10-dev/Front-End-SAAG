@@ -188,10 +188,9 @@ const Formulario = () => {
     let diffValid = true;
     if (userRole !== "admin") {
       if (fecha) {
-        const date = now;
-        const fechaParsed = days(fecha);
-        const diff = fechaParsed.diff(date, 'day');
-        if (diff >= 7) {
+        const selectedDate = days(fecha); 
+        const futureDate = days().add(7, 'days').startOf('day'); 
+        if (selectedDate >= futureDate) {
           alerta('success', 'La fecha es válida (cumple con el mínimo de 7 días de anticipación)');
         } else {
           diffValid = false;
@@ -255,9 +254,9 @@ const Formulario = () => {
 
   const validacionEstado = () => {
     let estadoValid;
-    if (userRole === "Empleado") {
+    if (userRole === "empleado") {
       estadoValid = "Pendiente"
-    } else if (userRole === "Supervisor") {
+    } else if (userRole === "supervisor") {
       estadoValid = "AprobadoPorJefatura"
     } else {
       estadoValid = estado;
@@ -412,6 +411,11 @@ const Formulario = () => {
                   format={dateFormat}
                   placeholder={['Fecha de inicio', 'Fecha de fin']}
                   value={[fechaInicio, fechaFin]}
+                  hideDisabledOptions
+                  disabledDate={userRole !== "admin" ? (current) => {
+                    const sevenDaysAhead = days().add(7, 'days').startOf('day');
+                    return current && current < sevenDaysAhead;
+                  } : undefined}
                   onChange={(dates: any) => {
                     handleFechaInicioChange(dates[0]);
                     validarFecha(dates[0]);
