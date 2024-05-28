@@ -8,6 +8,7 @@ import { ColabUsuario } from './tabs';
 import { GridColDef } from '@mui/x-data-grid';
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
+import SettingsIcon from '@mui/icons-material/Settings';
 import ReplayIcon from '@mui/icons-material/Replay';
 import AddIcon from '@mui/icons-material/Add';
 import AgregarUsuarioModal from './AgregarUsuarioModal'; 
@@ -19,14 +20,15 @@ interface TabPanelProps {
     index: number;
     colabUsuario: ColabUsuario[];
     columns: GridColDef[];
-    onDeleteRow: (idsToDelete: number[]) => Promise<void>; // Make sure this is async
+    onDeleteRow: (idsToDelete: number[]) => Promise<void>;
     onUpdateRow: (idToUpdate: number) => void;
-    onRefresh: () => void;
+    onUpdatePasswordRow: (idUsuario: number) => Promise<void>;
+    onRefresh: () => Promise<void>;
     loading: boolean;
 }
 
 function CustomTabPanel(props: TabPanelProps) {
-    const { value, index, colabUsuario, columns, onDeleteRow, onUpdateRow, onRefresh, loading } = props;
+    const { value, index, colabUsuario, columns, onDeleteRow, onUpdateRow, onUpdatePasswordRow, onRefresh, loading } = props;
     const [selectedRowIds, setSelectedRowIds] = useState<number[]>([]);
     const [isAgregarModalOpen, setAgregarModalOpen] = useState(false);
     const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -68,6 +70,13 @@ function CustomTabPanel(props: TabPanelProps) {
             setSelectedRowIds([]);
         }
     };
+
+    const handleUpdatePasswordSelected = async () => {
+        if (selectedRowIds.length === 1) {
+          await onUpdatePasswordRow(selectedRowIds[0]);
+          setSelectedRowIds([]);
+        }
+      };
 
     const handleRefresh = async () => {
         try {
@@ -138,7 +147,13 @@ function CustomTabPanel(props: TabPanelProps) {
                             onClick={handleRefresh}
                             startIcon={<ReplayIcon />}
                         >
-                            Refresh
+                        </Button>
+                        <Button
+                            variant="text"
+                            onClick={handleUpdatePasswordSelected}
+                            disabled={selectedRowIds.length !== 1}
+                            startIcon={<SettingsIcon />}
+                        >
                         </Button>
                     </Box>
                     <Modal

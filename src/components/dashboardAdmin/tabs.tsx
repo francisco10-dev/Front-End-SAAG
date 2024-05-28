@@ -7,6 +7,7 @@ import { GridColDef } from '@mui/x-data-grid';
 import CustomTabPanel from './CustomTabPanel';
 import { message } from 'antd';
 import UpdateUserModal from './EditUser';
+import UpdatePasswordModal from './editPassword';
 import Swal from 'sweetalert2';
 
 export interface ColabUsuario {
@@ -33,14 +34,23 @@ export default function TabsUsuarioAdmin() {
   const [selectedUsuario, setSelectedUsuario] = useState<Usuario | null>(null);
   const [filterText, setFilterText] = useState('');
   const [filteredUsuarios, setFilteredUsuarios] = useState<ColabUsuario[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUpdateUserModalOpen, setIsUpdateUserModalOpen] = useState(false);
+  const [isUpdatePasswordModalOpen, setIsUpdatePasswordModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const onUpdateRow = async (idUsuario: number) => {
     const usuarioToUpdate = ColabUsuario.find((usuario) => usuario.idUsuario === idUsuario);
     if (usuarioToUpdate) {
       setSelectedUsuario(usuarioToUpdate as unknown as Usuario);
-      setIsModalOpen(true); 
+      setIsUpdateUserModalOpen(true); 
+    }
+  };
+
+  const onUpdatePasswordRow = async (idUsuario: number) => {
+    const usuarioToUpdate = ColabUsuario.find((usuario) => usuario.idUsuario === idUsuario);
+    if (usuarioToUpdate) {
+      setSelectedUsuario(usuarioToUpdate as unknown as Usuario);
+      setIsUpdatePasswordModalOpen(true);
     }
   };
   
@@ -51,7 +61,20 @@ export default function TabsUsuarioAdmin() {
       }
       message.success('Usuario actualizado correctamente');
       obtenerYRecargarUsuarios();
-      setIsModalOpen(false); 
+      setIsUpdateUserModalOpen(false); 
+    } catch (error) {
+      message.error('Error al actualizar usuario: ' + error);
+    }
+  };
+
+  const onUpdatePassWord = async () => {
+    try {
+      if (!selectedUsuario) {
+        return;
+      }
+      message.success('Usuario actualizado correctamente');
+      obtenerYRecargarUsuarios();
+      setIsUpdatePasswordModalOpen(false); 
     } catch (error) {
       message.error('Error al actualizar usuario: ' + error);
     }
@@ -149,14 +172,21 @@ export default function TabsUsuarioAdmin() {
           columns={columns}
           onDeleteRow={onDeleteRow}
           onUpdateRow={onUpdateRow}
+          onUpdatePasswordRow={onUpdatePasswordRow}
           onRefresh={obtenerYRecargarUsuarios}
           loading={loading}
         />
       ))}
       <UpdateUserModal
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        open={isUpdateUserModalOpen}
+        onClose={() => setIsUpdateUserModalOpen(false)}
         onUpdate={onUpdateUser}
+        usuario={selectedUsuario ? { ...selectedUsuario} : null}
+      />
+      <UpdatePasswordModal
+        open={isUpdatePasswordModalOpen}
+        onClose={() => setIsUpdatePasswordModalOpen(false)}
+        onUpdate={onUpdatePassWord}
         usuario={selectedUsuario ? { ...selectedUsuario} : null}
       />
     </Box>
