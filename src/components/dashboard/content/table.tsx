@@ -245,7 +245,7 @@ function DashTable() {
       className: 'custom-column'
     },
     {
-      title: 'FechaVencimiento',
+      title: 'Vencimiento',
       dataIndex: 'fechaVencimiento',
       key: 'FechaVencimiento',
       width: 100,

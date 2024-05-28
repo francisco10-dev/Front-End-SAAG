@@ -96,6 +96,17 @@ const Formulario = () => {
 
   const handleHoraInicioChange = (time: any) => {
     setHoraInicio(time.format('HH:mm:ss'));
+    if (horaFin && time && time.isAfter(horaFin, 'second')) {
+      setHoraFin(null);
+    }
+  };
+
+  const disabledHours = () => {
+    if (horaInicio) {
+      const horaInicioHour = days(horaInicio, 'HH:mm').hour();
+      return [horaInicioHour,...Array(horaInicioHour).keys()];
+    }
+    return [];
   };
 
   const handleHoraFinChange = (time: any) => {
@@ -335,7 +346,7 @@ const Formulario = () => {
           {showModal && <ModalComponent onAdminChoice={handleAdminChoice} />}
         </div>
         <Alert severity="error"><Text className='text'>Solicitud debe hacerse minimo con 7 días de anticipación.</Text></Alert>
-        <img src="../../public/logoACIB.PNG" alt="Logo" style={{ height: 50, width: 200 }}></img>
+        <img src="/logoACIB.png" alt="Logo" style={{ height: 50, width: 200 }}></img>
         <div className="contenedor-campos">
           <div className="columna-1">
             {userChoice === 'solicitudEmpleado' && (
@@ -440,6 +451,8 @@ const Formulario = () => {
                         value={horaFin}
                         onChange={handleHoraFinChange}
                         format="HH:mm"
+                        disabledHours={disabledHours}
+                        hideDisabledOptions
                       />
                     </Form.Item>
                   </div>

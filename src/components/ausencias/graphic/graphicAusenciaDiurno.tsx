@@ -9,6 +9,7 @@ import { Chart, CategoryScale, LinearScale, PointElement, BarElement, Title, Too
 import { Tabs, Tab } from '@mui/material';
 import { Table, DatePicker, Drawer, } from 'antd';
 import moment, { Moment } from 'moment';
+import dayjs, { Dayjs } from 'dayjs';
 import './graphicStyle.css'
 import DatePickerRadioGroup from './datePickerRadioGroup';
 
@@ -45,12 +46,11 @@ const BarsDiurno = () => {
         const colaboradoresActivosOConSalidaEnAnioSeleccionado = todosLosColaboradores.filter(colaborador => {
 
           const esActivo = colaborador.estado === 'Activo' &&
-            colaborador.fechaIngreso && new Date(colaborador.fechaIngreso).getFullYear()
-            <= selectedYear;
+            colaborador.fechaIngreso && dayjs(colaborador.fechaIngreso).year() <= selectedYear;
 
           const esInactivoConFechaEnAnioSeleccionado = colaborador.estado === 'Inactivo' &&
-            colaborador.fechaSalida && new Date(colaborador.fechaSalida).getFullYear() >= selectedYear
-            && colaborador.fechaIngreso && new Date(colaborador.fechaIngreso).getFullYear() <= selectedYear;
+            colaborador.fechaSalida && dayjs(colaborador.fechaSalida).year() >= selectedYear
+            && colaborador.fechaIngreso && dayjs(colaborador.fechaIngreso).year() <= selectedYear;
           return esActivo || esInactivoConFechaEnAnioSeleccionado;
         });
 
@@ -74,6 +74,7 @@ const BarsDiurno = () => {
     const fetchSolicitudes = async () => {
       try {
         const solicitudes = await solicitudService.getSolicitudes();
+        console.log("Las solicitudes", solicitudes);
         setSolicitudes(solicitudes);
         setLoading(false);
       } catch (error) {
@@ -90,7 +91,7 @@ const BarsDiurno = () => {
         colaborador.tipoJornada === 'Diurna'
       );
 
-      const fechaSolicitud = new Date(solicitud.fechaSolicitud);
+      const fechaSolicitud = dayjs(solicitud.fechaSolicitud);
       let goceSalarialCondition = true;
 
       if (radioValue === 2) {
@@ -100,7 +101,7 @@ const BarsDiurno = () => {
       }
 
       return esDiurnoYActivo &&
-        fechaSolicitud.getFullYear() === selectedYear &&
+        fechaSolicitud.year() === selectedYear &&
         solicitud.estado === "Aprobado" &&
         goceSalarialCondition;
     });
@@ -180,7 +181,7 @@ const BarsDiurno = () => {
 
 
     const filteredSolicitudes = solicitudes.filter(solicitud => {
-      const fechaSolicitud = new Date(solicitud.fechaSolicitud);
+      const fechaSolicitud = dayjs(solicitud.fechaSolicitud);
       let goceSalarialCondition = true;
 
       if (radioValue === 2) {
@@ -189,7 +190,7 @@ const BarsDiurno = () => {
         goceSalarialCondition = solicitud.conGoceSalarial === true;
       }
 
-      return fechaSolicitud.getFullYear() === selectedYear && solicitud.estado === "Aprobado" && goceSalarialCondition;
+      return fechaSolicitud.year() === selectedYear && solicitud.estado === "Aprobado" && goceSalarialCondition;
     });
 
     let updatedRecuentosSolicitudesPorMes: Record<number, Record<string, number[]>> = {};
