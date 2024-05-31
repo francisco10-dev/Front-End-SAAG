@@ -28,7 +28,6 @@ const EditPasswordModal: React.FC<EditPasswordModalProps> = ({ open, usuario, on
   const serviceColaborador = new ColaboradorService();
   const [usuarioState, setUsuarioState] = useState<Usuario | null>(null);
 
-  
   const validarContrasena = (contrasena: string): boolean => {
     return (
       contrasena.length >= 8 &&

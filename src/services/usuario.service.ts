@@ -159,6 +159,22 @@ class UsuarioService {
     }
   }
 
+  async verificarContrasena(idUsuario: number, contrasenaActual: string): Promise<boolean> {
+    try {
+      const response = await this.axiosInstance.post('/verificar-contrasena/', { idUsuario, contrasenaActual });
+      return response.status === 200;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          throw new Error(`Error ${error.response.status}: ${error.response.data.message}`);
+        } else {
+          throw new Error('Error en la solicitud de red');
+        }
+      }
+      throw error;
+    }
+  }
+
   incrementarContadorLocalStorage() {
     const count = localStorage.getItem('usersCount');
     const newCount = count ? parseInt(count) + 1 : 1;
