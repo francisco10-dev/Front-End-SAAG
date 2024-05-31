@@ -30,7 +30,7 @@
     const diferenciaMs = fechaFinMs - fechaInicioMs;
     const diferenciaDias = Math.floor(diferenciaMs / (1000 * 60 * 60 * 24));
     const diferenciaDiasCorregido = diferenciaDias + 1;
-    const horasNoTrabajadas = diferenciaDiasCorregido * 8;
+    const horasNoTrabajadas = diferenciaDiasCorregido * 6;
     const horasContratadasNocturnas = 180;
     const totalHorasTrabajadas = horasContratadasNocturnas * cantidadActivos;
     const indicador = (horasNoTrabajadas / totalHorasTrabajadas) * 100;

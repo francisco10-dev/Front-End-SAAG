@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Input, Select as AntSelect, Button } from 'antd';
+import { Modal, Form, Input, message, Select as AntSelect, Button } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import Select from 'react-select';
 import UsuarioService from '../../services/usuario.service';
 import ColaboradorService from '../../services/colaborador.service';
-import { toast } from 'react-toastify';
 
 interface ColaboradorOption {
   value: number;
@@ -45,23 +44,29 @@ const AgregarUsuarioModal: React.FC<AgregarUsuarioModalProps> = ({ visible, setV
       setColaboradores([{ value: 0, label: "No existen colaboradores disponibles" }]);
     }
   };
-  
 
   useEffect(() => {
-    cargarColaboradores();
-  }, []);
+    if (visible) {
+      setNombreUsuario('');
+      setContrasena('');
+      setRol('empleado');
+      setIdColaborador(null);
+      setSelectedColaborador(null);
+      cargarColaboradores();
+    }
+  }, [visible]);
 
   const crearUsuario = async () => {
     if (!nombreUsuario || !contrasena || !idColaborador || isNaN(idColaborador!)) {
-      toast.error('Todos los campos son obligatorios y el ID de Colaborador debe ser un número válido');
+      message.error('Todos los campos son obligatorios y el ID de Colaborador debe ser un número válido');
       return;
     }
     if (contrasena.length < 10) {
-      toast.error('La contraseña debe tener al menos 10 caracteres.');
+      message.error('La contraseña debe tener al menos 10 caracteres.');
       return;
     }
     if (!/[a-z]/.test(contrasena) || !/[A-Z]/.test(contrasena) || !/\d/.test(contrasena) || !/\W/.test(contrasena)) {
-      toast.error('La contraseña debe contener al menos una letra minúscula, una letra mayúscula, un número y un carácter especial.');
+      message.error('La contraseña debe contener al menos una letra minúscula, una letra mayúscula, un número y un carácter especial.');
       return;
     }
     const nuevoUsuario = {
@@ -72,11 +77,11 @@ const AgregarUsuarioModal: React.FC<AgregarUsuarioModalProps> = ({ visible, setV
     };
     try {
       await usuarioService.agregarUsuario(nuevoUsuario);
-      toast.success('Usuario creado exitosamente');
+      message.success('Usuario creado exitosamente');
       setVisible(false); // Cierra el modal después de guardar exitosamente
       onAgregar(); // Ejecuta la función onAgregar para actualizar la lista de usuarios
     } catch (error) {
-      toast.error('Error al crear usuario: ' + error);
+      message.error('Error al crear usuario: ' + error);
     }
   };
 
@@ -109,6 +114,7 @@ const AgregarUsuarioModal: React.FC<AgregarUsuarioModalProps> = ({ visible, setV
         <Form.Item label="Tipo de empleado">
           <AntSelect value={rol} onChange={(value) => setRol(value)}>
             <AntSelect.Option value="empleado">Empleado</AntSelect.Option>
+            <AntSelect.Option value="supervisor">Supervisor</AntSelect.Option>
             <AntSelect.Option value="admin">Administrador</AntSelect.Option>
           </AntSelect>
         </Form.Item>

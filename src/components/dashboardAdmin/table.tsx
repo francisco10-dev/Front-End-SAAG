@@ -10,10 +10,11 @@ interface DataTableProps {
     onDeleteRow: (idsToDelete: number[]) => void;
     onUpdateRow: (idsToUpdate: number) => void;
     onSelectionModelChange: (newSelection: number[]) => void;
+    loading: boolean;
 }
 
 export default function DataTable(props: DataTableProps) {
-    const { columns, rows, filterFunction, getRowId, onSelectionModelChange } = props;
+    const { columns, rows, filterFunction, getRowId, onSelectionModelChange, loading } = props;
     const [filteredRows, setFilteredRows] = useState(rows);
     const [selectedRows, setSelectedRows] = useState<number[]>([]);
 
@@ -34,6 +35,7 @@ export default function DataTable(props: DataTableProps) {
                 rows={filteredRows}
                 columns={columns}
                 checkboxSelection
+                loading={loading}
                 rowSelectionModel={selectedRows} // Esto asegura que las filas seleccionadas estén marcadas en la tabla
                 onRowSelectionModelChange={handleSelectionModelChange}
                 initialState={{

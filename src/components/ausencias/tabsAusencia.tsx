@@ -44,8 +44,6 @@ function a11yProps(index: number) {
 export default function TabsSolicitudAdmin() {
   const Service = new SolicitudService();
   const [value, setValue] = useState(0);
-  //@ts-ignore
-  const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
   const [approved, setApproved] = useState<Solicitud[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -63,7 +61,7 @@ export default function TabsSolicitudAdmin() {
       } catch (error) {
         console.error('Error al obtener solicitudes:', error);
       } finally {
-        setLoading(false); // Marcamos que la carga ha finalizado, independientemente de si fue exitosa o no
+        setLoading(false);
       }
     };
     fetchData();
@@ -79,24 +77,8 @@ export default function TabsSolicitudAdmin() {
   }
 
   const updateRows = (nuevoArray: Solicitud[]) => {
-    setSolicitudes(nuevoArray);
     setData(nuevoArray);
   };
-
-  // Método para eliminar filas, pero no lo vas a usar
-  // const deleteRows = (ids: number[]) => {
-  //   const nuevoArray = solicitudes.filter((elemento) => !ids.includes(elemento.idSolicitud));
-  //   updateRows(nuevoArray);
-  // };
-
-  // Método para cambiar el estado, pero no lo vas a usar
-  // const changeStatus = (id: number, status: string) => {
-  //   const nuevoArray = solicitudes.map((solicitud) =>
-  //     solicitud.idSolicitud === id ? { ...solicitud, estado: status } : solicitud
-  //   );
-  //   updateRows(nuevoArray);
-  // };
-
 
   if (loading) {
     return <div><CircularProgress sx={{ position: 'absolute', top: '50%', left: '50%' }} /></div>;
@@ -112,21 +94,25 @@ export default function TabsSolicitudAdmin() {
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
-        <DataTable isLoading={loading} rows={approved} /*deleteRows={deleteRows} onSolicitudUpdate={changeStatus}*/ load={loadRequests} />
+        <DataTable isLoading={loading} rows={approved} load={loadRequests} />
       </CustomTabPanel>
       <CustomTabPanel value={value} index={1}>
         <DataTable isLoading={loading}  
         rows={approved.filter(item => item.fechaInicio && new Date(item.fechaInicio) > new Date()).sort((a, b) => {
         if (!a.fechaInicio || !b.fechaInicio) return 0;
         return new Date(a.fechaInicio).getTime() - new Date(b.fechaInicio).getTime();})}
-        /*deleteRows={deleteRows} onSolicitudUpdate={changeStatus}*/ load={loadRequests}/>
+        load={loadRequests}/>
       </CustomTabPanel>
       <CustomTabPanel value={value} index={2}>
         <DataTable isLoading={loading} 
-        rows={approved.filter(item => item.fechaInicio && new Date(item.fechaInicio) < new Date()).sort((a, b) => {
-          if (!a.fechaInicio || !b.fechaInicio) return 0;
+        rows={
+          approved
+          .filter(item => item.fechaInicio && new Date(item.fechaInicio) <= new Date() && item.fechaFin && new Date(item.fechaFin) >= new Date())
+          .sort((a, b) => {
+          if (!a.fechaInicio || !b.fechaInicio) 
+          return 0;
           return new Date(b.fechaInicio).getTime() - new Date(a.fechaInicio).getTime();})}
-        /*deleteRows={deleteRows} onSolicitudUpdate={changeStatus}*/ load={loadRequests} />
+        load={loadRequests} />
       </CustomTabPanel>
     </Box>
   );

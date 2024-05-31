@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Input, Button, message, Select as AntSelect } from 'antd';
+import { Modal, Form, Input, Button, message } from 'antd';
 import UsuarioService, { Usuario } from '../../services/usuario.service';
 import ColaboradorService from '../../services/colaborador.service';
 
@@ -8,23 +8,35 @@ interface ColaboradorOption {
   label: string;
 }
 
-interface EditUsuarioModalProps {
+interface EditPasswordModalProps {
   open: boolean;
   usuario: Usuario | null;
   onClose: () => void;
   onUpdate: (usuarioId: number) => void;
 }
 
-const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onClose, onUpdate }) => {
+const EditPasswordModal: React.FC<EditPasswordModalProps> = ({ open, usuario, onClose, onUpdate }) => {
   const [nombreUsuario, setNombreUsuario] = useState('');
+  const [contrasena, setContrasena] = useState('');
+  const [contrasenaValida, setContrasenaValida] = useState(true);
   const [rol, setRol] = useState('empleado');
   const [idColaborador, setIdColaborador] = useState<number | null>(null);
   const [selectedColaborador, setSelectedColaborador] = useState<ColaboradorOption | null>(null);
-  const [colaboradores, setColaboradores] = useState<ColaboradorOption[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [_colaboradores, setColaboradores] = useState<ColaboradorOption[]>([]);
+  const [_loading, setLoading] = useState(false);
   const service = new UsuarioService();
   const serviceColaborador = new ColaboradorService();
   const [usuarioState, setUsuarioState] = useState<Usuario | null>(null);
+
+  const validarContrasena = (contrasena: string): boolean => {
+    return (
+      contrasena.length >= 8 &&
+      /[A-Z]/.test(contrasena) &&
+      /[a-z]/.test(contrasena) &&
+      /[0-9]/.test(contrasena) &&
+      /[@#$%^&*_!.]/.test(contrasena)
+    );
+  };
 
   useEffect(() => {
     console.log(usuario);
@@ -91,6 +103,11 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
       return;
     }
 
+    if (!validarContrasena(contrasena)) {
+        message.error('La contraseña no cumple con los requisitos');
+        return;
+      }
+
     const updatedUsuario = { ...usuarioState, nombreUsuario, rol, idColaborador };
 
     if (usuario) {
@@ -98,6 +115,7 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
         const response = await service.actualizarUsuario(usuario.idUsuario, updatedUsuario);
         message.success('Usuario actualizado exitosamente');
         setNombreUsuario('');
+        setContrasena('');
         setRol('empleado');
         setIdColaborador(null);
         setSelectedColaborador(null);
@@ -110,45 +128,41 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
     }
   };
 
+  const handleContrasenaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const nuevaContrasena = e.target.value;
+    setContrasena(nuevaContrasena);
+    setContrasenaValida(validarContrasena(nuevaContrasena));
+  };
+
   return (
-    <Modal title={`Editar Usuario ${usuarioState?.idUsuario}`} open={open} onCancel={onClose} footer={null}>
+    <Modal title={`Editar contrasena de usuario ${usuarioState?.idUsuario}`} open={open} onCancel={onClose} footer={null}>
       <Form layout="vertical" onFinish={handleSave}>
         <Form.Item label="Nombre de Usuario">
-          <Input value={nombreUsuario} onChange={(e) => setNombreUsuario(e.target.value)} />
+            <Input value={nombreUsuario} readOnly />
+        </Form.Item>
+        <Form.Item
+          label="Contraseña"
+          validateStatus={contrasenaValida ? '' : 'error'}
+          help={contrasenaValida ? '' : 'La contraseña debe tener al menos 8 caracteres, incluir una letra mayúscula, una letra minúscula, un número y un carácter especial (@#$%^&*_!.).'}
+        >
+          <Input.Password value={contrasena} onChange={handleContrasenaChange} />
         </Form.Item>
         <Form.Item label="Tipo de Empleado">
-          <AntSelect
-            value={rol}
-            onChange={(value) => setRol(value)}
-            options={[
-              { value: 'admin', label: 'Administrador' },
-              { value: 'supervisor', label: 'Supervisor' },
-              { value: 'empleado', label: 'Empleado' },
-            ]}
-          />
+        <Input value={rol} readOnly />
         </Form.Item>
         <Form.Item label="Nombre del Colaborador">
-          <AntSelect
-            value={selectedColaborador?.value}
-            onChange={(value) => {
-              const selectedOption = colaboradores.find(option => option.value === value);
-              setIdColaborador(selectedOption?.value || null);
-              setSelectedColaborador(selectedOption || null);
-            }}
-            options={loading ? [{ value: 0, label: 'Cargando...' }] : colaboradores}
-            disabled={loading}
-          />
+        <Input value={selectedColaborador?.label} readOnly />
         </Form.Item>
         <Form.Item>
-          <Button type="primary" htmlType="submit">
+            <Button type="primary" htmlType="submit">
             Guardar
-          </Button>
-          <span style={{ marginRight: '10px' }} />
-          <Button type="primary" danger onClick={onClose}>Cancelar</Button>
+            </Button>
+            <span style={{ marginRight: '10px' }} />
+            <Button type="primary" danger onClick={onClose}>Cancelar</Button>
         </Form.Item>
-      </Form>
+        </Form>
     </Modal>
   );
 };
 
-export default EditUsuarioModal;
+export default EditPasswordModal;

@@ -1,8 +1,8 @@
 import { DatePicker, Radio } from 'antd';
 import { CalendarOutlined } from '@ant-design/icons';
-import dayjs, { Dayjs } from 'dayjs'; // Importar Dayjs
+import dayjs, { Dayjs } from 'dayjs'; 
 import React from 'react';
-import { RadioChangeEvent } from 'antd/lib/radio'; // Importar RadioChangeEvent
+import { RadioChangeEvent } from 'antd/lib/radio'; 
 
 interface Props {
   selectedYear: number;
@@ -19,31 +19,31 @@ const DatePickerRadioGroup: React.FC<Props> = ({ selectedYear, setSelectedYear, 
     }
   };
 
-  const handleRadioChange = (e: RadioChangeEvent) => { // Utilizar RadioChangeEvent
+  const handleRadioChange = (e: RadioChangeEvent) => {
     setRadioValue(Number(e.target.value));
   };
 
   return (
-    <div>
-      <DatePicker
-        picker="year"
-        onChange={handleDatePickerChange}
-        value={dayjs(`${selectedYear}`, 'YYYY')}
-        style={{ marginBottom: '1rem' }}
-        suffixIcon={<CalendarOutlined />}
-      />
-      <Radio.Group
-        name="radiogroup"
-        defaultValue={1}
-        value={radioValue}
-        onChange={handleRadioChange}
-        style={{ marginLeft: '1rem' }}
-      >
-        <Radio value={1}>AMBOS</Radio>
-        <Radio value={2}>SGS</Radio>
-        <Radio value={3}>CGS</Radio>
-      </Radio.Group>
-    </div>
+      <div>
+        <DatePicker
+          picker="year"
+          onChange={handleDatePickerChange}
+          value={dayjs(`${selectedYear}`, 'YYYY')}
+          style={{ marginBottom: '1rem' }}
+          suffixIcon={<CalendarOutlined />}
+        />
+        <Radio.Group
+          name="radiogroup"
+          defaultValue={1}
+          value={radioValue}
+          onChange={handleRadioChange}
+          style={{ marginLeft: '1rem' }}
+        >
+          <Radio value={1}>AMBOS</Radio>
+          <Radio value={2}>SGS</Radio>
+          <Radio value={3}>CGS</Radio>
+        </Radio.Group>
+      </div>
   );
 };
 

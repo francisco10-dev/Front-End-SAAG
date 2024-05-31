@@ -1,48 +1,16 @@
 import { GridToolbarContainer, GridToolbarColumnsButton, GridToolbarFilterButton, GridToolbarDensitySelector, GridToolbarExport } from '@mui/x-data-grid';
-//@ts-ignore
-import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
-//@ts-ignore
 
-import EditNoteOutlinedIcon from '@mui/icons-material/EditNoteOutlined';
-//@ts-ignore
-
-import { Button } from '@mui/material';
-//@ts-ignore
-
-export function CustomToolbar({ /*onEditClick, onDeleteClick,*/ onRefresh, selectedIds }: { onRefresh: () => void, /*onEditClick: () => void, onDeleteClick: () => void;*/ selectedIds: string[] }) {
-   //@ts-ignore
-   const DeleteButtonDisabled = selectedIds.length === 0;
-   //@ts-ignore
-    const EditButtonDisabled = selectedIds.length !== 1;
-  
+export function CustomToolbar({}: { onRefresh: () => void, selectedIds: string[] }) {
     return (
       <GridToolbarContainer>
         <GridToolbarColumnsButton />
         <GridToolbarFilterButton />
         <GridToolbarDensitySelector />
         <GridToolbarExport />
-        {/* <Button
-            variant="text"
-            onClick={onEditClick}
-            disabled={EditButtonDisabled}
-            startIcon={<EditNoteOutlinedIcon />}
-        >
-            GESTIONAR
-        </Button>
-        <Button
-          variant="text"
-          onClick={onDeleteClick}
-          disabled={DeleteButtonDisabled}
-          startIcon={<DeleteOutlinedIcon />}
-          color='error'
-        >
-          ELIMINAR
-        </Button> */}
       </GridToolbarContainer>
     );
 }
 
-//traducir el texto de las herramientas a español
 export const setToolBartext = {
     toolbarColumns: 'Columnas',
     toolbarFilters: 'Filtros',

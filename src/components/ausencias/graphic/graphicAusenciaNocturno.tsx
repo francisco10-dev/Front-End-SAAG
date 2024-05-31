@@ -9,6 +9,7 @@ import { Chart, CategoryScale, LinearScale, PointElement, BarElement, Title, Too
 import { Tabs, Tab } from '@mui/material';
 import { Table, DatePicker, Drawer, } from 'antd';
 import moment, { Moment } from 'moment';
+import dayjs from 'dayjs';
 import './graphicStyle.css'
 import DatePickerRadioGroup from './datePickerRadioGroup';
 
@@ -44,12 +45,12 @@ const BarsNocturno = () => {
         const colaboradoresActivosOConSalidaEnAnioSeleccionado = todosLosColaboradores.filter(colaborador => {
 
           const esActivo = colaborador.estado === 'Activo' &&
-            colaborador.fechaIngreso && new Date(colaborador.fechaIngreso).getFullYear()
+            colaborador.fechaIngreso && dayjs(colaborador.fechaIngreso).year()
             <= selectedYear;
 
           const esInactivoConFechaEnAnioSeleccionado = colaborador.estado === 'Inactivo' &&
-            colaborador.fechaSalida && new Date(colaborador.fechaSalida).getFullYear() >= selectedYear
-            && colaborador.fechaIngreso && new Date(colaborador.fechaIngreso).getFullYear() <= selectedYear;
+            colaborador.fechaSalida && dayjs(colaborador.fechaSalida).year() >= selectedYear
+            && colaborador.fechaIngreso && dayjs(colaborador.fechaIngreso).year() <= selectedYear;
           return esActivo || esInactivoConFechaEnAnioSeleccionado;
         });
 
@@ -72,15 +73,20 @@ const BarsNocturno = () => {
   useEffect(() => {
     const fetchSolicitudes = async () => {
       try {
-        const solicitudes = await solicitudService.getSolicitudes();
-        setSolicitudes(solicitudes);
+        const allSolicitudes = await solicitudService.getSolicitudes();
+        const solicitudesFiltradas = allSolicitudes.filter(solicitud => {
+          const solicitudYear = dayjs(solicitud.fechaSolicitud).year();
+          return solicitudYear === selectedYear;
+        });
+        console.log("Las solicitudes", solicitudesFiltradas);
+        setSolicitudes(solicitudesFiltradas);
         setLoading(false);
       } catch (error) {
         setLoading(false);
       }
     };
     fetchSolicitudes();
-  }, []);
+  }, [selectedYear]);
 
   useEffect(() => {
     const filteredSolicitudes = solicitudes.filter(solicitud => {
@@ -89,7 +95,7 @@ const BarsNocturno = () => {
         colaborador.tipoJornada === 'Nocturna'
       );
 
-      const fechaSolicitud = new Date(solicitud.fechaSolicitud);
+      const fechaSolicitud = dayjs(solicitud.fechaSolicitud);
       let goceSalarialCondition = true;
 
       if (radioValue === 2) {
@@ -99,7 +105,7 @@ const BarsNocturno = () => {
       }
 
       return esDiurnoYActivo &&
-        fechaSolicitud.getFullYear() === selectedYear &&
+        fechaSolicitud.year() === selectedYear &&
         solicitud.estado === "Aprobado" &&
         goceSalarialCondition;
     });
@@ -124,8 +130,8 @@ const BarsNocturno = () => {
 
       updatedSumasIndicadoresPorTipo[solicitud.tipoSolicitud] += indicador;
 
-      const fecha = new Date(solicitud.fechaSolicitud);
-      const mes = fecha.getUTCMonth();
+      const fecha = dayjs(solicitud.fechaSolicitud);
+      const mes = fecha.month();
 
       const unidad = solicitud.colaborador?.unidad;
       const tipoSolicitud = solicitud.tipoSolicitud;
@@ -523,7 +529,7 @@ const BarsNocturno = () => {
             closable={false}
             onClose={onCloseDrawer}
             open={drawerOpen}
-            width={700}
+            width={725}
           >
             <Tabs value={tabIndex} onChange={handleTabChange}>
               <Tab label="Anual" />

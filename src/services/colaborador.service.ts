@@ -151,6 +151,22 @@
         }
     }
 
+    async findUsuarioByColaboradorId(idColaborador: number): Promise<Usuario> {
+      try {
+          const response = await this.axiosInstance.get(`/find-user-by-IdColaborador/${idColaborador}/usuario`);
+          return response.data;
+      } catch (error) {
+          if (axios.isAxiosError(error)) {
+              if (error.response) {
+                  throw new Error(`Error ${error.response.status}: ${error.response.statusText}`);
+              } else {
+                  throw new Error('Error en la solicitud de red');
+              }
+          }
+          throw error;
+      }
+  }
+
     async agregarTelefono(id: number, phoneNumber: string): Promise<number> {
         try {
             const data = {

@@ -9,10 +9,9 @@ import { Chart, CategoryScale, LinearScale, PointElement, BarElement, Title, Too
 import { Tabs, Tab } from '@mui/material';
 import { Table, DatePicker, Drawer, } from 'antd';
 import moment, { Moment } from 'moment';
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import './graphicStyle.css'
 import DatePickerRadioGroup from './datePickerRadioGroup';
-
 
 Chart.register(CategoryScale, LinearScale, PointElement, BarElement, Title, Tooltip, Legend, Filler);
 
@@ -58,12 +57,10 @@ const BarsDiurno = () => {
         const colaboradoresDiurnosActivos = colaboradoresActivosOConSalidaEnAnioSeleccionado.filter(colaborador =>
           colaborador.tipoJornada === 'Diurna'
         );
-        console.log("colaboradores con jornada Diurna", colaboradoresDiurnosActivos);
+        //console.log("colaboradores con jornada Diurna", colaboradoresDiurnosActivos);
         setColaboradores(colaboradoresDiurnosActivos);
-
         setLoading(false);
       } catch (error) {
-        console.log(error);
         setLoading(false);
       }
     };
@@ -71,18 +68,21 @@ const BarsDiurno = () => {
   }, []);
 
   useEffect(() => {
-    const fetchSolicitudes = async () => {
-      try {
-        const solicitudes = await solicitudService.getSolicitudes();
-        console.log("Las solicitudes", solicitudes);
-        setSolicitudes(solicitudes);
-        setLoading(false);
-      } catch (error) {
-        setLoading(false);
-      }
-    };
-    fetchSolicitudes();
-  }, []);
+  const fetchSolicitudes = async () => {
+    try {
+      const allSolicitudes = await solicitudService.getSolicitudes();
+      const solicitudesFiltradas = allSolicitudes.filter(solicitud => {
+        const solicitudYear = dayjs(solicitud.fechaSolicitud).year();
+        return solicitudYear === selectedYear;
+      });
+      setSolicitudes(solicitudesFiltradas);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+    }
+  };
+  fetchSolicitudes();
+}, [selectedYear]);
 
   useEffect(() => {
     const filteredSolicitudes = solicitudes.filter(solicitud => {
@@ -105,7 +105,7 @@ const BarsDiurno = () => {
         solicitud.estado === "Aprobado" &&
         goceSalarialCondition;
     });
-    console.log("Solicitudes filtradas:", filteredSolicitudes);
+    //console.log("Solicitudes filtradas:", filteredSolicitudes);
     let updatedRecuentosSolicitudesPorMes: Record<number, Record<string, number[]>> = {};
     let updatedSumasIndicadoresPorTipo: { [key: string]: number } = {};
     let updatedSumaTotalIndicadores: { [key: string]: number } = {};
@@ -126,8 +126,8 @@ const BarsDiurno = () => {
 
       updatedSumasIndicadoresPorTipo[solicitud.tipoSolicitud] += indicador;
 
-      const fecha = new Date(solicitud.fechaSolicitud);
-      const mes = fecha.getUTCMonth();
+      const fecha = dayjs(solicitud.fechaSolicitud);
+      const mes = fecha.month();
 
       const unidad = solicitud.colaborador?.unidad;
       const tipoSolicitud = solicitud.tipoSolicitud;
@@ -154,23 +154,28 @@ const BarsDiurno = () => {
       updatedSumaTotalIndicadores[tipo] = updatedSumasIndicadoresPorTipo[tipo];
     });
 
-    //console.log(updatedTiposSolicitudesPorUnidad);
     setTiposSolicitudesPorUnidad(updatedTiposSolicitudesPorUnidad);
     setSumaTotalIndicadores(updatedSumaTotalIndicadores);
+    console.log('suma total indicadores', updatedSumaTotalIndicadores);
     setSumasIndicadoresPorTipo(updatedSumasIndicadoresPorTipo);
+    console.log('suma total indicadores tipo', updatedSumasIndicadoresPorTipo);
     setRecuentosSolicitudesPorMes(updatedRecuentosSolicitudesPorMes);
   }, [solicitudes, selectedYear, radioValue, cantidadActivos]);
 
   const handleYearChange = (_date: Moment | null, dateString: string | string[]) => {
     if (dateString && typeof dateString === 'string') {
-      const selectedYear = moment(dateString, 'YYYY').year();
+      const selectedYear = dayjs(dateString, 'YYYY').year();
       setSelectedYear(selectedYear);
       setLoading(true);
 
       const fetchData = async () => {
         try {
-          const solicitudes = await solicitudService.getSolicitudes();
-          setSolicitudes(solicitudes);
+          const allSolicitudes = await solicitudService.getSolicitudes();
+          const solicitudesFiltradas = allSolicitudes.filter(solicitud => {
+            const solicitudYear = dayjs(solicitud.fechaSolicitud).year();
+            return solicitudYear === selectedYear;
+          });
+          setSolicitudes(solicitudesFiltradas);
           setLoading(false);
         } catch (error) {
           setLoading(false);
@@ -210,8 +215,8 @@ const BarsDiurno = () => {
       }
       updatedSumasIndicadoresPorTipo[solicitud.tipoSolicitud] += indicador;
 
-      const fecha = new Date(solicitud.fechaSolicitud);
-      const mes = fecha.getUTCMonth();
+      const fecha = dayjs(solicitud.fechaSolicitud);
+      const mes = fecha.month();
 
       if (!updatedRecuentosSolicitudesPorMes[mes]) {
         updatedRecuentosSolicitudesPorMes[mes] = {};
@@ -221,8 +226,6 @@ const BarsDiurno = () => {
       updatedRecuentosSolicitudesPorMes[mes][solicitud.tipoSolicitud].push(indicador);
     });
 
-    //console.log(filteredSolicitudes,);
-    //console.log(updatedSumasIndicadoresPorTipo);
     setSumasIndicadoresPorTipo(updatedSumasIndicadoresPorTipo);
     setRecuentosSolicitudesPorMes(updatedRecuentosSolicitudesPorMes);
   };
@@ -282,7 +285,7 @@ const BarsDiurno = () => {
       x: {
         title: {
           display: true,
-          text: 'Indicador de Ausentismo Diurno',
+          text: 'Indicador de Ausentismo Diurno-Mixto',
           font: {
             size: 21,
           }
@@ -525,7 +528,7 @@ const BarsDiurno = () => {
             closable={false}
             onClose={onCloseDrawer}
             open={drawerOpen}
-            width={700}
+            width={725}
           >
             <Tabs value={tabIndex} onChange={handleTabChange}>
               <Tab label="Anual" />

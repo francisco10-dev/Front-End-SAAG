@@ -5,8 +5,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import BarsDiurno from './graphicAusenciaDiurno';
 import BarsNocturno from './graphicAusenciaNocturno';
-import { Solicitud } from '../../../services/solicitud.service';
-//cambio para master
+
 interface TabPanelProps {
   children?: React.ReactNode;
   index: number;
@@ -42,36 +41,17 @@ function a11yProps(index: number) {
 
 export default function TabsAusenciaGraficoAdmin() {
   const [value, setValue] = useState(0);
-  //@ts-ignore
-  const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
-  
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
     event
   };
 
-
-
-  // Método para eliminar filas, pero no lo vas a usar
-  // const deleteRows = (ids: number[]) => {
-  //   const nuevoArray = solicitudes.filter((elemento) => !ids.includes(elemento.idSolicitud));
-  //   updateRows(nuevoArray);
-  // };
-
-  // Método para cambiar el estado, pero no lo vas a usar
-  // const changeStatus = (id: number, status: string) => {
-  //   const nuevoArray = solicitudes.map((solicitud) =>
-  //     solicitud.idSolicitud === id ? { ...solicitud, estado: status } : solicitud
-  //   );
-  //   updateRows(nuevoArray);
-  // };
-
   return (
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Grafico Diurno" {...a11yProps(0)} />
-          <Tab label="Grafico Nocturno" {...a11yProps(1)} />
+          <Tab label="Diurno-Mixto" {...a11yProps(0)} />
+          <Tab label="Nocturno" {...a11yProps(1)} />
         </Tabs>
       </Box>
       <CustomTabPanel value={value} index={0}>
