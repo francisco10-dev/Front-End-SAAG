@@ -108,7 +108,7 @@ const EditPasswordModal: React.FC<EditPasswordModalProps> = ({ open, usuario, on
         return;
       }
 
-    const updatedUsuario = { ...usuarioState, nombreUsuario, rol, idColaborador };
+    const updatedUsuario = { ...usuarioState, nombreUsuario, rol, idColaborador, contrasena };
 
     if (usuario) {
       try {
