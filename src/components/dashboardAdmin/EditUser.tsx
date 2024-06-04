@@ -95,7 +95,7 @@ const EditUsuarioModal: React.FC<EditUsuarioModalProps> = ({ open, usuario, onCl
 
     if (usuario) {
       try {
-        const response = await service.actualizarUsuario(usuario.idUsuario, updatedUsuario);
+        await service.actualizarUsuario(usuario.idUsuario, updatedUsuario);
         message.success('Usuario actualizado exitosamente');
         setNombreUsuario('');
         setRol('empleado');

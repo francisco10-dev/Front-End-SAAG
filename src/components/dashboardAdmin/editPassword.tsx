@@ -112,7 +112,7 @@ const EditPasswordModal: React.FC<EditPasswordModalProps> = ({ open, usuario, on
 
     if (usuario) {
       try {
-        const response = await service.actualizarUsuario(usuario.idUsuario, updatedUsuario);
+        await service.actualizarUsuario(usuario.idUsuario, updatedUsuario);
         message.success('Usuario actualizado exitosamente');
         setNombreUsuario('');
         setContrasena('');
