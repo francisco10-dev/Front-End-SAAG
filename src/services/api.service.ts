@@ -5,8 +5,8 @@ export const localhost = 'http://localhost:3001/saag';
 export const hostedUrl = 'https://apisaag.onrender.com/saag'
 
 const axiosApi = axios.create({   //Se crea la instancia de axios que será usada de forma general para todos los services
-  // baseURL: hostedUrl,
-  baseURL: localhost,
+   baseURL: hostedUrl,
+  //baseURL: localhost,
 });
 
 
@@ -16,8 +16,8 @@ const renewToken = async () =>{   // Función para renovar el token de acceso si
 
     if(token){
     const newInstance = axios.create({   //Se crea una nueva instancia de axios para hacer la petición
-      //  baseURL: hostedUrl,
-       baseURL: localhost,
+      baseURL: hostedUrl,
+      //baseURL: localhost,
     })
     const response = await newInstance.post(`/refresh/${token}`); // Se hace la petición para obtener el nuevo token de acceso
     return response.data.newToken;
