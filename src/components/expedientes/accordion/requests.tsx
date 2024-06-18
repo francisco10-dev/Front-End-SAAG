@@ -12,7 +12,6 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import ColaboradorService from '../../../services/colaborador.service';
 import { Solicitud } from '../../../services/solicitud.service';
 import { formatDate } from '../../solicitudes/utils';
 import Badge from '../../solicitudes/badge';
@@ -94,31 +93,16 @@ function Row(props: Readonly<{ row: Solicitud }>) {
 
 
 interface Props{
-    id: number;
+    data: Solicitud[];
+    loading: boolean;
 }
 
-export default function Requests({id}: Readonly<Props>) {
+export default function Requests({data, loading}: Readonly<Props>) {
 
-  const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
-  const [idColaborador, setIdColaborador] = useState(id);
   const [filterText, setFilterText] = useState('');
+  const [solicitudes, setSolicitudes] = useState<Solicitud[]>(data);
   const [filteredRows, setFilteredRows] = useState(solicitudes); 
   const [sort, setSort] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const loadData = async ()=> {
-    try {
-        setLoading(true);
-        const service = new ColaboradorService();
-        const response = await service.obtenerSolicitudesPorColaborador(idColaborador);
-        setSolicitudes(response);
-    } catch (error) {
-        setSolicitudes([]);
-    }finally{
-      setLoading(false);
-    }
-  }
-
   
   const handleInputChange = (value: string) => {
     setFilterText(value);
@@ -146,12 +130,8 @@ export default function Requests({id}: Readonly<Props>) {
   },[filterText, solicitudes]);
 
   useEffect(()=> {
-    setIdColaborador(id);
-  },[id]);
-
-  useEffect(() => {
-    loadData();
-  },[idColaborador]);
+    setSolicitudes(data);
+  },[data]);
 
   useEffect(()=> {
     handleChangeSort();

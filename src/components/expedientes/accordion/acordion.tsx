@@ -3,7 +3,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Box from '@mui/material/Box';
-import { Colaborador } from '../../../services/colaborador.service';
+import ColaboradorService, { Colaborador } from '../../../services/colaborador.service';
 import { Typography } from '@mui/material';
 import PhoneNumbers from './phoneNumbers/phoneNumbersList';
 import Requests from './requests';
@@ -12,6 +12,7 @@ import Files from './documents';
 import { useEffect, useState } from 'react';
 import TabsLicencias from './licenses/tabsLicencias';
 import TabsCourses from './courses/tabsCourses';
+import { Solicitud } from '../../../services/solicitud.service';
 
 interface Props{
     data: Colaborador | null
@@ -20,10 +21,26 @@ interface Props{
 const Accordions = ({data}: Props) =>{
 
     const [colaborador, setColaborador] = useState<Colaborador | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
+
+    const loadData = async ()=> {
+        try {
+            setLoading(true);
+            const service = new ColaboradorService();
+            const response = await service.obtenerSolicitudesPorColaborador(data!.idColaborador);
+            setSolicitudes(response);
+        } catch (error) {
+            setSolicitudes([]);
+        }finally{
+          setLoading(false);
+        }
+    }
 
     useEffect(() => {
         if (data) {
             setColaborador(data);
+            loadData();
         }
     }, [data]);
 
@@ -99,7 +116,7 @@ const Accordions = ({data}: Props) =>{
                     <Typography variant='body1'>Historial de solicitudes</Typography>
                 </AccordionSummary>
                 <AccordionDetails>
-                    <Requests id={colaborador.idColaborador} />
+                    <Requests data={solicitudes} loading={loading} />
                 </AccordionDetails>
             </Accordion>
            </Box>
@@ -113,7 +130,7 @@ const Accordions = ({data}: Props) =>{
                         <Typography variant='body1'>Historial de ausencias</Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <Absences id={colaborador.idColaborador}/> 
+                        <Absences data={solicitudes} loading={loading} /> 
                     </AccordionDetails>
                 </Accordion>
            </Box>

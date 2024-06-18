@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Accordion, AccordionDetails, AccordionSummary, Box, Typography } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useAuth } from "../../authProvider";
@@ -6,21 +6,44 @@ import PersonalInfo from "../expedientes/info/personalInfo";
 import Requests from "../expedientes/accordion/requests";
 import Absences from "../expedientes/accordion/absences";
 import PasswordManager from "../expedientes/accordion/passwordManager";
+import { Solicitud } from "../../services/solicitud.service";
+import ColaboradorService from "../../services/colaborador.service";
 
 const Info = () => {
   const { colaborador, photo } = useAuth();
   const [expanded, setExpanded] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [solicitudes, setSolicitudes] = useState<Solicitud[]>([]);
+
+  const loadData = async ()=> {
+      try {
+          setLoading(true);
+          const service = new ColaboradorService();
+          const response = await service.obtenerSolicitudesPorColaborador(colaborador!.idColaborador);
+          setSolicitudes(response);
+      } catch (error) {
+          setSolicitudes([]);
+      }finally{
+        setLoading(false);
+      }
+  }
+
+  useEffect(() => {
+    if(colaborador){
+      loadData();
+    }
+  },[]);
 
   const renderRequests = () => {
     if (colaborador?.idColaborador) {
-      return <Requests id={colaborador.idColaborador} />;
+      return <Requests data={solicitudes} loading={loading}  />;
     }
     return null;
   };
 
   const renderAbsences = () => {
     if (colaborador?.idColaborador) {
-      return <Absences id={colaborador.idColaborador} />;
+      return <Absences data={solicitudes} loading={loading} />;
     }
     return null;
   };

@@ -7,32 +7,20 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Box  from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
-import AusenciaService, { Ausencia } from '../../../services/ausencia.service';
-import { TextField, Typography } from '@mui/material';
+import { TextField, Typography, Alert } from '@mui/material';
 import { formatDate } from '../../solicitudes/utils';
+import { Solicitud } from '../../../services/solicitud.service';
 
 interface Props{
-    readonly id: number;
+    data: Solicitud[];
+    loading: boolean;
 }
 
-export default function Absences({id}: Props) {
+export default function Absences({data, loading}: Props) {
 
-    const [idColaborador, setIdColaborador] = useState(id);
-    const [absences, setAbsences] = useState<Ausencia[]>([]);
+    const [absences, setAbsences] = useState<Solicitud[]>(data);
     const [filteredRows, setFilteredRows] = useState(absences); 
     const [filterText, setFilterText] = useState('');
-
-    const loadData = async ()=> {
-        try {
-            const service = new AusenciaService();
-            const response = await service.AusenciasPorColaborador(idColaborador);
-            setAbsences(response);
-        } catch (error) {
-            console.log(error);
-            setAbsences([]);
-        }
-    }
-
     
     const handleInputChange = (value: string) => {
         setFilterText(value);
@@ -43,15 +31,21 @@ export default function Absences({id}: Props) {
         setFilteredRows(filteredData);
       };
     
-      const filterRow = (row: Ausencia) => {
-        const formattedDate = formatDate(row.fechaAusencia);
-        const formattedDate2 = formatDate(row.fechaFin);
+      const filterRow = (row: Solicitud) => {
+        const fechaSolicitud = formatDate(row.fechaSolicitud);
+        const fechaInicio = formatDate(row.fechaInicio!);
+        const fechaFin = formatDate(row.fechaInicio!);
+
         return (
             (row.nombreColaborador?.toLowerCase().includes(filterText.toLowerCase())) ||
-            (row.razon?.toLowerCase().includes(filterText.toLowerCase())) ||
-            (row.idAusencia?.toString().includes(filterText)) ||
-            (formattedDate?.toLowerCase().includes(filterText.toLowerCase())) ||
-            (formattedDate2?.toLowerCase().includes(filterText.toLowerCase()))
+            (row.asunto?.toLowerCase().includes(filterText.toLowerCase())) ||
+            (row.tipoSolicitud?.toLowerCase().includes(filterText.toLowerCase())) ||
+            (row.idSolicitud?.toString().includes(filterText)) ||
+            (row.horaInicio?.toLowerCase().includes(filterText.toLowerCase())) ||
+            (row.horaFin?.toLowerCase().includes(filterText.toLowerCase())) ||
+            (fechaSolicitud?.toLowerCase().includes(filterText.toLowerCase())) ||
+            (fechaInicio?.toLowerCase().includes(filterText.toLowerCase())) ||
+            (fechaFin?.toLowerCase().includes(filterText.toLowerCase())) 
         );
       };
     
@@ -60,15 +54,22 @@ export default function Absences({id}: Props) {
       },[filterText, absences]);
 
     useEffect(()=> {
-        setIdColaborador(id);
-    },[id]);
+        setAbsences(data);
+    },[data]);
 
-    useEffect(()=> {
-        loadData();
-    },[idColaborador]);
+    if(loading){
+        return (
+            <Typography variant='body2' sx={{textAlign: 'center', padding: 3}}>
+            Cargando información...
+          </Typography>
+        );
+    }
 
   return (
     <Box>
+        <Box>
+            <Alert variant='filled' severity='info'>Las ausencias registradas se generan de las solicitudes.</Alert>
+        </Box>
         <Box ml={2}>
             <TextField
                 id="outlined-basic" 
@@ -85,24 +86,26 @@ export default function Absences({id}: Props) {
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                     <TableRow>
-                        <TableCell align='center'>N# Ausencia</TableCell>
+                        <TableCell align='left' >N# Ausencia</TableCell>
                         <TableCell>Fecha Ausencia</TableCell>
                         <TableCell>Fecha Fin</TableCell>
-                        <TableCell>Razón</TableCell>
+                        <TableCell>Asunto</TableCell>
+                        <TableCell>Hora Inicio</TableCell>
+                        <TableCell>Hora Fin</TableCell>
                     </TableRow>
                     </TableHead>
                     <TableBody>
-                    {filteredRows.map((row) => (
+                    {filteredRows.map((row, index) => (
                         <TableRow
-                        key={row.idAusencia}
+                        key={row.idSolicitud}
                         sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
-                        <TableCell component="th" scope="row" align='center'>
-                            {row.idAusencia}
-                        </TableCell>
-                        <TableCell>{formatDate(row.fechaAusencia)}</TableCell>
+                        <TableCell>{index + 1}</TableCell>
+                        <TableCell>{formatDate(row.fechaInicio!)}</TableCell>
                         <TableCell>{ row.fechaFin? formatDate(row.fechaFin) : 'No indica'}</TableCell>
-                        <TableCell>{row.razon? row.razon : 'No indica'}</TableCell>
+                        <TableCell>{row.asunto? row.asunto : 'No indica'}</TableCell>
+                        <TableCell>{row.horaInicio? row.horaInicio : 'No indica'}</TableCell>
+                        <TableCell>{row.horaFin? row.horaFin : 'No indica'}</TableCell>
                         </TableRow>
                     ))}
                     </TableBody>
