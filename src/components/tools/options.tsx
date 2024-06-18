@@ -21,7 +21,7 @@ export const items: MenuProps['items'] = [
     {
       key: '2',
       icon: <UserOutlined/>,
-      label: 'Empleados',
+      label: 'Colaboradores',
     },
     {
       key: 'Ausencias',

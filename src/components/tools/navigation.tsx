@@ -3,14 +3,31 @@ import HomeIcon from '@mui/icons-material/Home';
 import { useAuth } from "../../authProvider";
 
 import { useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
-function capitalizeFirstLetter(string:any) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}
 
 function CurrentNavigation() {
     const location = useLocation();
     const {userRole} = useAuth();
+
+    useEffect(() => {
+      console.log(location.pathname);
+    },[location]);
+
+    const paths: { [key: string]: string } = {
+      "/dashboard": "Dashboard",
+      "/solicitudes": "Solicitudes",
+      "/solicitud-form": "Ingresar Solicitud",
+      "/ausencias": "Ausencias",
+      "/graficos": "Gráficos",
+      "/mi-informacion": "Mi Información",
+      "/administrador": "Administración de usuarios",
+      "/auditorias": "Actividad",
+      "/auditorias-login": "Sesiones",
+      "/panel-expedientes": "Colaboradores"
+    };
+  
+    const getPathName = (path: string): string | undefined => paths[path];
 
   return (
     <div>
@@ -20,9 +37,9 @@ function CurrentNavigation() {
             <HomeIcon sx={{paddingBottom: '3px'}} />
           </Link>
         )}
-        <Typography sx={{ color: 'grey'}} color="textPrimary">{capitalizeFirstLetter(location.pathname.substring(1))}</Typography>
+        <Typography sx={{ color: 'grey'}} color="textPrimary">{getPathName(location.pathname)}</Typography>
       </Breadcrumbs>
-      <Typography variant="h6" fontWeight="bold">{capitalizeFirstLetter(location.pathname.substring(1))}</Typography>
+      <Typography variant="h6" fontWeight="bold">{getPathName(location.pathname)}</Typography>
     </div>
   );
 }
